@@ -3,7 +3,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
 } from "discord.js";
-import { Plant } from "db/models/Plant.js";
+import { Plants } from "~/db/models/Plants.js";
 
 // List of available plants with their default grow times (in weeks)
 const AVAILABLE_PLANTS = {
@@ -81,7 +81,7 @@ async function createPlantEmbed(
 }
 
 async function getUserPlantCount(userId: string): Promise<number> {
-  return await Plant.count({
+  return await Plants.count({
     where: {
       user: userId,
     },
@@ -120,7 +120,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
 
     // Create the plant in the database
-    const plant = await Plant.create({
+    const plant = await Plants.create({
       name: plantName,
       time: timeToGrow,
       user: userId,

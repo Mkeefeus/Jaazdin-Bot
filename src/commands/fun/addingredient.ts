@@ -1,6 +1,6 @@
 import { db } from "db/db";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { IngredientCategory, Ingredient } from "~/db/models/Ingredient";
+import { IngredientCategory, Ingredients } from "~/db/models/Ingredients";
 
 export const data = new SlashCommandBuilder()
   .setName("addingredient")
@@ -45,7 +45,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
-    const existingIngredients = await Ingredient.findAll({
+    const existingIngredients = await Ingredients.findAll({
       where: { name: uniqueNames, category: category },
     });
 
@@ -68,7 +68,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     await Promise.all(
       newIngredients.map((name) =>
-        Ingredient.create({
+        Ingredients.create({
           name,
           category: category as IngredientCategory,
         })

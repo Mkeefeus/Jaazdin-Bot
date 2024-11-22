@@ -3,7 +3,7 @@ import {
   SlashCommandBuilder,
   EmbedBuilder,
 } from "discord.js";
-import { IngredientCategory, Ingredient } from "~/db/models/Ingredient";
+import { IngredientCategory, Ingredients, Ingredient } from "~/db/models/Ingredients";
 
 export const data = new SlashCommandBuilder()
   .setName("kitchen")
@@ -13,7 +13,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   try {
     await interaction.deferReply();
 
-    const ingredients: Ingredient[] = (await Ingredient.findAll()).map(
+    const ingredients: Ingredient[] = (await Ingredients.findAll()).map(
       (ingredient) => ingredient.toJSON()
     );
 

@@ -9,15 +9,14 @@ export enum IngredientCategory {
   cheese = "cheese",
   extra = "extra",
 }
-// bread, protein, cheese, roughage, wild magic, sauce
 
 export interface Ingredient {
   name: string;
   category: IngredientCategory;
 }
 
-export const Ingredient = db.define(
-  "Ingredient",
+export const Ingredients = db.define(
+  "Ingredients",
   {
     // Model attributes are defined here
     name: {
@@ -28,8 +27,5 @@ export const Ingredient = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-  },
-  {
-    freezeTableName: true,
   }
 );

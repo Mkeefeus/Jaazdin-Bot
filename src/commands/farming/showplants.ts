@@ -8,7 +8,7 @@ import {
   ComponentType,
   ButtonInteraction,
 } from "discord.js";
-import { Plant } from "db/models/Plant.js";
+import { Plants } from "~/db/models/Plants.js";
 
 const ITEMS_PER_PAGE = 3;
 
@@ -33,7 +33,7 @@ async function getPlants(
   userId: string | null = null
 ): Promise<PlantDisplay[]> {
   const whereClause = userId ? { user: userId } : {};
-  const plants = await Plant.findAll({ where: whereClause });
+  const plants = await Plants.findAll({ where: whereClause });
 
   return plants.map((plant) => ({
     name: plant.get("name") as string,
