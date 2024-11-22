@@ -1,6 +1,6 @@
 import { db } from "~/db/db";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { isBotDev } from "~/functions/isBotDev";
+import { isBotDev } from "~/functions/helpers";
 
 export const data = new SlashCommandBuilder()
     .setName("sql")

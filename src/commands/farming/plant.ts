@@ -2,23 +2,12 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
   EmbedBuilder,
+  AutocompleteInteraction,
 } from "discord.js";
-import { Plants } from "~/db/models/Plants.js";
+import { Plants, PlantInformation, PlantHarvestInformation } from "~/db/models/Plants";
+import { formatPlantName } from "~/functions/helpers";
 
-// List of available plants with their default grow times (in weeks)
-const AVAILABLE_PLANTS = {
-  "Fire Lily": 4,
-  "Harmony Cap": 1,
-  "Hiker's Bounty": 1,
-  "Rusty Sprig": 3,
-  "Drow's Wine Glass": 3,
-  "Gem Root": 7,
-  "Flaming Lily": 5,
-  Mistcreeper: 1,
-  "Red Winterberry": 2,
-} as const;
-
-type PlantName = keyof typeof AVAILABLE_PLANTS;
+const MAX_PLANTS_PER_USER = 150;
 
 export const data = new SlashCommandBuilder()
   .setName("plant")
@@ -28,54 +17,20 @@ export const data = new SlashCommandBuilder()
       .setName("name")
       .setDescription("The type of plant to grow")
       .setRequired(true)
-      .addChoices(
-        ...Object.entries(AVAILABLE_PLANTS).map(([name, _]) => ({
-          name,
-          value: name,
-        }))
-      )
-  )
-  .addIntegerOption((option) =>
-    option
-      .setName("time")
-      .setDescription("Override the default grow time (in weeks)")
-      .setRequired(false)
-      .setMinValue(1)
-      .setMaxValue(52)
-  )
-  .addBooleanOption((option) =>
-    option
-      .setName("repeatable")
-      .setDescription("Whether the plant should regrow after harvesting")
-      .setRequired(false)
-  )
-  .addIntegerOption((option) =>
-    option
-      .setName("repeat_time")
-      .setDescription("Time between harvests for repeatable plants (in weeks)")
-      .setRequired(false)
-      .setMinValue(1)
-      .setMaxValue(52)
+      .setAutocomplete(true)
   );
 
 async function createPlantEmbed(
-  plantName: string,
-  timeToGrow: number,
+  plantInfo: any,
   owner: string,
-  repeatable: boolean,
-  repeatTime?: number
 ): Promise<EmbedBuilder> {
   return new EmbedBuilder()
     .setTitle("🌱 New Plant Added!")
     .setColor(0x2ecc71)
     .addFields(
-      { name: "Plant Type", value: plantName, inline: true },
-      { name: "Time to Grow", value: `${timeToGrow} weeks`, inline: true },
+      { name: "Plant Type", value: formatPlantName(plantInfo.dataValues.name), inline: true },
+      { name: "Time to Maturity", value: `${plantInfo.dataValues.maturity_time} weeks`, inline: true },
       { name: "Owner", value: `<@${owner}>`, inline: true },
-      { name: "Repeatable", value: repeatable ? "Yes" : "No", inline: true },
-      ...(repeatTime
-        ? [{ name: "Repeat Time", value: `${repeatTime} weeks`, inline: true }]
-        : [])
     )
     .setTimestamp();
 }
@@ -88,13 +43,28 @@ async function getUserPlantCount(userId: string): Promise<number> {
   });
 }
 
-const MAX_PLANTS_PER_USER = 150;
+export async function autocomplete(interaction: AutocompleteInteraction) {
+  const focusedValue = interaction.options.getFocused().toLowerCase();
+  const plants = await PlantInformation.findAll();
+
+  console.log(plants.map(plant => plant.dataValues.name))
+
+  const filtered = plants.filter(plant => 
+    plant.dataValues.name.includes(focusedValue)
+  );
+
+  await interaction.respond(
+    filtered.slice(0, 25).map(plant => ({
+      name: formatPlantName(plant.dataValues.name), // Display nicely formatted
+      value: plant.dataValues.name, // Keep lowercase for database lookup
+    }))
+  );
+}
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   try {
     const userId = interaction.user.id;
 
-    // Check if user has reached the plant limit
     const currentPlants = await getUserPlantCount(userId);
     if (currentPlants >= MAX_PLANTS_PER_USER) {
       await interaction.reply({
@@ -104,36 +74,32 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
-    const plantName = interaction.options.getString("name", true) as PlantName;
-    const defaultTime = AVAILABLE_PLANTS[plantName];
-    const timeToGrow = interaction.options.getInteger("time") ?? defaultTime;
-    const repeatable = interaction.options.getBoolean("repeatable") ?? true;
-    const repeatTime = interaction.options.getInteger("repeat_time");
+    // Get the exact name from the autocomplete value (already lowercase)
+    const plantName = interaction.options.getString("name", true).toLowerCase();
 
-    // Validate repeat_time is provided if plant is repeatable
-    if (repeatable && !repeatTime) {
+    const plantInfo = await PlantInformation.findOne({
+      where: { name: plantName }
+    });
+
+    console.log(plantInfo)
+
+    if (!plantInfo) {
       await interaction.reply({
-        content: "You must specify a repeat_time for repeatable plants!",
+        content: "That plant type doesn't exist!",
         ephemeral: true,
       });
       return;
     }
 
-    // Create the plant in the database
-    const plant = await Plants.create({
+    await Plants.create({
       name: plantName,
-      time: timeToGrow,
       user: userId,
-      repeatable: repeatable,
-      repeatTime: repeatTime,
+      planted_at: new Date()
     });
 
     const embed = await createPlantEmbed(
-      plantName,
-      timeToGrow,
-      userId,
-      repeatable,
-      repeatTime ? repeatTime : undefined
+      plantInfo,
+      userId
     );
 
     await interaction.reply({
@@ -151,4 +117,5 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export default {
   data,
   execute,
+  autocomplete,
 };

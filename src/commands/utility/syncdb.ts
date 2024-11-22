@@ -1,12 +1,87 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { isBotDev } from "~/functions/isBotDev";
+import { PlantHarvestInformation, PlantHarvests, PlantInformation, Plants } from "~/db/models/Plants";
+import { isBotDev } from "~/functions/helpers";
+import { db } from "~/db/db";
+import { Ingredients, Ingredient, IngredientCategory } from "~/db/models/Ingredients";
 
 export const data = new SlashCommandBuilder().setName("resetdb").setDescription("Resets the database");
+
+async function syncPlantsDatabase() {
+    // First, sync the independent tables
+    await PlantInformation.sync({ force: true });
+    console.log("PlantInformation table created");
+
+    await Plants.sync({ force: true });
+    console.log("Plants table created");
+
+    // Then sync the dependent tables
+    await PlantHarvestInformation.sync({ force: true });
+    console.log("PlantHarvestInformation table created");
+
+    await PlantHarvests.sync({ force: true });
+    console.log("PlantHarvests table created");
+
+    // Wait a moment to ensure tables are ready
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+}
+
+async function seedPlantsDatabase(plantData: any) {
+    try {
+        // Create each plant and its harvests in sequence
+        for (const plant of plantData.plants) {
+            try {
+                // First create the plant information
+                const plantInfo = await PlantInformation.create({
+                    name: plant.name.toLowerCase(),
+                    maturity_time: plant.maturityTime,
+                });
+                console.log(`Created plant info for ${plant.name}`);
+
+                // Wait a moment before creating harvests
+                await new Promise((resolve) => setTimeout(resolve, 100));
+
+                // Then create all harvests for this plant
+                for (const harvest of plant.harvest) {
+                    await PlantHarvestInformation.create({
+                        plant_id: plantInfo.getDataValue("id"),
+                        harvest_time: harvest.harvestTime,
+                        harvest_amount: harvest.harvestAmount,
+                        harvest_name: harvest.harvestName.toLowerCase(),
+                        renewable: harvest.renewable,
+                    });
+                }
+                console.log(`Created harvests for ${plant.name}`);
+            } catch (error) {
+                console.error(`Error seeding plant ${plant.name}:`, error);
+            }
+        }
+    } catch (error) {
+        console.error("Error in seedDatabase:", error);
+        throw error;
+    }
+}
+
+async function seedIngredientsDatabase(ingredientData: Ingredient[]) {
+    try {
+        // Create each ingredient and its category in sequence
+        ingredientData.forEach((ingredient) => {
+            Ingredients.create({
+                name: ingredient.name,
+                category: ingredient.category,
+            });
+        });
+        console.log("Seeded ingredients");
+    } catch (error) {
+        console.error("Error in seedDatabase:", error);
+        throw error;
+    }
+}
 
 export async function execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.member) {
         return;
     }
+
     let hasRole = isBotDev(interaction);
     if (!hasRole) {
         await interaction.reply("You do not have permission to use this command");
@@ -14,15 +89,48 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
 
     try {
-        await Promise.all([
-            // Ingredients.sync({ force: true }),
-            // Plants.sync({ force: true }),
-        ]);
-        // await db.sync({ force: true });
-        await interaction.reply("Database synced!");
+        // Defer the reply since this might take a while
+        await interaction.deferReply();
+
+        // Start a transaction
+        const transaction = await db.transaction();
+
+        try {
+            /**
+             * Sync and seed the plants database
+             * syncPlantsDatabase() creates the tables for the plants database
+             * seedDatabase() seeds the tables with the plant data
+             * Uncomment the lines below to sync and seed the plants database
+             */
+            // await syncPlantsDatabase();
+            // const plantData = await import('~/../plantInformation.json');
+            // await seedDatabase(plantData);
+
+            // Import and seed ingredient data
+            // const ingredientModule = await import('~/../ingredients.json');
+            // const ingredientData: Ingredient[] = ingredientModule.default.map((ingredient: { name: string; category: string }) => ({
+            //     name: ingredient.name,
+            //     category: ingredient.category as IngredientCategory,
+            // }));
+            // await seedIngredientsDatabase(ingredientData);
+
+            // Commit the transaction
+            //   await transaction.commit();
+
+            await interaction.editReply("Database synced and seeded successfully!");
+        } catch (error) {
+            // Rollback on error
+            await transaction.rollback();
+            console.error("Error in database setup:", error);
+            await interaction.editReply("Error setting up database. Check logs for details.");
+        }
     } catch (e) {
-        console.error("Error syncing database:", e);
-        await interaction.reply("Error syncing database");
+        console.error("Error in command execution:", e);
+        if (interaction.deferred) {
+            await interaction.editReply("Error setting up database");
+        } else {
+            await interaction.reply("Error setting up database");
+        }
     }
 }
 

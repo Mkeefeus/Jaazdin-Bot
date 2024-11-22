@@ -11,14 +11,22 @@ export enum IngredientCategory {
 }
 
 export interface Ingredient {
+  id?: number;
   name: string;
   category: IngredientCategory;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const Ingredients = db.define(
-  "Ingredients",
+  "ingredients",
   {
     // Model attributes are defined here
+    id : {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
