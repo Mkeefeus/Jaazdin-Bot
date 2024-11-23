@@ -37,3 +37,28 @@ export const Ingredients = db.define(
     },
   }
 );
+
+async function seed() {
+  const ingredientModule = await import('~/../ingredients.json');
+  const ingredientData: Ingredient[] = ingredientModule.default.map((ingredient: { name: string; category: string }) => ({
+      name: ingredient.name,
+      category: ingredient.category as IngredientCategory,
+  }));
+    try {
+        // Create each ingredient and its category in sequence
+        ingredientData.forEach((ingredient) => {
+            Ingredients.create({
+                name: ingredient.name,
+                category: ingredient.category,
+            });
+        });
+        console.log("Seeded ingredients");
+    } catch (error) {
+        console.error("Error in seedDatabase:", error);
+        throw error;
+    }
+}
+
+export {
+  seed,
+}

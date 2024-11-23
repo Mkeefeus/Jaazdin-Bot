@@ -8,15 +8,19 @@ import {
   ComponentType,
   ButtonInteraction,
 } from "discord.js";
-import { Plants } from "~/db/models/Plants.js";
+import { Plants, PlantInformation } from "~/db/models/Plants.js";
+import { formatPlantName } from "~/functions/helpers";
 
 const ITEMS_PER_PAGE = 3;
 
 interface PlantDisplay {
+  id: number;
   name: string;
-  weeksLeft: number;
+  plantedAt: Date;
+  fertilizerType: string;
+  yieldMultiplier: number;
+  growthMultiplier: number;
   owner: string;
-  repeatable: boolean;
 }
 
 export const data = new SlashCommandBuilder()
@@ -29,17 +33,25 @@ export const data = new SlashCommandBuilder()
       .setRequired(false)
   );
 
-async function getPlants(
-  userId: string | null = null
-): Promise<PlantDisplay[]> {
+async function getPlants(userId: string | null = null): Promise<PlantDisplay[]> {
   const whereClause = userId ? { user: userId } : {};
-  const plants = await Plants.findAll({ where: whereClause });
+  const plants = await Plants.findAll({ 
+    where: whereClause,
+    include: [{
+      model: PlantInformation,
+      as: 'information'
+    }],
+    order: [['planted_at', 'DESC']]
+  });
 
   return plants.map((plant) => ({
-    name: plant.get("name") as string,
-    weeksLeft: plant.get("time") as number,
-    owner: plant.get("user") as string,
-    repeatable: plant.get("repeatable") as boolean,
+    id: plant.getDataValue('id'),
+    name: plant.getDataValue('name'),
+    plantedAt: plant.getDataValue('planted_at'),
+    fertilizerType: plant.getDataValue('fertilizer_type'),
+    yieldMultiplier: plant.getDataValue('yield_multiplier') || 1.0,
+    growthMultiplier: plant.getDataValue('growth_multiplier') || 1.0,
+    owner: plant.getDataValue('user')
   }));
 }
 
@@ -54,19 +66,23 @@ function createPlantsEmbed(
   const currentPlants = plants.slice(start, end);
 
   const embed = new EmbedBuilder()
-    .setTitle("🌱 Plants")
-    .setThumbnail(
-      "https://kittenrescue.org/wp-content/uploads/2017/03/KittenRescue_KittenCareHandbook.jpg"
-    )
-    .setAuthor({ name: "Plant Tracker" })
+    .setTitle("🌱 Your Garden")
     .setColor(0x2ecc71)
     .setDescription(showingSelf ? "Showing your plants" : "Showing all plants")
     .setFooter({ text: `Page ${page + 1} of ${totalPages}` });
 
   currentPlants.forEach((plant) => {
+    const ageInWeeks = (Date.now() - plant.plantedAt.getTime()) / (1000 * 60 * 60 * 24 * 7);
+    const fertilizerInfo = plant.fertilizerType !== 'NONE' 
+      ? `\n🧪 ${plant.fertilizerType} (Yield: ${((plant.yieldMultiplier - 1) * 100).toFixed(0)}%, Growth: ${((plant.growthMultiplier - 1) * 100).toFixed(0)}%)`
+      : '';
+
     embed.addFields({
-      name: plant.name,
-      value: `Weeks Left: ${plant.weeksLeft}\nOwner: <@${plant.owner}>\nRepeatable? ${plant.repeatable}`,
+      name: `${formatPlantName(plant.name)} (ID: ${plant.id})`,
+      value: [
+        `Age: ${ageInWeeks.toFixed(1)} weeks`,
+        `Owner: <@${plant.owner}>${fertilizerInfo}`
+      ].join('\n'),
       inline: false,
     });
   });
@@ -81,7 +97,6 @@ function createButtons(
 ): ActionRowBuilder<ButtonBuilder>[] {
   const row = new ActionRowBuilder<ButtonBuilder>();
 
-  // Navigation buttons
   row.addComponents(
     new ButtonBuilder()
       .setCustomId("first")
@@ -108,7 +123,6 @@ function createButtons(
       .setDisabled(currentPage === totalPages - 1)
   );
 
-  // Toggle filter button
   const filterRow = new ActionRowBuilder<ButtonBuilder>();
   filterRow.addComponents(
     new ButtonBuilder()
@@ -125,7 +139,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   let showingSelf = interaction.options.getBoolean("self") ?? false;
 
   try {
-    // Get initial plants
     const plants = await getPlants(showingSelf ? interaction.user.id : null);
     const totalPages = Math.ceil(plants.length / ITEMS_PER_PAGE);
 
@@ -139,13 +152,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
-    // Send initial message
-    const embed = createPlantsEmbed(
-      plants,
-      currentPage,
-      totalPages,
-      showingSelf
-    );
+    const embed = createPlantsEmbed(plants, currentPage, totalPages, showingSelf);
     const components = createButtons(currentPage, totalPages, showingSelf);
 
     const response = await interaction.reply({
@@ -154,14 +161,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       fetchReply: true,
     });
 
-    // Create collector for button interactions
     const collector = response.createMessageComponentCollector({
       componentType: ComponentType.Button,
-      time: 300000, // 5 minutes
+      time: 300000,
     });
 
     collector.on("collect", async (i: ButtonInteraction) => {
-      // Ensure the user who clicked is the one who ran the command
       if (i.user.id !== interaction.user.id) {
         await i.reply({
           content: "Only the command user can navigate these plants!",
@@ -170,7 +175,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         return;
       }
 
-      // Handle button clicks
       switch (i.customId) {
         case "first":
           currentPage = 0;
@@ -211,7 +215,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           return;
       }
 
-      // Update embed and buttons
       const currentPlants = await getPlants(
         showingSelf ? interaction.user.id : null
       );

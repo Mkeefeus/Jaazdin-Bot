@@ -4,21 +4,26 @@ import { isBotDev } from "~/functions/helpers";
 import { db } from "~/db/db";
 import { Ingredients, Ingredient, IngredientCategory } from "~/db/models/Ingredients";
 
-export const data = new SlashCommandBuilder().setName("resetdb").setDescription("Resets the database");
+export const data = new SlashCommandBuilder()
+    .setName("resetdb")
+    .setDescription("Resets the database")
+    .addBooleanOption((option) => option.setName("drop").setDescription("Drop tables if they exist").setRequired(false))
+    .addBooleanOption((option) => option.setName("seed").setDescription("Seed the database with default data").setRequired(false));
 
-async function syncPlantsDatabase() {
+async function syncPlantsDatabase(interaction: ChatInputCommandInteraction) {
+    const syncOptions = interaction.options.getBoolean("drop") ? { force: true } : undefined;
     // First, sync the independent tables
-    await PlantInformation.sync({ force: true });
+    await PlantInformation.sync(syncOptions);
     console.log("PlantInformation table created");
 
-    await Plants.sync({ force: true });
+    await Plants.sync(syncOptions);
     console.log("Plants table created");
 
     // Then sync the dependent tables
-    await PlantHarvestInformation.sync({ force: true });
+    await PlantHarvestInformation.sync(syncOptions);
     console.log("PlantHarvestInformation table created");
 
-    await PlantHarvests.sync({ force: true });
+    await PlantHarvests.sync(syncOptions);
     console.log("PlantHarvests table created");
 
     // Wait a moment to ensure tables are ready
@@ -61,21 +66,7 @@ async function seedPlantsDatabase(plantData: any) {
     }
 }
 
-async function seedIngredientsDatabase(ingredientData: Ingredient[]) {
-    try {
-        // Create each ingredient and its category in sequence
-        ingredientData.forEach((ingredient) => {
-            Ingredients.create({
-                name: ingredient.name,
-                category: ingredient.category,
-            });
-        });
-        console.log("Seeded ingredients");
-    } catch (error) {
-        console.error("Error in seedDatabase:", error);
-        throw error;
-    }
-}
+
 
 export async function execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.member) {
@@ -98,7 +89,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         try {
             /**
              * Sync and seed the plants database
-             * syncPlantsDatabase() creates the tables for the plants database
+             * syncPlantsDatabase(interaction) creates the tables for the plants database
              * seedDatabase() seeds the tables with the plant data
              * Uncomment the lines below to sync and seed the plants database
              */

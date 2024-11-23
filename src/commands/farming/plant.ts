@@ -4,7 +4,7 @@ import {
   EmbedBuilder,
   AutocompleteInteraction,
 } from "discord.js";
-import { Plants, PlantInformation, PlantHarvestInformation } from "~/db/models/Plants";
+import { Plants, PlantInformation, PlantHarvestInformation, FertilizerType, FERTILIZER_EFFECTS } from "~/db/models/Plants";
 import { formatPlantName } from "~/functions/helpers";
 
 const MAX_PLANTS_PER_USER = 150;
@@ -18,21 +18,73 @@ export const data = new SlashCommandBuilder()
       .setDescription("The type of plant to grow")
       .setRequired(true)
       .setAutocomplete(true)
+  )
+  .addStringOption((option) =>
+    option
+      .setName("fertilizer")
+      .setDescription("Type of fertilizer to use")
+      .setRequired(false)
+      .addChoices(
+        { name: "None", value: FertilizerType.NONE },
+        { name: "Normal - Basic yield boost", value: FertilizerType.NORMAL },
+        { name: "Robust - Balanced yield and growth", value: FertilizerType.ROBUST },
+        { name: "Fortifying - Strong yield boost", value: FertilizerType.FORTIFYING },
+        { name: "Enriching - Superior yield and growth", value: FertilizerType.ENRICHING },
+        { name: "Speed-Grow - Fast growth", value: FertilizerType.SPEEDGROW },
+        { name: "Miracle-Grow - Premium all-around", value: FertilizerType.MIRACLEGROW },
+        { name: "Mystery-Grow - Random powerful effects", value: FertilizerType.MYSTERYGROW }
+      )
   );
 
 async function createPlantEmbed(
   plantInfo: any,
   owner: string,
+  fertilizerType: FertilizerType,
+  yieldMult: number,
+  growthMult: number
 ): Promise<EmbedBuilder> {
-  return new EmbedBuilder()
+  const fertilizerEffect = FERTILIZER_EFFECTS[fertilizerType];
+  const embed = new EmbedBuilder()
     .setTitle("🌱 New Plant Added!")
     .setColor(0x2ecc71)
     .addFields(
       { name: "Plant Type", value: formatPlantName(plantInfo.dataValues.name), inline: true },
       { name: "Time to Maturity", value: `${plantInfo.dataValues.maturity_time} weeks`, inline: true },
       { name: "Owner", value: `<@${owner}>`, inline: true },
-    )
-    .setTimestamp();
+    );
+
+  if (fertilizerType !== FertilizerType.NONE) {
+    embed.addFields(
+      { 
+        name: "🧪 Fertilizer", 
+        value: `${fertilizerType.charAt(0) + fertilizerType.slice(1).toLowerCase()}`, 
+        inline: true 
+      },
+      { 
+        name: "📈 Effects", 
+        value: [
+          `Yield: ${((yieldMult - 1) * 100).toFixed(0)}%`,
+          `Growth: ${((growthMult - 1) * 100).toFixed(0)}%`
+        ].join('\n'), 
+        inline: true 
+      },
+      {
+        name: "ℹ️ Description",
+        value: fertilizerEffect.description,
+        inline: false
+      }
+    );
+  }
+  return embed.setTimestamp();
+  // return new EmbedBuilder()
+  //   .setTitle("🌱 New Plant Added!")
+  //   .setColor(0x2ecc71)
+  //   .addFields(
+  //     { name: "Plant Type", value: formatPlantName(plantInfo.dataValues.name), inline: true },
+  //     { name: "Time to Maturity", value: `${plantInfo.dataValues.maturity_time} weeks`, inline: true },
+  //     { name: "Owner", value: `<@${owner}>`, inline: true },
+  //   )
+  //   .setTimestamp();
 }
 
 async function getUserPlantCount(userId: string): Promise<number> {
@@ -76,12 +128,24 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     // Get the exact name from the autocomplete value (already lowercase)
     const plantName = interaction.options.getString("name", true).toLowerCase();
+    const fertilizerType = (interaction.options.getString("fertilizer") || FertilizerType.NONE) as FertilizerType;
 
     const plantInfo = await PlantInformation.findOne({
       where: { name: plantName }
     });
 
-    console.log(plantInfo)
+    let yieldMult = 1.0;
+    let growthMult = 1.0;
+
+    if (fertilizerType === FertilizerType.MYSTERYGROW) {
+      console.log("Mystery grow. Fix this shit.")
+    } else {
+      const effects = FERTILIZER_EFFECTS[fertilizerType];
+      yieldMult = effects.yieldMultiplier;
+      growthMult = effects.growthMultiplier;
+    }
+
+    // console.log(plantInfo)
 
     if (!plantInfo) {
       await interaction.reply({
@@ -91,15 +155,21 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
-    await Plants.create({
+    const plant = await Plants.create({
       name: plantName,
       user: userId,
-      planted_at: new Date()
+      planted_at: new Date(),
+      fertilizer_type: fertilizerType,
+      yield_multiplier: yieldMult,
+      growth_multiplier: growthMult
     });
 
     const embed = await createPlantEmbed(
       plantInfo,
-      userId
+      userId,
+      fertilizerType,
+      yieldMult,
+      growthMult
     );
 
     await interaction.reply({
