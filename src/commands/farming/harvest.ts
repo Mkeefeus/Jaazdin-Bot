@@ -6,7 +6,7 @@ import {
 } from "discord.js";
 import { Plants, PlantHarvests, PlantHarvestInformation, PlantInformation, FERTILIZER_EFFECTS, FertilizerType } from "~/db/models/Plants";
 import { Users } from "~/db/models/Users";
-import { formatPlantName } from "~/functions/helpers";
+import { formatNames } from "~/functions/helpers";
 
 // Export the command data
 export const data = new SlashCommandBuilder()
@@ -238,7 +238,7 @@ async function autocompletePlant(interaction: AutocompleteInteraction) {
 
   return interaction.respond(
     filtered.slice(0, 25).map(plant => ({
-      name: `${plant.getDataValue('id')} - ${formatPlantName(plant.getDataValue('name'))}`,
+      name: `${plant.getDataValue('id')} - ${formatNames(plant.getDataValue('name'))}`,
       value: plant.getDataValue('id').toString()
     }))
   );
@@ -292,7 +292,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         .setTitle("🌾 Harvest Complete!")
         .setColor(0x2ecc71)
         .addFields(
-          { name: "Plant", value: formatPlantName(result.plantName), inline: true },
+          { name: "Plant", value: formatNames(result.plantName), inline: true },
           { 
             name: "Harvested", 
             value: `${result.amount}x ${result.harvestName}`, 

@@ -5,7 +5,7 @@ import {
   AutocompleteInteraction,
 } from "discord.js";
 import { Plants, PlantInformation, PlantHarvestInformation, FertilizerType, FERTILIZER_EFFECTS } from "~/db/models/Plants";
-import { formatPlantName } from "~/functions/helpers";
+import { formatNames } from "~/functions/helpers";
 
 const MAX_PLANTS_PER_USER = 150;
 
@@ -48,7 +48,7 @@ async function createPlantEmbed(
     .setTitle("🌱 New Plant Added!")
     .setColor(0x2ecc71)
     .addFields(
-      { name: "Plant Type", value: formatPlantName(plantInfo.dataValues.name), inline: true },
+      { name: "Plant Type", value: formatNames(plantInfo.dataValues.name), inline: true },
       { name: "Time to Maturity", value: `${plantInfo.dataValues.maturity_time} weeks`, inline: true },
       { name: "Owner", value: `<@${owner}>`, inline: true },
     );
@@ -80,7 +80,7 @@ async function createPlantEmbed(
   //   .setTitle("🌱 New Plant Added!")
   //   .setColor(0x2ecc71)
   //   .addFields(
-  //     { name: "Plant Type", value: formatPlantName(plantInfo.dataValues.name), inline: true },
+  //     { name: "Plant Type", value: formatNames(plantInfo.dataValues.name), inline: true },
   //     { name: "Time to Maturity", value: `${plantInfo.dataValues.maturity_time} weeks`, inline: true },
   //     { name: "Owner", value: `<@${owner}>`, inline: true },
   //   )
@@ -107,7 +107,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
   await interaction.respond(
     filtered.slice(0, 25).map(plant => ({
-      name: formatPlantName(plant.dataValues.name), // Display nicely formatted
+      name: formatNames(plant.dataValues.name), // Display nicely formatted
       value: plant.dataValues.name, // Keep lowercase for database lookup
     }))
   );

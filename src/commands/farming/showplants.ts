@@ -9,7 +9,7 @@ import {
   ButtonInteraction,
 } from "discord.js";
 import { Plants, PlantInformation } from "~/db/models/Plants.js";
-import { formatPlantName } from "~/functions/helpers";
+import { formatNames } from "~/functions/helpers";
 
 const ITEMS_PER_PAGE = 3;
 
@@ -78,7 +78,7 @@ function createPlantsEmbed(
       : '';
 
     embed.addFields({
-      name: `${formatPlantName(plant.name)} (ID: ${plant.id})`,
+      name: `${formatNames(plant.name)} (ID: ${plant.id})`,
       value: [
         `Age: ${ageInWeeks.toFixed(1)} weeks`,
         `Owner: <@${plant.owner}>${fertilizerInfo}`

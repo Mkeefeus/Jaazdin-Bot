@@ -22,7 +22,7 @@ export function isBotDev(interaction: ChatInputCommandInteraction) {
 }
 
 // Helper to format plant names for display (capitalize words)
-export function formatPlantName(name: string): string {
+export function formatNames(name: string): string {
     return name.split(' ').map(word => 
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
