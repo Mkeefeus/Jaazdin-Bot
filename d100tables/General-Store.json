@@ -1,0 +1,79 @@
+[
+    {
+        "bonus": "GP Die +1 & 10gp.",
+        "roll": {
+            "min": 1,
+            "max": 20
+        }
+    },
+    {
+        "bonus": "Purchase any Adventuring Gear for 25% off (stacks up to 100%)",
+        "roll": {
+            "min": 21,
+            "max": 40
+        }
+    },
+    {
+        "bonus": "Gain additional GP equal to a Persuasion roll X 2gp.",
+        "roll": {
+            "min": 41,
+            "max": 55
+        }
+    },
+    {
+        "bonus": "Increase your Wage progression by +1.",
+        "roll": {
+            "min": 56,
+            "max": 70
+        }
+    },
+    {
+        "bonus": "Purchase any Adventuring Gear for 50% off (stacks up to 100%)",
+        "roll": {
+            "min": 71,
+            "max": 85
+        }
+    },
+    {
+        "bonus": "Gain 10% off any purchase from the Docks (Stacks up to 100%)",
+        "roll": {
+            "min": 86,
+            "max": 95
+        }
+    },
+    {
+        "bonus": "Gain additional GP equal to a Persuasion roll X 5gp.",
+        "roll": {
+            "min": 96,
+            "max": 105
+        }
+    },
+    {
+        "bonus": "GP Die +3 and +30gp.",
+        "roll": {
+            "min": 106,
+            "max": 115
+        }
+    },
+    {
+        "bonus": "Gain 20% off any Weapon, Armor, Adventuring Gear, or Tool (stacks up to 100%)",
+        "roll": {
+            "min": 116,
+            "max": 125
+        }
+    },
+    {
+        "bonus": "Increase your Wage progression by +2.",
+        "roll": {
+            "min": 126,
+            "max": 135
+        }
+    },
+    {
+        "bonus": "Gain 20% any purchase from the Docks (Stacks up to 100%)",
+        "roll": {
+            "min": 136,
+            "max": 300
+        }
+    }
+]

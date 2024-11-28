@@ -1,0 +1,79 @@
+[
+    {
+        "bonus": "GP Die +1 & 10gp.",
+        "roll": {
+            "min": 1,
+            "max": 20
+        }
+    },
+    {
+        "bonus": "Gain a 1st level spell scroll (Random)",
+        "roll": {
+            "min": 21,
+            "max": 40
+        }
+    },
+    {
+        "bonus": "Increase the progress of one magic item being crafted by 30 or combined by 1 week",
+        "roll": {
+            "min": 41,
+            "max": 55
+        }
+    },
+    {
+        "bonus": "Increase your Wage progression by +1.",
+        "roll": {
+            "min": 56,
+            "max": 70
+        }
+    },
+    {
+        "bonus": "Gain a 2nd level spell scroll (Random)",
+        "roll": {
+            "min": 71,
+            "max": 85
+        }
+    },
+    {
+        "bonus": "Make use of one built faculty's tier 3 ability.",
+        "roll": {
+            "min": 86,
+            "max": 95
+        }
+    },
+    {
+        "bonus": "Increase the progress of one magic item being crafted by 60 or combined by 2 weeks",
+        "roll": {
+            "min": 96,
+            "max": 105
+        }
+    },
+    {
+        "bonus": "GP Die +3 and +30gp.",
+        "roll": {
+            "min": 106,
+            "max": 115
+        }
+    },
+    {
+        "bonus": "Gain a 3rd level spell scroll (Random)",
+        "roll": {
+            "min": 116,
+            "max": 125
+        }
+    },
+    {
+        "bonus": "Increase your Wage progression by +2.",
+        "roll": {
+            "min": 126,
+            "max": 135
+        }
+    },
+    {
+        "bonus": "Make use of two built faculty's Tier 3 ability.",
+        "roll": {
+            "min": 136,
+            "max": 300
+        }
+    }
+]

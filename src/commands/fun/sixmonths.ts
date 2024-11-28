@@ -1,1 +1,1 @@
-// Bot celebrates every six month anniversity : )
+// Bot celebrates every six month anniversary : )

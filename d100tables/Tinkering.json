@@ -1,0 +1,79 @@
+[
+    {
+        "bonus": "GP Die +1 & 10gp.",
+        "roll": {
+            "min": 1,
+            "max": 20
+        }
+    },
+    {
+        "bonus": "Gain advantage on next Blueprint or Invention crafting check you make.",
+        "roll": {
+            "min": 21,
+            "max": 40
+        }
+    },
+    {
+        "bonus": "You are offered an Uncommon Metal for 200gp.",
+        "roll": {
+            "min": 41,
+            "max": 55
+        }
+    },
+    {
+        "bonus": "Increase your Wage progression by +1.",
+        "roll": {
+            "min": 56,
+            "max": 70
+        }
+    },
+    {
+        "bonus": "You are offered a Rare Metal for 300gp.",
+        "roll": {
+            "min": 71,
+            "max": 85
+        }
+    },
+    {
+        "bonus": "You can immediately work on 1 Blueprint or Invention crafting check.",
+        "roll": {
+            "min": 86,
+            "max": 95
+        }
+    },
+    {
+        "bonus": "You are offered a Very Rare Metal for 450gp.",
+        "roll": {
+            "min": 96,
+            "max": 105
+        }
+    },
+    {
+        "bonus": "GP Die +3 and +30gp.",
+        "roll": {
+            "min": 106,
+            "max": 115
+        }
+    },
+    {
+        "bonus": "You can immediately work on 2 Blueprint or Invention crafting checks.",
+        "roll": {
+            "min": 116,
+            "max": 125
+        }
+    },
+    {
+        "bonus": "Increase your Wage progression by +2.",
+        "roll": {
+            "min": 126,
+            "max": 135
+        }
+    },
+    {
+        "bonus": "Progress one Blueprint or Invention by 15 x your Proficency Bonus.",
+        "roll": {
+            "min": 136,
+            "max": 300
+        }
+    }
+]

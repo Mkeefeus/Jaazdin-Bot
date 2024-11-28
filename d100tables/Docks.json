@@ -1,0 +1,79 @@
+[
+    {
+        "bonus": "GP Die +1 & 10gp.",
+        "roll": {
+            "min": 1,
+            "max": 20
+        }
+    },
+    {
+        "bonus": "Secure a shipment of Common goods, roll 1d4.",
+        "roll": {
+            "min": 21,
+            "max": 40
+        }
+    },
+    {
+        "bonus": "Gain a 10% discount on your next trade fleet purchase.",
+        "roll": {
+            "min": 41,
+            "max": 55
+        }
+    },
+    {
+        "bonus": "Increase your Wage progression by +1.",
+        "roll": {
+            "min": 56,
+            "max": 70
+        }
+    },
+    {
+        "bonus": "Secure a shipment of Uncommon goods, roll 1d4.",
+        "roll": {
+            "min": 71,
+            "max": 85
+        }
+    },
+    {
+        "bonus": "Secure a shipment of Rare goods, roll 1d4.",
+        "roll": {
+            "min": 86,
+            "max": 95
+        }
+    },
+    {
+        "bonus": "Gain a 20% discount on your next trade fleet purchase.",
+        "roll": {
+            "min": 96,
+            "max": 105
+        }
+    },
+    {
+        "bonus": "GP Die +3 and +30gp.",
+        "roll": {
+            "min": 106,
+            "max": 115
+        }
+    },
+    {
+        "bonus": "Secure a shipment of Very Rare goods, roll 1d4.",
+        "roll": {
+            "min": 116,
+            "max": 125
+        }
+    },
+    {
+        "bonus": "Increase your Wage progression by +2.",
+        "roll": {
+            "min": 126,
+            "max": 135
+        }
+    },
+    {
+        "bonus": "Secure a shipment of Legendary goods, roll 1d4.",
+        "roll": {
+            "min": 136,
+            "max": 300
+        }
+    }
+]
