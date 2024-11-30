@@ -80,14 +80,14 @@ JobTiers.belongsTo(Jobs, {
 async function seed() {
   // Reading each file in d100tables and set them to create the objects.
   const d100TablesDir = path.join(__dirname, '../../../d100tables');
-  console.log(d100TablesDir);
   try {
     const d100Jobs = await fs.readdir(d100TablesDir);
 
     for (const file of d100Jobs) {
       //confirming that the file is .json
       if (!file.endsWith('.json')) continue;
-      const jobName = file.split('.')[0];
+      let jobName = file.split('.')[0].toLowerCase();
+      jobName = jobName.replace('-', ' ');
       //read in json file.
       const jobJson: JobTier[] = (await import(`${d100TablesDir}/${file}`)).default;
       const job = await Jobs.create({

@@ -300,7 +300,6 @@ async function seed() {
                     name: plant.name.toLowerCase(),
                     maturity_time: plant.maturityTime,
                 });
-                console.log(`Created plant info for ${plant.name}`);
 
                 // Wait a moment before creating harvests
                 await new Promise((resolve) => setTimeout(resolve, 100));
@@ -315,7 +314,6 @@ async function seed() {
                         renewable: harvest.renewable,
                     });
                 }
-                console.log(`Created harvests for ${plant.name}`);
             } catch (error) {
                 console.error(`Error seeding plant ${plant.name}:`, error);
             }

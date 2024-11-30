@@ -99,8 +99,6 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused().toLowerCase();
   const plants = await PlantInformation.findAll();
 
-  console.log(plants.map(plant => plant.dataValues.name))
-
   const filtered = plants.filter(plant => 
     plant.dataValues.name.includes(focusedValue)
   );
@@ -144,8 +142,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       yieldMult = effects.yieldMultiplier;
       growthMult = effects.growthMultiplier;
     }
-
-    // console.log(plantInfo)
 
     if (!plantInfo) {
       await interaction.reply({
