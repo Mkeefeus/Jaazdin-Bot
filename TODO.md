@@ -67,6 +67,8 @@ Create Table `fertilizer_types`
 
 - Help command
 
+## Buildings
+
 `/addBuilding`
 @params discord_ID
 @params Name of building
@@ -83,6 +85,9 @@ Create Table `fertilizer_types`
 @params length in weeks
 @params tier of building
 - same as before
+
+
+## Items
 
 `/addItem`
 @params character
@@ -112,6 +117,25 @@ Create Table `fertilizer_types`
 @params tier of building
 - same as before
 
+## Boats
+
+migrate boats logic to bot
+
+migrate jobs logic to bot 
+
+
+`/updateboatitem`
+
+`/buyItem` [boat] [item] [character] 
+
+boat:
+dropdown with current boats in town
+item:
+items in boat
+character:
+if database allows tracking if they've bought this week to display
+
+## Misc
 
 `addTimer`
 @params discord_ID
@@ -125,19 +149,22 @@ Create Table `fertilizer_types`
 `removeTimer`
 - deletes the entry. 
 
-migrate boats logic to bot
 
-migrate jobs logic to bot 
+## User
+
+birthdays should be included, but not required in the userdb
 
 
-`/updateboatitem 
+`addBirthday`
+@params discord_ID or characterName
+@params date - Formatted: DD/MM/YYY
+- Attaches birthdate to the character *and spits out age?*
 
-`/buyItem` [boat] [item] [character] 
+`updateAge` (this might be due to some time fuckery)
+@params discord_ID or characterName
+@params new age
+- updates the age of the inputed character
 
-boat:
-dropdown with current boats in town
-item:
-items in boat
-character:
-if database allows tracking if they've bought this week to display
-
+`showCharacter`
+@params characterName
+- shows information of the character requested, should most likely only be the user's character
