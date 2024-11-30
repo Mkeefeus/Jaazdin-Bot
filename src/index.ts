@@ -1,12 +1,12 @@
 // src/index.ts
-import { Client, Events, GatewayIntentBits, Collection } from "discord.js";
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs/promises";
+import { Client, Events, GatewayIntentBits, Collection } from 'discord.js';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
 
 // Extend the Client type to include commands
-declare module "discord.js" {
+declare module 'discord.js' {
   export interface Client {
     commands: Collection<string, any>;
   }
@@ -26,23 +26,21 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 // Initialize commands collection
 client.commands = new Collection();
 // Load commands at startup
-const foldersPath = path.join(__dirname, "commands");
+const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = await fs.readdir(foldersPath);
 
 for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
-  const commandFiles = (await fs.readdir(commandsPath)).filter(
-    (file) => file.endsWith(".ts") || file.endsWith(".js")
-  );
+  const commandFiles = (await fs.readdir(commandsPath)).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
 
   for (const file of commandFiles) {
-    if (file.endsWith("-bak.ts")) continue; // Skip backup files
+    if (file.endsWith('-bak.ts')) continue; // Skip backup files
 
     const filePath = path.join(commandsPath, file);
     const fileUrl = new URL(`file://${filePath}`).href;
 
     const command = await import(fileUrl);
-    if ("data" in command && "execute" in command) {
+    if ('data' in command && 'execute' in command) {
       client.commands.set(command.data.name, command);
     }
   }
@@ -61,19 +59,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch (error) {
       console.error(error);
       const errorMessage = {
-        content: "There was an error while executing this command!",
+        content: 'There was an error while executing this command!',
         ephemeral: true,
       };
-
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp(errorMessage);
-      } else {
-        await interaction.reply(errorMessage);
-      }
+      await interaction.respond([{ name: errorMessage.content, value: 'error' }]);
     }
     return;
   }
-
 
   if (!interaction.isChatInputCommand()) return;
 
@@ -85,7 +77,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   } catch (error) {
     console.error(error);
     const errorMessage = {
-      content: "There was an error while executing this command!",
+      content: 'There was an error while executing this command!',
       ephemeral: true,
     };
 

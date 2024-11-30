@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from "discord.js";
-import { IngredientCategory, Ingredients, Ingredient } from "~/db/models/Ingredients";
+import { IngredientCategory, Ingredient } from "~/db/models/Ingredients";
 import { writeFile } from "fs/promises";
 import { resolve } from "path";
 
@@ -9,13 +9,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     try {
         await interaction.deferReply();
 
-        const ingredients: Ingredient[] = (await Ingredients.findAll()).map((ingredient) => ingredient.toJSON());
+        const ingredients: Ingredient[] = (await Ingredient.findAll()).map((ingredient) => ingredient.toJSON());
 
-        ingredients.forEach((ingredient) => {
-            delete ingredient.id;
-            delete ingredient.updatedAt;
-            delete ingredient.createdAt;
-        });
+        // ingredients.forEach((ingredient) => {
+        //     delete ingredient.id;
+        //     delete ingredient.updatedAt;
+        //     delete ingredient.createdAt;
+        // });
 
         const filePath = resolve("./ingredients.json");
         await writeFile(filePath, JSON.stringify(ingredients, null, 2));

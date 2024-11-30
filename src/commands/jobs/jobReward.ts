@@ -1,4 +1,11 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  AutocompleteInteraction,
+  Colors,
+  userMention,
+} from 'discord.js';
 import { Op } from 'sequelize';
 
 import { Jobs, Job, JobTiers } from '~/db/models/Jobs';
@@ -23,7 +30,6 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  // const userId = interaction.user.id;
   const jobName = interaction.options.getString('name');
   const tier = interaction.options.getInteger('tier');
   const roll = interaction.options.getInteger('roll');
@@ -63,11 +69,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const message = `${formatNames(
-    jobData.getDataValue('name')
-  )} - Tier ${tier} - Final Roll ${modifiedRoll}: ${rolledTier.getDataValue('bonus')}`;
+  const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier}, Final Roll: ${modifiedRoll}`
+  const message = `${rolledTier.getDataValue('bonus')}`;
 
-  await interaction.reply(message);
+  // await interaction.reply(message);
+  await interaction.reply({
+    content: userMention(interaction.user.id),
+    embeds: [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Green)],
+  });
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {

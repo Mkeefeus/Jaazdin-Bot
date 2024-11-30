@@ -3,7 +3,7 @@ import {
   SlashCommandBuilder,
   EmbedBuilder,
 } from "discord.js";
-import { IngredientCategory, Ingredients, Ingredient } from "../../db/models/Ingredients.js";
+import { IngredientCategory, Ingredient } from "../../db/models/Ingredients.js";
 
 // Fun rating messages
 const TASTE_RATINGS = [
@@ -55,7 +55,7 @@ function generateSandwichScore(): number {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  const ingredients: Ingredient[] = (await Ingredients.findAll()).map(
+  const ingredients: Ingredient[] = (await Ingredient.findAll()).map(
     (ingredient) => ingredient.toJSON()
   );
 

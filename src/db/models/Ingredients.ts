@@ -1,16 +1,16 @@
-import { DataTypes } from "sequelize";
-import { db } from "db/db";
+import { DataTypes, Model } from 'sequelize';
+import { db } from 'db/db';
 
 export enum IngredientCategory {
-  bread = "bread",
-  protein = "protein",
-  roughage = "roughage",
-  sauce = "sauce",
-  cheese = "cheese",
-  extra = "extra",
+  bread = 'bread',
+  protein = 'protein',
+  roughage = 'roughage',
+  sauce = 'sauce',
+  cheese = 'cheese',
+  extra = 'extra',
 }
 
-export interface Ingredient {
+export interface IngredientData {
   id?: number;
   name: string;
   category: IngredientCategory;
@@ -18,11 +18,17 @@ export interface Ingredient {
   updatedAt?: Date;
 }
 
-export const Ingredients = db.define(
-  "ingredients",
+export class Ingredient extends Model {
+  declare id: number;
+  declare name: string;
+  declare category: IngredientCategory;
+  declare createdAt: Date;
+  declare updatedAt: Date;
+}
+
+Ingredient.init(
   {
-    // Model attributes are defined here
-    id : {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -35,30 +41,35 @@ export const Ingredients = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+  },
+  {
+    sequelize: db,
+    modelName: 'ingredients',
+    timestamps: true,
   }
 );
 
 async function seed() {
   const ingredientModule = await import('~/../ingredients.json');
-  const ingredientData: Ingredient[] = ingredientModule.default.map((ingredient: { name: string; category: string }) => ({
+  const ingredientData: IngredientData[] = ingredientModule.default.map(
+    (ingredient: { name: string; category: string }) => ({
       name: ingredient.name,
       category: ingredient.category as IngredientCategory,
-  }));
-    try {
-        // Create each ingredient and its category in sequence
-        ingredientData.forEach((ingredient) => {
-            Ingredients.create({
-                name: ingredient.name,
-                category: ingredient.category,
-            });
-        });
-        console.log("Seeded ingredients");
-    } catch (error) {
-        console.error("Error in seedDatabase:", error);
-        throw error;
-    }
+    })
+  );
+  try {
+    // Create each ingredient and its category in sequence
+    ingredientData.forEach((ingredient) => {
+      Ingredient.create({
+        name: ingredient.name,
+        category: ingredient.category,
+      });
+    });
+    console.log('Seeded ingredients');
+  } catch (error) {
+    console.error('Error in seedDatabase:', error);
+    throw error;
+  }
 }
 
-export {
-  seed,
-}
+export { seed };
