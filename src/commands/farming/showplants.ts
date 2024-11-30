@@ -7,9 +7,9 @@ import {
   ButtonStyle,
   ComponentType,
   ButtonInteraction,
-} from "discord.js";
-import { Plants, PlantInformation } from "~/db/models/Plants.js";
-import { formatNames } from "~/functions/helpers";
+} from 'discord.js';
+import { Plants, PlantInformation } from '~/db/models/Plants.js';
+import { formatNames } from '~/functions/helpers';
 
 const ITEMS_PER_PAGE = 3;
 
@@ -24,24 +24,21 @@ interface PlantDisplay {
 }
 
 export const data = new SlashCommandBuilder()
-  .setName("showplants")
-  .setDescription("Shows all plants or just your plants")
-  .addBooleanOption((option) =>
-    option
-      .setName("self")
-      .setDescription("Show only your plants")
-      .setRequired(false)
-  );
+  .setName('showplants')
+  .setDescription('Shows all plants or just your plants')
+  .addBooleanOption((option) => option.setName('self').setDescription('Show only your plants').setRequired(false));
 
 async function getPlants(userId: string | null = null): Promise<PlantDisplay[]> {
   const whereClause = userId ? { user: userId } : {};
-  const plants = await Plants.findAll({ 
+  const plants = await Plants.findAll({
     where: whereClause,
-    include: [{
-      model: PlantInformation,
-      as: 'information'
-    }],
-    order: [['planted_at', 'DESC']]
+    include: [
+      {
+        model: PlantInformation,
+        as: 'information',
+      },
+    ],
+    order: [['planted_at', 'DESC']],
   });
 
   return plants.map((plant) => ({
@@ -51,7 +48,7 @@ async function getPlants(userId: string | null = null): Promise<PlantDisplay[]> 
     fertilizerType: plant.getDataValue('fertilizer_type'),
     yieldMultiplier: plant.getDataValue('yield_multiplier') || 1.0,
     growthMultiplier: plant.getDataValue('growth_multiplier') || 1.0,
-    owner: plant.getDataValue('user')
+    owner: plant.getDataValue('user'),
   }));
 }
 
@@ -66,23 +63,21 @@ function createPlantsEmbed(
   const currentPlants = plants.slice(start, end);
 
   const embed = new EmbedBuilder()
-    .setTitle("🌱 Your Garden")
+    .setTitle('🌱 Your Garden')
     .setColor(0x2ecc71)
-    .setDescription(showingSelf ? "Showing your plants" : "Showing all plants")
+    .setDescription(showingSelf ? 'Showing your plants' : 'Showing all plants')
     .setFooter({ text: `Page ${page + 1} of ${totalPages}` });
 
   currentPlants.forEach((plant) => {
     const ageInWeeks = (Date.now() - plant.plantedAt.getTime()) / (1000 * 60 * 60 * 24 * 7);
-    const fertilizerInfo = plant.fertilizerType !== 'NONE' 
-      ? `\n🧪 ${plant.fertilizerType} (Yield: ${((plant.yieldMultiplier - 1) * 100).toFixed(0)}%, Growth: ${((plant.growthMultiplier - 1) * 100).toFixed(0)}%)`
-      : '';
+    const fertilizerInfo =
+      plant.fertilizerType !== 'NONE'
+        ? `\n🧪 ${plant.fertilizerType} (Yield: ${((plant.yieldMultiplier - 1) * 100).toFixed(0)}%, Growth: ${((plant.growthMultiplier - 1) * 100).toFixed(0)}%)`
+        : '';
 
     embed.addFields({
       name: `${formatNames(plant.name)} (ID: ${plant.id})`,
-      value: [
-        `Age: ${ageInWeeks.toFixed(1)} weeks`,
-        `Owner: <@${plant.owner}>${fertilizerInfo}`
-      ].join('\n'),
+      value: [`Age: ${ageInWeeks.toFixed(1)} weeks`, `Owner: <@${plant.owner}>${fertilizerInfo}`].join('\n'),
       inline: false,
     });
   });
@@ -99,26 +94,26 @@ function createButtons(
 
   row.addComponents(
     new ButtonBuilder()
-      .setCustomId("first")
-      .setLabel("<<")
+      .setCustomId('first')
+      .setLabel('<<')
       .setStyle(ButtonStyle.Primary)
       .setDisabled(currentPage === 0),
 
     new ButtonBuilder()
-      .setCustomId("prev")
-      .setLabel("<")
+      .setCustomId('prev')
+      .setLabel('<')
       .setStyle(ButtonStyle.Primary)
       .setDisabled(currentPage === 0),
 
     new ButtonBuilder()
-      .setCustomId("next")
-      .setLabel(">")
+      .setCustomId('next')
+      .setLabel('>')
       .setStyle(ButtonStyle.Primary)
       .setDisabled(currentPage === totalPages - 1),
 
     new ButtonBuilder()
-      .setCustomId("last")
-      .setLabel(">>")
+      .setCustomId('last')
+      .setLabel('>>')
       .setStyle(ButtonStyle.Primary)
       .setDisabled(currentPage === totalPages - 1)
   );
@@ -126,8 +121,8 @@ function createButtons(
   const filterRow = new ActionRowBuilder<ButtonBuilder>();
   filterRow.addComponents(
     new ButtonBuilder()
-      .setCustomId("toggle")
-      .setLabel(showingSelf ? "Show All Plants" : "Show My Plants")
+      .setCustomId('toggle')
+      .setLabel(showingSelf ? 'Show All Plants' : 'Show My Plants')
       .setStyle(showingSelf ? ButtonStyle.Success : ButtonStyle.Secondary)
   );
 
@@ -136,7 +131,7 @@ function createButtons(
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   let currentPage = 0;
-  let showingSelf = interaction.options.getBoolean("self") ?? false;
+  let showingSelf = interaction.options.getBoolean('self') ?? false;
 
   try {
     const plants = await getPlants(showingSelf ? interaction.user.id : null);
@@ -144,9 +139,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     if (plants.length === 0) {
       await interaction.reply({
-        content: showingSelf
-          ? "You don't have any plants!"
-          : "No plants found!",
+        content: showingSelf ? "You don't have any plants!" : 'No plants found!',
         ephemeral: true,
       });
       return;
@@ -166,47 +159,36 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       time: 300000,
     });
 
-    collector.on("collect", async (i: ButtonInteraction) => {
+    collector.on('collect', async (i: ButtonInteraction) => {
       if (i.user.id !== interaction.user.id) {
         await i.reply({
-          content: "Only the command user can navigate these plants!",
+          content: 'Only the command user can navigate these plants!',
           ephemeral: true,
         });
         return;
       }
 
       switch (i.customId) {
-        case "first":
+        case 'first':
           currentPage = 0;
           break;
-        case "prev":
+        case 'prev':
           currentPage = Math.max(0, currentPage - 1);
           break;
-        case "next":
+        case 'next':
           currentPage = Math.min(totalPages - 1, currentPage + 1);
           break;
-        case "last":
+        case 'last':
           currentPage = totalPages - 1;
           break;
-        case "toggle":
+        case 'toggle':
           showingSelf = !showingSelf;
-          const newPlants = await getPlants(
-            showingSelf ? interaction.user.id : null
-          );
+          const newPlants = await getPlants(showingSelf ? interaction.user.id : null);
           const newTotalPages = Math.ceil(newPlants.length / ITEMS_PER_PAGE);
           currentPage = 0;
 
-          const newEmbed = createPlantsEmbed(
-            newPlants,
-            currentPage,
-            newTotalPages,
-            showingSelf
-          );
-          const newComponents = createButtons(
-            currentPage,
-            newTotalPages,
-            showingSelf
-          );
+          const newEmbed = createPlantsEmbed(newPlants, currentPage, newTotalPages, showingSelf);
+          const newComponents = createButtons(currentPage, newTotalPages, showingSelf);
 
           await i.update({
             embeds: [newEmbed],
@@ -215,20 +197,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           return;
       }
 
-      const currentPlants = await getPlants(
-        showingSelf ? interaction.user.id : null
-      );
-      const updatedEmbed = createPlantsEmbed(
-        currentPlants,
-        currentPage,
-        totalPages,
-        showingSelf
-      );
-      const updatedComponents = createButtons(
-        currentPage,
-        totalPages,
-        showingSelf
-      );
+      const currentPlants = await getPlants(showingSelf ? interaction.user.id : null);
+      const updatedEmbed = createPlantsEmbed(currentPlants, currentPage, totalPages, showingSelf);
+      const updatedComponents = createButtons(currentPage, totalPages, showingSelf);
 
       await i.update({
         embeds: [updatedEmbed],
@@ -236,7 +207,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       });
     });
 
-    collector.on("end", () => {
+    collector.on('end', () => {
       interaction
         .editReply({
           components: [],
@@ -244,9 +215,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         .catch(console.error);
     });
   } catch (error) {
-    console.error("Error in showplants command:", error);
+    console.error('Error in showplants command:', error);
     await interaction.reply({
-      content: "There was an error while executing this command!",
+      content: 'There was an error while executing this command!',
       ephemeral: true,
     });
   }

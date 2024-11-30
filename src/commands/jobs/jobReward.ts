@@ -69,7 +69,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier}, Final Roll: ${modifiedRoll}`
+  const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier}, Final Roll: ${modifiedRoll}`;
   const message = `${rolledTier.getDataValue('bonus')}`;
 
   // await interaction.reply(message);

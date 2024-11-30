@@ -1,33 +1,25 @@
-import {
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-  EmbedBuilder,
-} from "discord.js";
-import { IngredientCategory, Ingredient} from "~/db/models/Ingredients";
+import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { IngredientCategory, Ingredient } from '~/db/models/Ingredients';
 
 export const data = new SlashCommandBuilder()
-  .setName("kitchen")
-  .setDescription("Shows all available ingredients in the kitchen");
+  .setName('kitchen')
+  .setDescription('Shows all available ingredients in the kitchen');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   try {
     await interaction.deferReply();
 
-    const ingredients: Ingredient[] = (await Ingredient.findAll()).map(
-      (ingredient) => ingredient.toJSON()
-    );
+    const ingredients: Ingredient[] = (await Ingredient.findAll()).map((ingredient) => ingredient.toJSON());
 
     if (ingredients.length === 0) {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setColor(0xff0000)
-            .setTitle("🚫 Empty Kitchen!")
-            .setDescription(
-              "The kitchen is empty! Add some ingredients with `/addingredient`"
-            )
+            .setTitle('🚫 Empty Kitchen!')
+            .setDescription('The kitchen is empty! Add some ingredients with `/addingredient`')
             .setFooter({
-              text: "Tip: Try adding bread, meat, cheese, and other ingredients!",
+              text: 'Tip: Try adding bread, meat, cheese, and other ingredients!',
             }),
         ],
       });
@@ -50,11 +42,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     const totalIngredients = ingredients.length;
     const categoryStats = Object.entries(categories)
-      .map(
-        ([cat, ingredients]) =>
-          `${getCategoryEmoji(cat as IngredientCategory)} ${ingredients.length}`
-      )
-      .join(" // ");
+      .map(([cat, ingredients]) => `${getCategoryEmoji(cat as IngredientCategory)} ${ingredients.length}`)
+      .join(' // ');
 
     const embed = new EmbedBuilder()
       .setTitle("👨‍🍳 Kreider's Gourmet Kitchen")
@@ -71,55 +60,45 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const midpoint = Math.ceil(categoryEntries.length / 2);
 
     // First row
-    categoryEntries
-      .slice(0, midpoint)
-      .forEach(([category, categoryIngredients]) => {
-        const emoji = getCategoryEmoji(category as IngredientCategory);
-        const formattedCategory =
-          category.charAt(0).toUpperCase() + category.slice(1);
-        const header = `${emoji} ${formattedCategory}`;
+    categoryEntries.slice(0, midpoint).forEach(([category, categoryIngredients]) => {
+      const emoji = getCategoryEmoji(category as IngredientCategory);
+      const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+      const header = `${emoji} ${formattedCategory}`;
 
-        const ingredientList =
-          categoryIngredients.length > 0
-            ? categoryIngredients
-                .map((ingredient) => `• ${ingredient.name}`)
-                .join("\n")
-            : "*None available*";
+      const ingredientList =
+        categoryIngredients.length > 0
+          ? categoryIngredients.map((ingredient) => `• ${ingredient.name}`).join('\n')
+          : '*None available*';
 
-        embed.addFields({
-          name: header,
-          value: ingredientList,
-          inline: true,
-        });
+      embed.addFields({
+        name: header,
+        value: ingredientList,
+        inline: true,
       });
+    });
 
     // Add a blank field for spacing if needed
     if (categoryEntries.length % 2 !== 0) {
-      embed.addFields({ name: "\u200b", value: "\u200b", inline: true });
+      embed.addFields({ name: '\u200b', value: '\u200b', inline: true });
     }
 
     // Second row
-    categoryEntries
-      .slice(midpoint)
-      .forEach(([category, categoryIngredients]) => {
-        const emoji = getCategoryEmoji(category as IngredientCategory);
-        const formattedCategory =
-          category.charAt(0).toUpperCase() + category.slice(1);
-        const header = `${emoji} ${formattedCategory}`;
+    categoryEntries.slice(midpoint).forEach(([category, categoryIngredients]) => {
+      const emoji = getCategoryEmoji(category as IngredientCategory);
+      const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+      const header = `${emoji} ${formattedCategory}`;
 
-        const ingredientList =
-          categoryIngredients.length > 0
-            ? categoryIngredients
-                .map((ingredient) => `• ${ingredient.name}`)
-                .join("\n")
-            : "*None available*";
+      const ingredientList =
+        categoryIngredients.length > 0
+          ? categoryIngredients.map((ingredient) => `• ${ingredient.name}`).join('\n')
+          : '*None available*';
 
-        embed.addFields({
-          name: header,
-          value: ingredientList,
-          inline: true,
-        });
+      embed.addFields({
+        name: header,
+        value: ingredientList,
+        inline: true,
       });
+    });
 
     // Footer with tip
     // embed.setFooter({
@@ -128,14 +107,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     await interaction.editReply({ embeds: [embed] });
   } catch (error) {
-    console.error("Error listing ingredients:", error);
+    console.error('Error listing ingredients:', error);
     if (interaction.deferred) {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setColor(0xff0000)
-            .setTitle("❌ Error")
-            .setDescription("There was an error accessing the kitchen!"),
+            .setTitle('❌ Error')
+            .setDescription('There was an error accessing the kitchen!'),
         ],
       });
     } else {
@@ -143,8 +122,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         embeds: [
           new EmbedBuilder()
             .setColor(0xff0000)
-            .setTitle("❌ Error")
-            .setDescription("There was an error accessing the kitchen!"),
+            .setTitle('❌ Error')
+            .setDescription('There was an error accessing the kitchen!'),
         ],
       });
     }
@@ -153,12 +132,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 function getCategoryEmoji(category: IngredientCategory): string {
   const emojiMap: Record<IngredientCategory, string> = {
-    [IngredientCategory.bread]: "🍞",
-    [IngredientCategory.protein]: "🥩",
-    [IngredientCategory.cheese]: "🧀",
-    [IngredientCategory.roughage]: "🥬",
-    [IngredientCategory.sauce]: "🥫",
-    [IngredientCategory.extra]: "✨",
+    [IngredientCategory.bread]: '🍞',
+    [IngredientCategory.protein]: '🥩',
+    [IngredientCategory.cheese]: '🧀',
+    [IngredientCategory.roughage]: '🥬',
+    [IngredientCategory.sauce]: '🥫',
+    [IngredientCategory.extra]: '✨',
   };
   return emojiMap[category];
 }

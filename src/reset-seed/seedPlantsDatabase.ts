@@ -1,2 +1,1 @@
-import { PlantInformation, PlantHarvestInformation } from "~/db/models/Plants";
-
+import { PlantInformation, PlantHarvestInformation } from '~/db/models/Plants';

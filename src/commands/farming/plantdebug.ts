@@ -1,47 +1,45 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, AutocompleteInteraction } from "discord.js";
-import { Op } from "sequelize";
-import { PlantHarvestInformation, PlantInformation } from "~/db/models/Plants";
-import { isBotDev } from "~/functions/helpers";
+import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
+import { Op } from 'sequelize';
+import { PlantHarvestInformation, PlantInformation } from '~/db/models/Plants';
+import { isBotDev } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()
-  .setName("plantdebug")
-  .setDescription("Shows detailed plant information for debugging")
-  .addStringOption(option =>
-    option
-      .setName("name")
-      .setDescription("Name of the plant to look up")
-      .setRequired(true)
-      .setAutocomplete(true)
+  .setName('plantdebug')
+  .setDescription('Shows detailed plant information for debugging')
+  .addStringOption((option) =>
+    option.setName('name').setDescription('Name of the plant to look up').setRequired(true).setAutocomplete(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (!interaction.member) return;
-  
+
   let hasRole = isBotDev(interaction);
   if (!hasRole) {
-    await interaction.reply({ 
-      content: "You do not have permission to use this command",
-      ephemeral: true 
+    await interaction.reply({
+      content: 'You do not have permission to use this command',
+      ephemeral: true,
     });
     return;
   }
 
-  const plantName = interaction.options.getString("name", true);
+  const plantName = interaction.options.getString('name', true);
 
   try {
     // Find the plant and include its harvest information
     const plant = await PlantInformation.findOne({
       where: { name: plantName },
-      include: [{
-        model: PlantHarvestInformation,
-        as: 'harvests'
-      }]
+      include: [
+        {
+          model: PlantHarvestInformation,
+          as: 'harvests',
+        },
+      ],
     });
 
     if (!plant) {
       await interaction.reply({
         content: `No plant found with name: ${plantName}`,
-        ephemeral: true
+        ephemeral: true,
       });
       return;
     }
@@ -49,7 +47,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // Create an embed with the plant information
     const embed = new EmbedBuilder()
       .setTitle(`🌱 Debug Info: ${plant.getDataValue('name')}`)
-      .setColor(0x00FF00)
+      .setColor(0x00ff00)
       .addFields(
         { name: 'ID', value: `${plant.getDataValue('id')}`, inline: true },
         { name: 'Maturity Time', value: `${plant.getDataValue('maturity_time')} weeks`, inline: true },
@@ -59,10 +57,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // Add harvest information
     const harvests = plant.getDataValue('harvests');
     if (harvests && harvests.length > 0) {
-      embed.addFields({ 
-        name: '🔄 Harvests', 
-        value: '───────────────────', 
-        inline: false 
+      embed.addFields({
+        name: '🔄 Harvests',
+        value: '───────────────────',
+        inline: false,
       });
 
       harvests.forEach((harvest: any, index: number) => {
@@ -73,45 +71,48 @@ export async function execute(interaction: ChatInputCommandInteraction) {
             `Time: ${harvest.harvest_time} weeks`,
             `Amount: ${harvest.harvest_amount}`,
             `Renewable: ${harvest.renewable ? 'Yes' : 'No'}`,
-            `Created: ${harvest.createdAt.toLocaleString()}`
+            `Created: ${harvest.createdAt.toLocaleString()}`,
           ].join('\n'),
-          inline: true
+          inline: true,
         });
       });
     } else {
       embed.addFields({
         name: '🔄 Harvests',
         value: 'No harvest information found',
-        inline: false
+        inline: false,
       });
     }
 
     // Add raw data field for complete debugging
     embed.addFields({
       name: '📑 Raw Data',
-      value: `\`\`\`json\n${JSON.stringify({
-        plant: {
-          id: plant.getDataValue('id'),
-          name: plant.getDataValue('name'),
-          maturity_time: plant.getDataValue('maturity_time'),
-          createdAt: plant.getDataValue('createdAt'),
-          updatedAt: plant.getDataValue('updatedAt'),
+      value: `\`\`\`json\n${JSON.stringify(
+        {
+          plant: {
+            id: plant.getDataValue('id'),
+            name: plant.getDataValue('name'),
+            maturity_time: plant.getDataValue('maturity_time'),
+            createdAt: plant.getDataValue('createdAt'),
+            updatedAt: plant.getDataValue('updatedAt'),
+          },
+          harvests: harvests,
         },
-        harvests: harvests
-      }, null, 2)}\`\`\``,
-      inline: false
+        null,
+        2
+      )}\`\`\``,
+      inline: false,
     });
 
     await interaction.reply({
       embeds: [embed],
-      ephemeral: true
+      ephemeral: true,
     });
-
   } catch (error) {
     console.error('Error in plantdebug command:', error);
     await interaction.reply({
       content: 'Error retrieving plant information',
-      ephemeral: true
+      ephemeral: true,
     });
   }
 }
@@ -119,22 +120,24 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export async function autocomplete(interaction: AutocompleteInteraction) {
   try {
     const focusedValue = interaction.options.getFocused().toLowerCase();
-    
+
     // Get all plants if no search term, or search by partial name
     const plants = await PlantInformation.findAll({
-      where: focusedValue ? {
-        name: {
-          [Op.like]: `%${focusedValue}%`
-        }
-      } : {},
+      where: focusedValue
+        ? {
+            name: {
+              [Op.like]: `%${focusedValue}%`,
+            },
+          }
+        : {},
       limit: 25,
-      order: [['name', 'ASC']]
+      order: [['name', 'ASC']],
     });
 
     await interaction.respond(
-      plants.map(plant => ({
+      plants.map((plant) => ({
         name: plant.getDataValue('name'),
-        value: plant.getDataValue('name')
+        value: plant.getDataValue('name'),
       }))
     );
   } catch (error) {
@@ -146,5 +149,5 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 export default {
   data,
   execute,
-  autocomplete
+  autocomplete,
 };

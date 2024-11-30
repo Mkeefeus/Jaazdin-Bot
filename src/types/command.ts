@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
 
 export interface Command {
   data: SlashCommandBuilder;

@@ -1,42 +1,30 @@
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
 import {
-  SlashCommandBuilder,
-  ChatInputCommandInteraction,
-  EmbedBuilder,
-  AutocompleteInteraction,
-} from "discord.js";
-import { Plants, PlantHarvests, PlantHarvestInformation, PlantInformation, FERTILIZER_EFFECTS, FertilizerType } from "~/db/models/Plants";
-import { Users } from "~/db/models/Users";
-import { formatNames } from "~/functions/helpers";
+  Plants,
+  PlantHarvests,
+  PlantHarvestInformation,
+  PlantInformation,
+  FERTILIZER_EFFECTS,
+  FertilizerType,
+} from '~/db/models/Plants';
+import { Users } from '~/db/models/Users';
+import { formatNames } from '~/functions/helpers';
 
 // Export the command data
 export const data = new SlashCommandBuilder()
-  .setName("harvest")
-  .setDescription("Harvest a specific plant")
-  .addStringOption(option =>
-    option
-      .setName("character")
-      .setDescription("Character doing the harvesting")
-      .setRequired(true)
-      .setAutocomplete(true)
+  .setName('harvest')
+  .setDescription('Harvest a specific plant')
+  .addStringOption((option) =>
+    option.setName('character').setDescription('Character doing the harvesting').setRequired(true).setAutocomplete(true)
   )
-  .addStringOption(option =>
-    option
-      .setName("plant_id")
-      .setDescription("ID of the plant to harvest")
-      .setRequired(true)
-      .setAutocomplete(true)
+  .addStringOption((option) =>
+    option.setName('plant_id').setDescription('ID of the plant to harvest').setRequired(true).setAutocomplete(true)
   )
-  .addBooleanOption(option =>
-    option
-      .setName("harvest_seeds")
-      .setDescription("Whether to harvest seeds")
-      .setRequired(false)
+  .addBooleanOption((option) =>
+    option.setName('harvest_seeds').setDescription('Whether to harvest seeds').setRequired(false)
   )
-  .addBooleanOption(option =>
-    option
-      .setName("replant")
-      .setDescription("Automatically replant after harvesting")
-      .setRequired(false)
+  .addBooleanOption((option) =>
+    option.setName('replant').setDescription('Automatically replant after harvesting').setRequired(false)
   );
 
 interface HarvestResult {
@@ -54,24 +42,18 @@ interface HarvestCheck {
   currentStage: 'growing' | 'maturing' | 'ready' | 'complete';
 }
 
-async function checkPlantHarvestability(
-  plant: any,
-  plantInfo: any,
-  harvestInfo: any
-): Promise<HarvestCheck> {
+async function checkPlantHarvestability(plant: any, plantInfo: any, harvestInfo: any): Promise<HarvestCheck> {
   const now = Date.now();
   const plantedAt = new Date(plant.planted_at).getTime();
-  
+
   // Get the latest harvest for this plant
   const latestHarvest = await PlantHarvests.findOne({
     where: { plant_id: plant.id },
-    order: [['harvested_at', 'DESC']]
+    order: [['harvested_at', 'DESC']],
   });
-  
-  const timeReference = latestHarvest ? 
-    new Date(latestHarvest.getDataValue('harvested_at')).getTime() : 
-    plantedAt;
-  
+
+  const timeReference = latestHarvest ? new Date(latestHarvest.getDataValue('harvested_at')).getTime() : plantedAt;
+
   // Apply growth multiplier from fertilizer
   const adjustedMaturityTime = plantInfo.maturity_time / plant.growth_multiplier;
   const adjustedHarvestTime = harvestInfo.harvest_time / plant.growth_multiplier;
@@ -81,15 +63,15 @@ async function checkPlantHarvestability(
 
   // Get current harvest count
   const harvestCount = await PlantHarvests.count({
-    where: { plant_id: plant.id }
+    where: { plant_id: plant.id },
   });
 
   // Check if we've reached max harvests
   if (harvestCount >= harvestInfo.harvest_amount) {
     return {
       harvestable: false,
-      reason: "Plant has completed all its harvests",
-      currentStage: 'complete'
+      reason: 'Plant has completed all its harvests',
+      currentStage: 'complete',
     };
   }
 
@@ -97,9 +79,9 @@ async function checkPlantHarvestability(
   if (harvestCount === 0 && ageInWeeks < adjustedMaturityTime) {
     return {
       harvestable: false,
-      reason: "Plant is still growing to maturity",
+      reason: 'Plant is still growing to maturity',
       timeRemaining: adjustedMaturityTime - ageInWeeks,
-      currentStage: 'growing'
+      currentStage: 'growing',
     };
   }
 
@@ -107,30 +89,32 @@ async function checkPlantHarvestability(
   if (timeSinceLastHarvest < adjustedHarvestTime) {
     return {
       harvestable: false,
-      reason: "Plant is growing its next harvest",
+      reason: 'Plant is growing its next harvest',
       timeRemaining: adjustedHarvestTime - timeSinceLastHarvest,
-      currentStage: 'maturing'
+      currentStage: 'maturing',
     };
   }
 
   // Plant has matured and completed a harvest cycle
   return {
     harvestable: true,
-    currentStage: 'ready'
+    currentStage: 'ready',
   };
 }
 
 async function harvestPlant(
-  plant: any, 
-  harvestSeeds: boolean = false, 
+  plant: any,
+  harvestSeeds: boolean = false,
   character: string
 ): Promise<HarvestResult | null> {
   const plantInfo = await PlantInformation.findOne({
     where: { name: plant.name },
-    include: [{
-      model: PlantHarvestInformation,
-      as: 'harvests'
-    }]
+    include: [
+      {
+        model: PlantHarvestInformation,
+        as: 'harvests',
+      },
+    ],
   });
 
   if (!plantInfo) return null;
@@ -138,13 +122,13 @@ async function harvestPlant(
 
   // Check harvestability
   const harvestCheck = await checkPlantHarvestability(plant, plantInfo, harvestInfo);
-  
+
   if (!harvestCheck.harvestable) {
-    throw new Error(`Plant not ready: ${harvestCheck.reason}${
-      harvestCheck.timeRemaining ? 
-      ` (${harvestCheck.timeRemaining.toFixed(1)} weeks remaining)` : 
-      ''
-    }`);
+    throw new Error(
+      `Plant not ready: ${harvestCheck.reason}${
+        harvestCheck.timeRemaining ? ` (${harvestCheck.timeRemaining.toFixed(1)} weeks remaining)` : ''
+      }`
+    );
   }
 
   // Calculate harvest amount with fertilizer boost
@@ -166,12 +150,12 @@ async function harvestPlant(
     amount_harvested: finalAmount,
     harvested_at: new Date(),
     fertilizer_multiplier: plant.yield_multiplier,
-    character_name: character
+    character_name: character,
   });
 
   // Get total harvests after this one
   const harvestCount = await PlantHarvests.count({
-    where: { plant_id: plant.id }
+    where: { plant_id: plant.id },
   });
 
   // Handle plant state after harvest
@@ -185,7 +169,7 @@ async function harvestPlant(
         fertilizer_type: FertilizerType.NONE,
         yield_multiplier: 1.0,
         growth_multiplier: 1.0,
-        has_persistent_fertilizer: false
+        has_persistent_fertilizer: false,
       });
     }
   }
@@ -195,26 +179,24 @@ async function harvestPlant(
     harvestName: harvestInfo.harvest_name,
     amount: finalAmount,
     seedsHarvested: seedAmount,
-    fertilizerPersisted: fertilizerPersists
+    fertilizerPersisted: fertilizerPersists,
   };
 }
 
 // Character autocomplete handler
 async function autocompleteCharacter(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused().toLowerCase();
-  
+
   const characters = await Users.findAll({
-    where: { discord_id: interaction.user.id }
+    where: { discord_id: interaction.user.id },
   });
 
-  const filtered = characters.filter(char => 
-    char.character_name.toLowerCase().includes(focusedValue)
-  );
+  const filtered = characters.filter((char) => char.character_name.toLowerCase().includes(focusedValue));
 
   return interaction.respond(
-    filtered.map(char => ({
+    filtered.map((char) => ({
       name: char.character_name,
-      value: char.character_name
+      value: char.character_name,
     }))
   );
 }
@@ -222,24 +204,27 @@ async function autocompleteCharacter(interaction: AutocompleteInteraction) {
 // Plant autocomplete handler
 async function autocompletePlant(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused().toLowerCase();
-  
+
   const plants = await Plants.findAll({
     where: { user: interaction.user.id },
-    include: [{
-      model: PlantInformation,
-      as: 'information'
-    }]
+    include: [
+      {
+        model: PlantInformation,
+        as: 'information',
+      },
+    ],
   });
 
-  const filtered = plants.filter(plant => 
-    plant.getDataValue('id').toString().includes(focusedValue) ||
-    plant.getDataValue('name').toLowerCase().includes(focusedValue)
+  const filtered = plants.filter(
+    (plant) =>
+      plant.getDataValue('id').toString().includes(focusedValue) ||
+      plant.getDataValue('name').toLowerCase().includes(focusedValue)
   );
 
   return interaction.respond(
-    filtered.slice(0, 25).map(plant => ({
+    filtered.slice(0, 25).map((plant) => ({
       name: `${plant.getDataValue('id')} - ${formatNames(plant.getDataValue('name'))}`,
-      value: plant.getDataValue('id').toString()
+      value: plant.getDataValue('id').toString(),
     }))
   );
 }
@@ -247,23 +232,23 @@ async function autocompletePlant(interaction: AutocompleteInteraction) {
 // Main execute handler
 export async function execute(interaction: ChatInputCommandInteraction) {
   try {
-    const character = interaction.options.getString("character", true);
-    const plantId = interaction.options.getString("plant_id", true);
-    const harvestSeeds = interaction.options.getBoolean("harvest_seeds") ?? false;
-    const shouldReplant = interaction.options.getBoolean("replant") ?? false;
+    const character = interaction.options.getString('character', true);
+    const plantId = interaction.options.getString('plant_id', true);
+    const harvestSeeds = interaction.options.getBoolean('harvest_seeds') ?? false;
+    const shouldReplant = interaction.options.getBoolean('replant') ?? false;
 
     // Verify character ownership
     const userChar = await Users.findOne({
       where: {
         discord_id: interaction.user.id,
-        character_name: character
-      }
+        character_name: character,
+      },
     });
 
     if (!userChar) {
       await interaction.reply({
         content: "You don't have a character with that name!",
-        ephemeral: true
+        ephemeral: true,
       });
       return;
     }
@@ -272,47 +257,47 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const plant = await Plants.findOne({
       where: {
         id: plantId,
-        user: interaction.user.id
-      }
+        user: interaction.user.id,
+      },
     });
 
     if (!plant) {
       await interaction.reply({
         content: "Could not find that plant or it doesn't belong to you!",
-        ephemeral: true
+        ephemeral: true,
       });
       return;
     }
 
     try {
       const result = await harvestPlant(plant, harvestSeeds, character);
-      
+
       // Create harvest summary embed
       const embed = new EmbedBuilder()
-        .setTitle("🌾 Harvest Complete!")
+        .setTitle('🌾 Harvest Complete!')
         .setColor(0x2ecc71)
         .addFields(
-          { name: "Plant", value: formatNames(result.plantName), inline: true },
-          { 
-            name: "Harvested", 
-            value: `${result.amount}x ${result.harvestName}`, 
-            inline: true 
+          { name: 'Plant', value: formatNames(result.plantName), inline: true },
+          {
+            name: 'Harvested',
+            value: `${result.amount}x ${result.harvestName}`,
+            inline: true,
           }
         );
 
       if (result.seedsHarvested) {
         embed.addFields({
-          name: "Seeds",
+          name: 'Seeds',
           value: `${result.seedsHarvested}x seeds harvested`,
-          inline: true
+          inline: true,
         });
       }
 
       if (result.fertilizerPersisted) {
         embed.addFields({
-          name: "Fertilizer",
-          value: "🧪 Fertilizer effects persisted!",
-          inline: true
+          name: 'Fertilizer',
+          value: '🧪 Fertilizer effects persisted!',
+          inline: true,
         });
       }
 
@@ -325,45 +310,43 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           fertilizer_type: FertilizerType.NONE,
           yield_multiplier: 1.0,
           growth_multiplier: 1.0,
-          has_persistent_fertilizer: false
+          has_persistent_fertilizer: false,
         });
         embed.addFields({
-          name: "Replanted",
-          value: "🌱 A new plant has been planted!",
-          inline: true
+          name: 'Replanted',
+          value: '🌱 A new plant has been planted!',
+          inline: true,
         });
       }
 
       await interaction.reply({ embeds: [embed] });
-
     } catch (error) {
       await interaction.reply({
         content: error.message,
-        ephemeral: true
+        ephemeral: true,
       });
     }
-
   } catch (error) {
-    console.error("Error in harvest command:", error);
+    console.error('Error in harvest command:', error);
     await interaction.reply({
-      content: "There was an error while harvesting!",
-      ephemeral: true
+      content: 'There was an error while harvesting!',
+      ephemeral: true,
     });
   }
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-    const focusedOption = interaction.options.getFocused(true);
-    
-    if (focusedOption.name === 'character') {
-        return autocompleteCharacter(interaction);
-    } else if (focusedOption.name === 'plant_id') {
-        return autocompletePlant(interaction);
-    }
+  const focusedOption = interaction.options.getFocused(true);
+
+  if (focusedOption.name === 'character') {
+    return autocompleteCharacter(interaction);
+  } else if (focusedOption.name === 'plant_id') {
+    return autocompletePlant(interaction);
+  }
 }
 
 export default {
   data,
   execute,
-  autocomplete
+  autocomplete,
 };

@@ -1,79 +1,79 @@
 [
-    {
-        "bonus": "GP Die +1 & 10gp.",
-        "roll": {
-            "min": 1,
-            "max": 20
-        }
-    },
-    {
-        "bonus": "Learn a Common potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
-        "roll": {
-            "min": 21,
-            "max": 40
-        }
-    },
-    {
-        "bonus": "ADV on your next Brewing check.",
-        "roll": {
-            "min": 41,
-            "max": 55
-        }
-    },
-    {
-        "bonus": "Increase your Wage progression by +1.",
-        "roll": {
-            "min": 56,
-            "max": 70
-        }
-    },
-    {
-        "bonus": "Learn an Uncommon potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
-        "roll": {
-            "min": 71,
-            "max": 85
-        }
-    },
-    {
-        "bonus": "Learn a Rare potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
-        "roll": {
-            "min": 86,
-            "max": 95
-        }
-    },
-    {
-        "bonus": "Learn a Very Rare potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
-        "roll": {
-            "min": 96,
-            "max": 105
-        }
-    },
-    {
-        "bonus": "GP Die +3 and +30gp.",
-        "roll": {
-            "min": 106,
-            "max": 115
-        }
-    },
-    {
-        "bonus": "Immediately complete Brewing on a potion. No check is needed but all ingredients are required.",
-        "roll": {
-            "min": 116,
-            "max": 125
-        }
-    },
-    {
-        "bonus": "Increase your Wage progression by +2.",
-        "roll": {
-            "min": 126,
-            "max": 135
-        }
-    },
-    {
-        "bonus": "Learn a Legendary potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
-        "roll": {
-            "min": 136,
-            "max": 300
-        }
+  {
+    "bonus": "GP Die +1 & 10gp.",
+    "roll": {
+      "min": 1,
+      "max": 20
     }
+  },
+  {
+    "bonus": "Learn a Common potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
+    "roll": {
+      "min": 21,
+      "max": 40
+    }
+  },
+  {
+    "bonus": "ADV on your next Brewing check.",
+    "roll": {
+      "min": 41,
+      "max": 55
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +1.",
+    "roll": {
+      "min": 56,
+      "max": 70
+    }
+  },
+  {
+    "bonus": "Learn an Uncommon potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
+    "roll": {
+      "min": 71,
+      "max": 85
+    }
+  },
+  {
+    "bonus": "Learn a Rare potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
+    "roll": {
+      "min": 86,
+      "max": 95
+    }
+  },
+  {
+    "bonus": "Learn a Very Rare potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
+    "roll": {
+      "min": 96,
+      "max": 105
+    }
+  },
+  {
+    "bonus": "GP Die +3 and +30gp.",
+    "roll": {
+      "min": 106,
+      "max": 115
+    }
+  },
+  {
+    "bonus": "Immediately complete Brewing on a potion. No check is needed but all ingredients are required.",
+    "roll": {
+      "min": 116,
+      "max": 125
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +2.",
+    "roll": {
+      "min": 126,
+      "max": 135
+    }
+  },
+  {
+    "bonus": "Learn a Legendary potion recipe or meal. If you know all potions or meal recipes in that tier you can craft one instead.",
+    "roll": {
+      "min": 136,
+      "max": 300
+    }
+  }
 ]

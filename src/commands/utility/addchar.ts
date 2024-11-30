@@ -22,10 +22,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await interaction.reply('Please provide a name for the character.');
     return;
   }
-    if (name.length > MAX_LENGTH) {
-        await interaction.reply(`Character name must be less than ${MAX_LENGTH} characters.`);
-        return;
-    }
+  if (name.length > MAX_LENGTH) {
+    await interaction.reply(`Character name must be less than ${MAX_LENGTH} characters.`);
+    return;
+  }
   let discordId = interaction.options.getString('discord_id');
   if (!discordId) {
     discordId = interaction.user.id;
