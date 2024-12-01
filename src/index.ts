@@ -1,17 +1,14 @@
 // src/index.ts
-import { Client, Events, GatewayIntentBits, Collection, SlashCommandBuilder, Command } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Collection } from 'discord.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
+import { Command } from './types/command';
+import setupWeeklyTasks from './weeklies/weekly';
 
 // Extend the Client type to include commands
 declare module 'discord.js' {
-  export interface Command {
-    data: SlashCommandBuilder;
-    execute: (interaction: CommandInteraction) => Promise<void>;
-    autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
-  }
   export interface Client {
     commands: Collection<string, Command>;
   }
@@ -96,6 +93,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+  setupWeeklyTasks();
 });
 
 client.login(token);
