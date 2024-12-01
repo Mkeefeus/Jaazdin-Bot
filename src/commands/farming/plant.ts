@@ -1,11 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
-import {
-  Plants,
-  PlantInformation,
-  PlantHarvestInformation,
-  FertilizerType,
-  FERTILIZER_EFFECTS,
-} from '~/db/models/Plants';
+import { Plants, PlantInformation, FertilizerType, FERTILIZER_EFFECTS } from '~/db/models/Plants';
 import { formatNames } from '~/functions/helpers';
 
 const MAX_PLANTS_PER_USER = 150;
@@ -146,7 +140,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
-    const plant = await Plants.create({
+    await Plants.create({
       name: plantName,
       user: userId,
       planted_at: new Date(),

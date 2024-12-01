@@ -181,7 +181,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         case 'last':
           currentPage = totalPages - 1;
           break;
-        case 'toggle':
+        case 'toggle': {
           showingSelf = !showingSelf;
           const newPlants = await getPlants(showingSelf ? interaction.user.id : null);
           const newTotalPages = Math.ceil(newPlants.length / ITEMS_PER_PAGE);
@@ -195,6 +195,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
             components: newComponents,
           });
           return;
+        }
       }
 
       const currentPlants = await getPlants(showingSelf ? interaction.user.id : null);

@@ -1,5 +1,5 @@
 {
-  "name": "Jaazdin-Bot",
+  "name": "jaazdin_bot",
   "version": "1.0.0",
   "type": "module",
   "description": "",
@@ -9,7 +9,8 @@
     "start": "bun run src/index.ts",
     "build": "tsc",
     "deploy": "bun run deploy-commands.ts",
-    "pretty": "prettier --write ."
+    "pretty": "prettier --write .",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -22,9 +23,12 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "@types/bun": "latest",
     "@types/node": "^20.17.6",
-    "eslint": "^9.15.0",
+    "eslint": "^9.16.0",
     "prettier": "^3.4.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.16.0"
   }
 }

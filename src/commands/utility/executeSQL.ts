@@ -8,7 +8,7 @@ export const data = new SlashCommandBuilder()
   .addStringOption((option) => option.setName('query').setDescription('The SQL query to execute').setRequired(true));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  let hasRole = isBotDev(interaction);
+  const hasRole = isBotDev(interaction);
   if (!hasRole) {
     await interaction.reply('You do not have permission to use this command');
     return;

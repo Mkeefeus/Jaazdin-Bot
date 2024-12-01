@@ -24,7 +24,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  let hasRole = isBotDev(interaction);
+  const hasRole = isBotDev(interaction);
   if (!hasRole) {
     await interaction.reply('You do not have permission to use this command');
     return;
@@ -43,6 +43,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const modelFiles = (await readdir(modelsPath)).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
 
+  if (!seedTables) return;
   for (const file of modelFiles) {
     const filePath = path.join(modelsPath, file);
     const fileUrl = new URL(`file://${filePath}`).href;

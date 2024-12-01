@@ -102,8 +102,12 @@ async function seed() {
         });
       }
     }
-  } catch (err: any) {
-    console.error('Error reading in folders for each json for the jobs.' + err.message);
+  } catch (err) {
+    let message = 'Unknown Error';
+    if (err instanceof Error) {
+      message = err.message;
+    }
+    console.error('Error reading in folders for each json for the jobs. ' + message);
   }
 }
 

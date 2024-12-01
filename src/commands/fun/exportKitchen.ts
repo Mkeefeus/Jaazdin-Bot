@@ -1,5 +1,5 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { IngredientCategory, Ingredient } from '~/db/models/Ingredients';
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { Ingredient } from '~/db/models/Ingredients';
 import { writeFile } from 'fs/promises';
 import { resolve } from 'path';
 

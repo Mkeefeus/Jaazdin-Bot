@@ -13,7 +13,7 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (!interaction.member) return;
 
-  let hasRole = isBotDev(interaction);
+  const hasRole = isBotDev(interaction);
   if (!hasRole) {
     await interaction.reply({
       content: 'You do not have permission to use this command',

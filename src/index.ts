@@ -1,5 +1,5 @@
 // src/index.ts
-import { Client, Events, GatewayIntentBits, Collection } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Collection, SlashCommandBuilder, Command } from 'discord.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -7,8 +7,13 @@ import fs from 'fs/promises';
 
 // Extend the Client type to include commands
 declare module 'discord.js' {
+  export interface Command {
+    data: SlashCommandBuilder;
+    execute: (interaction: CommandInteraction) => Promise<void>;
+    autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
+  }
   export interface Client {
-    commands: Collection<string, any>;
+    commands: Collection<string, Command>;
   }
 }
 
@@ -39,7 +44,7 @@ for (const folder of commandFolders) {
     const filePath = path.join(commandsPath, file);
     const fileUrl = new URL(`file://${filePath}`).href;
 
-    const command = await import(fileUrl);
+    const command = (await import(fileUrl)) as Command;
     if ('data' in command && 'execute' in command) {
       client.commands.set(command.data.name, command);
     }
