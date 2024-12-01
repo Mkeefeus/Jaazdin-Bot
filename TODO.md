@@ -193,3 +193,7 @@ birthdays should be included, but not required in the userdb
 
 - deletes all data about that one religion.
 - requires confirmation
+
+`showReligions`
+
+- previews all religions and their followers.

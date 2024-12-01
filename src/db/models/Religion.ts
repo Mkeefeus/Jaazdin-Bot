@@ -1,8 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from 'db/db';
 
-console.log('Religion Model is running');
-
 export class Religion extends Model {
   declare id: number;
   declare name: string;
@@ -78,7 +76,6 @@ async function seed() {
   // parse through the religionInformation.json create each domain.
   const domainData = (await import('~/../religionInformation.json')).default;
   try {
-    console.log(domainData);
     for (const domain of domainData) {
       await Domain.create({
         name: domain.domain,

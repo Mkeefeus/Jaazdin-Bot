@@ -24,6 +24,10 @@
     "dominant_effect": "Characters may add a +1 to all INT checks made during downtime. In addition, the cost to train a new language or tool is reduced by 10gp."
   },
   {
+    "domain": "life",
+    "dominant_effect": "Characters can remove two levels of exhaustion or resurrection sickness a week, instead of one."
+  },
+  {
     "domain": "light",
     "dominant_effect": "At the start of each quest, every character gains 10ft of darkvision or extends their darkvision by 10ft."
   },
