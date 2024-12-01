@@ -14,6 +14,28 @@ export class Domain extends Model {
   declare dominant_effect: string;
 }
 
+Domain.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    dominant_effect: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize: db,
+    timestamps: true,
+  }
+);
+
 Religion.init(
   {
     id: {
@@ -44,47 +66,29 @@ Religion.init(
   }
 );
 
-Domain.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    dominant_effect: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  {
-    sequelize: db,
-    timestamps: true,
-  }
-);
-
 Religion.belongsTo(Domain);
 
 Domain.hasMany(Religion, {
   foreignKey: 'domain_id',
 });
 
+
 async function seed() {
+  
   // parse through the religionInformation.json create each domain.
   const domainData = (await import('~/../religionInformation.json')).default;
   try {
+    console.log(domainData);
     for (const domain of domainData) {
-      const domainInfo = await Domain.create({
+      await Domain.create({
         name: domain.domain,
         dominant_effect: domain.dominant_effect,
       });
     }
   } catch (error) {
-    console.log('could not parse religions domains.');
+    console.log('could not parse religions domains.', error);
   }
 }
+
 
 export { seed };
