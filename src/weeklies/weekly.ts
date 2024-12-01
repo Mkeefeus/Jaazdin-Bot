@@ -10,9 +10,8 @@ type WeeklyFunctions = {
 async function executeWeeklyTasks() {
   // Perform the weekly task here
   const weeklyFiles = readdirSync(path.join(__dirname)).filter((file) => file.endsWith('.ts'));
-  console.log('Weekly tasks:', weeklyFiles);
   for (const file of weeklyFiles) {
-    if (file === 'weekly.ts') continue;
+    if (file === path.basename(__filename)) continue;
     const { update, post } = (await import(path.join(__dirname, file))) as WeeklyFunctions;
     if (update) {
       update();
@@ -28,7 +27,7 @@ export default function setupWeeklyTasks() {
     console.log('Checking weekly tasks');
     const lastRun = await LastWeeklyRunTime.findOne();
     const now = new Date();
-    const nextRuntime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (7 - now.getDay()), 0, 0, 0, 0);
+    const nextRuntime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + ((1 + 7 - now.getDay()) % 7), 0, 1);
 
     if (!lastRun) {
       executeWeeklyTasks();
