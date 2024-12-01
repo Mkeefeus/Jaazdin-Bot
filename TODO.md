@@ -172,24 +172,24 @@ birthdays should be included, but not required in the userdb
 ## Religions
 
 `addReligion`
+
 - creates a new religion
 
 `changeFollowers`
 @params religionName
-@params changeInFollowers 
+@params changeInFollowers
 
-- takes the current number of followers and add the change 
+- takes the current number of followers and add the change
 
 `updateReligion`
 @params religionName
 @params followerAmount
 @params domain
 
--  overrides all values from the current religion
-
+- overrides all values from the current religion
 
 `destroyReligion`
 @params religionName
 
-- deletes all data about that one religion. 
+- deletes all data about that one religion.
 - requires confirmation

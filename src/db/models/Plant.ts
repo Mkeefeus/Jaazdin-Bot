@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from 'db/db';
+import { sleepSync } from 'bun';
 
 export enum FertilizerType {
   NONE = 'NONE',
@@ -282,7 +283,8 @@ async function seed() {
         });
 
         // Wait a moment before creating harvests
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        // await new Promise((resolve) => setTimeout(resolve, 100));
+        sleepSync(100);
 
         // Then create all harvests for this plant
         for (const harvest of plant.harvest) {

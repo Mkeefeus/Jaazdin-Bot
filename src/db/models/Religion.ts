@@ -1,6 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from 'db/db';
 
+console.log('Religion Model is running');
+
 export class Religion extends Model {
   declare id: number;
   declare name: string;
@@ -72,9 +74,7 @@ Domain.hasMany(Religion, {
   foreignKey: 'domain_id',
 });
 
-
 async function seed() {
-  
   // parse through the religionInformation.json create each domain.
   const domainData = (await import('~/../religionInformation.json')).default;
   try {
@@ -89,6 +89,5 @@ async function seed() {
     console.log('could not parse religions domains.', error);
   }
 }
-
 
 export { seed };

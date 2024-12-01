@@ -13,6 +13,7 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
+    "noImplicitAny": true,
     "paths": {
       "~/*": ["src/*"],
       "db/*": ["src/db/*"]

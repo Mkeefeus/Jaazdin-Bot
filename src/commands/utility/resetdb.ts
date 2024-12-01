@@ -1,16 +1,8 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-// import { PlantHarvestInformation, PlantHarvest, PlantInformation, Plants } from "~/db/models/Plants";
 import { isBotDev } from '~/functions/helpers';
-import { db } from '~/db/db';
-// import { Ingredients, Ingredient, IngredientCategory } from "~/db/models/Ingredients";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readdir } from 'fs/promises';
-// import { Command } from "~/types/command";
-
-interface SeedFunction {
-  seed: () => Promise<void>;
-}
 
 export const data = new SlashCommandBuilder()
   .setName('resetdb')
@@ -34,37 +26,30 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const dropTables = interaction.options.getBoolean('drop');
   const seedTables = interaction.options.getBoolean('seed');
 
-  if (dropTables) {
-    await db.sync({ force: true });
-  } else {
-    await db.sync();
-  }
   const modelsPath = path.join(__dirname, '../../db', 'models');
 
   const modelFiles = (await readdir(modelsPath)).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
 
-  if (seedTables) {
-    for (const file of modelFiles) {
-      const filePath = path.join(modelsPath, file);
-      const fileUrl = new URL(`file://${filePath}`).href;
+  for (const file of modelFiles) {
+    const filePath = path.join(modelsPath, file);
+    const fileUrl = new URL(`file://${filePath}`).href;
+    const model = await import(fileUrl);
+    const keys = Object.keys(model).filter((key) => key !== 'seed');
+    for (const key of keys) {
+      if (dropTables && model[key].sync) {
+        await model[key].sync({ force: dropTables ?? false });
+      }
+    }
 
+    if (seedTables) {
       try {
-        const model = (await import(fileUrl)) as SeedFunction;
         try {
           if (model.seed) {
             await model.seed();
-            console.log(`Seeded ${file}`);
           }
         } catch (error) {
           console.error(`Error seeding ${file}:`, error);
         }
-
-        // if (seedTables) {
-        //     await syncPlantsDatabase(interaction);
-        //     const plantData = await import('~/../plantInformation.json');
-        //     await seedPlantsDatabase(plantData);
-        //     await interaction.reply("Database seeded successfully");
-        // }
       } catch (error) {
         console.error(error);
         await interaction.reply('An error occurred');
