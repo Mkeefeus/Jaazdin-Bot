@@ -272,6 +272,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     try {
       const result = await harvestPlant(plant, harvestSeeds, character);
 
+      if (!result) {
+        await interaction.reply({
+          content: 'Could not harvest plant!',
+          ephemeral: true,
+        });
+        return;
+      }
+
       // Create harvest summary embed
       const embed = new EmbedBuilder()
         .setTitle('🌾 Harvest Complete!')
@@ -321,8 +329,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
+      let message = 'Unknown error';
+      if (error instanceof Error) {
+        message = error.message;
+      }
       await interaction.reply({
-        content: error.message,
+        content: message,
         ephemeral: true,
       });
     }
