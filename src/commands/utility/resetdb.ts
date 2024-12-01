@@ -43,16 +43,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     if (seedTables) {
       try {
-        try {
-          if (model.seed) {
-            await model.seed();
-          }
-        } catch (error) {
-          console.error(`Error seeding ${file}:`, error);
+        if (model.seed) {
+          await model.seed();
         }
       } catch (error) {
-        console.error(error);
-        await interaction.reply('An error occurred');
+        console.error(`Error seeding ${file}:`, error);
       }
     }
   }
