@@ -28,7 +28,7 @@ export const data = new SlashCommandBuilder()
   );
 
 async function createPlantEmbed(
-  plantInfo: any,
+  plantInfo: PlantInformation,
   owner: string,
   fertilizerType: FertilizerType,
   yieldMult: number,

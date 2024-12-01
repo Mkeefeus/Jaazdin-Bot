@@ -63,7 +63,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         inline: false,
       });
 
-      harvests.forEach((harvest: any, index: number) => {
+      harvests.forEach((harvest: PlantHarvestInformation, index: number) => {
         embed.addFields({
           name: `Harvest ${index + 1}: ${harvest.harvest_name}`,
           value: [
@@ -71,7 +71,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
             `Time: ${harvest.harvest_time} weeks`,
             `Amount: ${harvest.harvest_amount}`,
             `Renewable: ${harvest.renewable ? 'Yes' : 'No'}`,
-            `Created: ${harvest.createdAt.toLocaleString()}`,
           ].join('\n'),
           inline: true,
         });

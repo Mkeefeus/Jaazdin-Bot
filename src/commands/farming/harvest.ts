@@ -42,7 +42,11 @@ interface HarvestCheck {
   currentStage: 'growing' | 'maturing' | 'ready' | 'complete';
 }
 
-async function checkPlantHarvestability(plant: any, plantInfo: any, harvestInfo: any): Promise<HarvestCheck> {
+async function checkPlantHarvestability(
+  plant: Plant,
+  plantInfo: PlantInformation,
+  harvestInfo: PlantHarvestInformation
+): Promise<HarvestCheck> {
   const now = Date.now();
   const plantedAt = new Date(plant.planted_at).getTime();
 
@@ -103,7 +107,7 @@ async function checkPlantHarvestability(plant: any, plantInfo: any, harvestInfo:
 }
 
 async function harvestPlant(
-  plant: any,
+  plant: Plant,
   harvestSeeds: boolean = false,
   character: string
 ): Promise<HarvestResult | null> {
@@ -118,7 +122,7 @@ async function harvestPlant(
   });
 
   if (!plantInfo) return null;
-  const harvestInfo = plantInfo.harvests[0];
+  const harvestInfo = plantInfo.dataValues.harvests[0];
 
   // Check harvestability
   const harvestCheck = await checkPlantHarvestability(plant, plantInfo, harvestInfo);
