@@ -15,9 +15,9 @@ interface SeedFunction {
 export const data = new SlashCommandBuilder()
   .setName('resetdb')
   .setDescription('Resets the database')
-  .addBooleanOption((option) => option.setName('drop').setDescription('Drop tables if they exist').setRequired(false))
+  .addBooleanOption((option) => option.setName('drop').setDescription('Drop tables if they exist').setRequired(true))
   .addBooleanOption((option) =>
-    option.setName('seed').setDescription('Seed the database with default data').setRequired(false)
+    option.setName('seed').setDescription('Seed the database with default data').setRequired(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -30,8 +30,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const dropTables = interaction.options.getBoolean('drop') ?? false;
-  const seedTables = interaction.options.getBoolean('seed') ?? false;
+  const dropTables = interaction.options.getBoolean('drop');
+  const seedTables = interaction.options.getBoolean('seed');
 
   if (dropTables) {
     await db.sync({ force: true });
