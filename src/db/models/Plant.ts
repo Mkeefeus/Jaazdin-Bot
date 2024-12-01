@@ -74,6 +74,28 @@ export class Plant extends Model {
   declare has_persistent_fertilizer: boolean;
 }
 
+export class PlantInformation extends Model {
+  declare id: number;
+  declare name: string;
+  declare maturity_time: number;
+}
+
+export class PlantHarvestInformation extends Model {
+  declare id: number;
+  declare plant_id: number;
+  declare harvest_time: number;
+  declare harvest_amount: number;
+  declare harvest_name: string;
+  declare renewable: boolean;
+}
+export class PlantHarvest extends Model {
+  declare id: number;
+  declare plant_id: number;
+  declare harvest_info_id: number;
+  declare harvested_at: Date;
+  declare amount_harvested: number;
+}
+
 Plant.init(
   {
     id: {
@@ -120,12 +142,6 @@ Plant.init(
   }
 );
 
-export class PlantInformation extends Model {
-  declare id: number;
-  declare name: string;
-  declare maturity_time: number;
-}
-
 PlantInformation.init(
   {
     id: {
@@ -148,15 +164,6 @@ PlantInformation.init(
     sequelize: db,
   }
 );
-
-export class PlantHarvestInformation extends Model {
-  declare id: number;
-  declare plant_id: number;
-  declare harvest_time: number;
-  declare harvest_amount: number;
-  declare harvest_name: string;
-  declare renewable: boolean;
-}
 
 PlantHarvestInformation.init(
   {
@@ -197,14 +204,6 @@ PlantHarvestInformation.init(
     sequelize: db,
   }
 );
-
-export class PlantHarvest extends Model {
-  declare id: number;
-  declare plant_id: number;
-  declare harvest_info_id: number;
-  declare harvested_at: Date;
-  declare amount_harvested: number;
-}
 
 PlantHarvest.init(
   {
@@ -251,31 +250,18 @@ PlantInformation.hasMany(PlantHarvestInformation, {
   as: 'harvests',
 });
 
-PlantHarvestInformation.belongsTo(PlantInformation, {
-  foreignKey: 'plant_id',
-  as: 'plant',
-});
+PlantHarvestInformation.belongsTo(PlantInformation);
 
 Plant.hasMany(PlantHarvest, {
   foreignKey: 'plant_id',
   as: 'harvests',
 });
 
-PlantHarvest.belongsTo(Plant, {
-  foreignKey: 'plant_id',
-  as: 'plant',
-});
+PlantHarvest.belongsTo(Plant);
 
-PlantHarvest.belongsTo(PlantHarvestInformation, {
-  foreignKey: 'harvest_info_id',
-  as: 'harvest_info',
-});
+PlantHarvest.belongsTo(PlantHarvestInformation);
 
-Plant.belongsTo(PlantInformation, {
-  foreignKey: 'name',
-  targetKey: 'name',
-  as: 'information',
-});
+Plant.belongsTo(PlantInformation);
 
 PlantInformation.hasMany(Plant, {
   foreignKey: 'name',

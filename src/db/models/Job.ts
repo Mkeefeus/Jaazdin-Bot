@@ -3,14 +3,21 @@ import { db } from 'db/db';
 import fs from 'fs/promises';
 import path from 'path';
 
-interface JobTierData {
-  bonus: string;
-  roll: { min: number; max: number };
-}
-
 export class Job extends Model {
   declare id: number;
   declare name: string;
+}
+
+export class JobTier extends Model {
+  declare id: number;
+  declare job_id: number;
+  declare bonus: string;
+  declare roll_min: number;
+  declare roll_max: number;
+}
+interface JobTierData {
+  bonus: string;
+  roll: { min: number; max: number };
 }
 
 Job.init(
@@ -30,14 +37,6 @@ Job.init(
     timestamps: true,
   }
 );
-
-export class JobTier extends Model {
-  declare id: number;
-  declare job_id: number;
-  declare bonus: string;
-  declare roll_min: number;
-  declare roll_max: number;
-}
 
 JobTier.init(
   {
@@ -75,13 +74,9 @@ JobTier.init(
 
 Job.hasMany(JobTier, {
   foreignKey: 'job_id',
-  as: 'tiers',
 });
 
-JobTier.belongsTo(Job, {
-  foreignKey: 'job_id',
-  as: 'job',
-});
+JobTier.belongsTo(Job);
 
 async function seed() {
   // Reading each file in d100tables and set them to create the objects.
