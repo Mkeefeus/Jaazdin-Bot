@@ -1,78 +1,139 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import { db } from 'db/db';
 import fs from 'fs/promises';
 import path from 'path';
 
-export interface Job {
-  name: string;
-  bonus: string;
-  rollMin: number;
-  rollMax: number;
-}
+// export interface Job {
+//   name: string;
+//   bonus: string;
+//   rollMin: number;
+//   rollMax: number;
+// }
 
-export interface JobTier {
+interface JobTierData {
   bonus: string;
   roll: { min: number; max: number };
 }
 
-export const Jobs = db.define(
-  'jobs',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+// export const Jobs = db.define(
+//   'jobs',
+//   {
+//     id: {
+//       type: DataTypes.INTEGER,
+//       primaryKey: true,
+//       autoIncrement: true,
+//     },
+//     name: {
+//       type: DataTypes.STRING,
+//       allowNull: false,
+//     },
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
+
+export class Job extends Model {
+  declare id: number;
+  declare name: string;
+}
+
+Job.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+}, {
+  sequelize: db,
+  // modelName: 'jobs',
+  timestamps: true,
+})
+
+// export const JobTiers = db.define(
+//   'job_tiers',
+//   {
+//     id: {
+//       type: DataTypes.INTEGER,
+//       primaryKey: true,
+//       autoIncrement: true,
+//     },
+//     job_id: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//       references: {
+//         model: 'jobs',
+//         key: 'id',
+//       },
+//     },
+//     bonus: {
+//       type: DataTypes.STRING,
+//       allowNull: false,
+//     },
+//     roll_min: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//     },
+//     roll_max: {
+//       type: DataTypes.INTEGER,
+//       allowNull: false,
+//     },
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
+
+export class JobTier extends Model {
+  declare id: number;
+  declare job_id: number;
+  declare bonus: string;
+  declare roll_min: number;
+  declare roll_max: number;
+}
+
+JobTier.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  job_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Job,
+      key: 'id',
     },
   },
-  {
-    timestamps: true,
-  }
-);
-
-export const JobTiers = db.define(
-  'job_tiers',
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    job_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'jobs',
-        key: 'id',
-      },
-    },
-    bonus: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    roll_min: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    roll_max: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+  bonus: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
-  {
-    timestamps: true,
-  }
-);
+  roll_min: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  roll_max: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+}, {
+  sequelize: db,
+  // modelName: 'job_tiers',
+  timestamps: true,
+})
 
-Jobs.hasMany(JobTiers, {
+Job.hasMany(JobTier, {
   foreignKey: 'job_id',
   as: 'tiers',
 });
 
-JobTiers.belongsTo(Jobs, {
+JobTier.belongsTo(Job, {
   foreignKey: 'job_id',
   as: 'job',
 });
@@ -89,12 +150,12 @@ async function seed() {
       let jobName = file.split('.')[0].toLowerCase();
       jobName = jobName.replace('-', ' ');
       //read in json file.
-      const jobJson: JobTier[] = (await import(`${d100TablesDir}/${file}`)).default;
-      const job = await Jobs.create({
+      const jobJson: JobTierData[] = (await import(`${d100TablesDir}/${file}`)).default;
+      const job = await Job.create({
         name: jobName,
       });
       for (const tier of jobJson) {
-        await JobTiers.create({
+        await JobTier.create({
           job_id: job.getDataValue('id'),
           bonus: tier.bonus,
           roll_min: tier.roll.min,

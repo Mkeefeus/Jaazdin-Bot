@@ -7,8 +7,7 @@ import {
   userMention,
 } from 'discord.js';
 import { Op } from 'sequelize';
-
-import { Jobs, JobTiers } from '~/db/models/Jobs';
+import { Job, JobTier } from '~/db/models/Jobs';
 import { formatNames } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()
@@ -39,14 +38,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const jobData = await Jobs.findOne({ where: { name: jobName } });
+  const jobData = await Job.findOne({ where: { name: jobName } });
 
   if (!jobData) {
     await interaction.reply('Job not found');
     return;
   }
 
-  let modifiedRoll = tier > 3 ? roll + (Math.min(tier, 7) - 3) * 10 : roll;
+  const modifiedRoll = tier > 3 ? roll + (Math.min(tier, 7) - 3) * 10 : roll;
 
   /*
   const boatsInTown = await Boats.findAll()
@@ -56,7 +55,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
   */
 
-  const rolledTier = await JobTiers.findOne({
+  const rolledTier = await JobTier.findOne({
     where: {
       job_id: jobData.getDataValue('id'),
       roll_min: { [Op.lte]: modifiedRoll },
@@ -81,7 +80,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused().toLowerCase();
-  const jobs = await Jobs.findAll();
+  const jobs = await Job.findAll();
 
   const filtered = jobs.filter((job) => job.dataValues.name.toLowerCase().startsWith(focusedValue));
 
