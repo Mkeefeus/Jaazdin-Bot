@@ -162,9 +162,34 @@ birthdays should be included, but not required in the userdb
 @params discord_ID or characterName
 @params new age
 
-- updates the age of the inputed character
+- updates the age of the inputted character
 
 `showCharacter`
 @params characterName
 
 - shows information of the character requested, should most likely only be the user's character
+
+## Religions
+
+`addReligion`
+- creates a new religion
+
+`changeFollowers`
+@params religionName
+@params changeInFollowers 
+
+- takes the current number of followers and add the change 
+
+`updateReligion`
+@params religionName
+@params followerAmount
+@params domain
+
+-  overrides all values from the current religion
+
+
+`destroyReligion`
+@params religionName
+
+- deletes all data about that one religion. 
+- requires confirmation
