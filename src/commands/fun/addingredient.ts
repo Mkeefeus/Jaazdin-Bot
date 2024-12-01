@@ -1,6 +1,6 @@
 import { db } from 'db/db';
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { IngredientCategory, Ingredient } from '~/db/models/Ingredients';
+import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
 
 export const data = new SlashCommandBuilder()
   .setName('addingredient')

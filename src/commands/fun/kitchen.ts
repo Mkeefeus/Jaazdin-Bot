@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { IngredientCategory, Ingredient } from '~/db/models/Ingredients';
+import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
 
 export const data = new SlashCommandBuilder()
   .setName('kitchen')

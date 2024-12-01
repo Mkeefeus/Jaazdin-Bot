@@ -8,7 +8,7 @@ import {
   ComponentType,
   ButtonInteraction,
 } from 'discord.js';
-import { Plants, PlantInformation } from '~/db/models/Plants.js';
+import { Plant, PlantInformation } from '~/db/models/Plant.js';
 import { formatNames } from '~/functions/helpers';
 
 const ITEMS_PER_PAGE = 3;
@@ -30,7 +30,7 @@ export const data = new SlashCommandBuilder()
 
 async function getPlants(userId: string | null = null): Promise<PlantDisplay[]> {
   const whereClause = userId ? { user: userId } : {};
-  const plants = await Plants.findAll({
+  const plants = await Plant.findAll({
     where: whereClause,
     include: [
       {

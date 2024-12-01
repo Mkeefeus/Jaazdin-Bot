@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
 import { Op } from 'sequelize';
-import { PlantHarvestInformation, PlantInformation } from '~/db/models/Plants';
+import { PlantHarvestInformation, PlantInformation } from '~/db/models/Plant';
 import { isBotDev } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()

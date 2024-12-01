@@ -1,13 +1,13 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
 import {
-  Plants,
-  PlantHarvests,
+  Plant,
+  PlantHarvest,
   PlantHarvestInformation,
   PlantInformation,
   FERTILIZER_EFFECTS,
   FertilizerType,
-} from '~/db/models/Plants';
-import { Users } from '~/db/models/Users';
+} from '~/db/models/Plant';
+import { User } from '~/db/models/User';
 import { formatNames } from '~/functions/helpers';
 
 // Export the command data
@@ -47,7 +47,7 @@ async function checkPlantHarvestability(plant: any, plantInfo: any, harvestInfo:
   const plantedAt = new Date(plant.planted_at).getTime();
 
   // Get the latest harvest for this plant
-  const latestHarvest = await PlantHarvests.findOne({
+  const latestHarvest = await PlantHarvest.findOne({
     where: { plant_id: plant.id },
     order: [['harvested_at', 'DESC']],
   });
@@ -62,7 +62,7 @@ async function checkPlantHarvestability(plant: any, plantInfo: any, harvestInfo:
   const timeSinceLastHarvest = (now - timeReference) / (1000 * 60 * 60 * 24 * 7);
 
   // Get current harvest count
-  const harvestCount = await PlantHarvests.count({
+  const harvestCount = await PlantHarvest.count({
     where: { plant_id: plant.id },
   });
 
@@ -144,7 +144,7 @@ async function harvestPlant(
   const seedAmount = harvestSeeds ? Math.floor(Math.random() * 3) + 1 : 0;
 
   // Record the harvest
-  await PlantHarvests.create({
+  await PlantHarvest.create({
     plant_id: plant.id,
     harvest_info_id: harvestInfo.id,
     amount_harvested: finalAmount,
@@ -154,7 +154,7 @@ async function harvestPlant(
   });
 
   // Get total harvests after this one
-  const harvestCount = await PlantHarvests.count({
+  const harvestCount = await PlantHarvest.count({
     where: { plant_id: plant.id },
   });
 
@@ -187,7 +187,7 @@ async function harvestPlant(
 async function autocompleteCharacter(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused().toLowerCase();
 
-  const characters = await Users.findAll({
+  const characters = await User.findAll({
     where: { discord_id: interaction.user.id },
   });
 
@@ -205,7 +205,7 @@ async function autocompleteCharacter(interaction: AutocompleteInteraction) {
 async function autocompletePlant(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused().toLowerCase();
 
-  const plants = await Plants.findAll({
+  const plants = await Plant.findAll({
     where: { user: interaction.user.id },
     include: [
       {
@@ -238,7 +238,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const shouldReplant = interaction.options.getBoolean('replant') ?? false;
 
     // Verify character ownership
-    const userChar = await Users.findOne({
+    const userChar = await User.findOne({
       where: {
         discord_id: interaction.user.id,
         character_name: character,
@@ -254,7 +254,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
 
     // Get the plant
-    const plant = await Plants.findOne({
+    const plant = await Plant.findOne({
       where: {
         id: plantId,
         user: interaction.user.id,
@@ -311,7 +311,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
       // Handle replanting if requested and plant was removed
       if (shouldReplant && !plant.isNewRecord) {
-        await Plants.create({
+        await Plant.create({
           name: plant.getDataValue('name'),
           user: interaction.user.id,
           planted_at: new Date(),

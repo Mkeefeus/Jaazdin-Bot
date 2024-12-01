@@ -44,8 +44,6 @@ Ingredient.init(
   },
   {
     sequelize: db,
-    modelName: 'ingredients',
-    timestamps: true,
   }
 );
 

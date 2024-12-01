@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-// import { PlantHarvestInformation, PlantHarvests, PlantInformation, Plants } from "~/db/models/Plants";
+// import { PlantHarvestInformation, PlantHarvest, PlantInformation, Plants } from "~/db/models/Plants";
 import { isBotDev } from '~/functions/helpers';
 import { db } from '~/db/db';
 // import { Ingredients, Ingredient, IngredientCategory } from "~/db/models/Ingredients";

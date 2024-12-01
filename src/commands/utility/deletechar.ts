@@ -7,7 +7,7 @@ import {
   ButtonStyle,
   Interaction,
 } from 'discord.js';
-import { Users } from '~/db/models/Users';
+import { User } from '~/db/models/User';
 import { formatNames, isBotDev } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()
@@ -43,7 +43,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 15000 });
     if (confirmation.customId === 'confirm') {
       try {
-        await Users.destroy({ where: { character_name: charName } });
+        await User.destroy({ where: { character_name: charName } });
       } catch (error) {
         console.error('Error deleting character:', error);
         await confirmation.update({ content: `Error deleting character ${formattedName}.`, components: [] });
@@ -61,7 +61,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
   //   const focusedValue = interaction.options.getFocused().toLowerCase();
-  const characters = await Users.findAll();
+  const characters = await User.findAll();
   const characterNames = characters.map((character) => character.dataValues.character_name);
 
   await interaction.respond(characterNames.map((character) => ({ name: formatNames(character), value: character })));

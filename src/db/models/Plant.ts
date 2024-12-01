@@ -1,19 +1,5 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import { db } from 'db/db';
-
-interface HarvestData {
-  time: number;
-  amount: number;
-  name: string;
-  renewable: boolean; // if the harvest is not renewable, the plant needs to be removed after harvesting
-}
-
-export interface Plant {
-  name: string;
-  maturityTime: number;
-  harvest: HarvestData[];
-  user: string;
-}
 
 export enum FertilizerType {
   NONE = 'NONE',
@@ -77,31 +63,18 @@ export const FERTILIZER_EFFECTS = {
   },
 };
 
-// export const Plants = db.define(
-//   "plants",
-//   {
-//     // Model attributes are defined here
-//     name: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//     },
-//     user: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//     },
-//     maturity_time: {
-//       type: DataTypes.INTEGER,
-//       allowNull: false,
-//     },
-//     harvest: {
-//       type: DataTypes.JSON,
-//       allowNull: false,
-//     },
-//   }
-// );
+export class Plant extends Model {
+  declare id: number;
+  declare name: string;
+  declare user: string;
+  declare planted_at: Date;
+  declare fertilizer_type: FertilizerType;
+  declare yield_multiplier: number;
+  declare growth_multiplier: number;
+  declare has_persistent_fertilizer: boolean;
+}
 
-export const Plants = db.define(
-  'plants',
+Plant.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -143,12 +116,17 @@ export const Plants = db.define(
     },
   },
   {
-    timestamps: true,
+    sequelize: db,
   }
 );
 
-export const PlantInformation = db.define(
-  'plant_information',
+export class PlantInformation extends Model {
+  declare id: number;
+  declare name: string;
+  declare maturity_time: number;
+}
+
+PlantInformation.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -167,12 +145,20 @@ export const PlantInformation = db.define(
     },
   },
   {
-    freezeTableName: true,
+    sequelize: db,
   }
 );
 
-export const PlantHarvestInformation = db.define(
-  'plant_harvest_information',
+export class PlantHarvestInformation extends Model {
+  declare id: number;
+  declare plant_id: number;
+  declare harvest_time: number;
+  declare harvest_amount: number;
+  declare harvest_name: string;
+  declare renewable: boolean;
+}
+
+PlantHarvestInformation.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -183,7 +169,7 @@ export const PlantHarvestInformation = db.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'plant_information',
+        model: PlantInformation,
         key: 'id',
       },
     },
@@ -208,12 +194,19 @@ export const PlantHarvestInformation = db.define(
     },
   },
   {
-    freezeTableName: true,
+    sequelize: db,
   }
 );
 
-export const PlantHarvests = db.define(
-  'plant_harvests',
+export class PlantHarvest extends Model {
+  declare id: number;
+  declare plant_id: number;
+  declare harvest_info_id: number;
+  declare harvested_at: Date;
+  declare amount_harvested: number;
+}
+
+PlantHarvest.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -224,7 +217,7 @@ export const PlantHarvests = db.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'plants',
+        model: Plant,
         key: 'id',
       },
     },
@@ -232,7 +225,7 @@ export const PlantHarvests = db.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'plant_harvest_information',
+        model: PlantHarvestInformation,
         key: 'id',
       },
     },
@@ -248,7 +241,7 @@ export const PlantHarvests = db.define(
     },
   },
   {
-    freezeTableName: true,
+    sequelize: db,
   }
 );
 
@@ -263,28 +256,28 @@ PlantHarvestInformation.belongsTo(PlantInformation, {
   as: 'plant',
 });
 
-Plants.hasMany(PlantHarvests, {
+Plant.hasMany(PlantHarvest, {
   foreignKey: 'plant_id',
   as: 'harvests',
 });
 
-PlantHarvests.belongsTo(Plants, {
+PlantHarvest.belongsTo(Plant, {
   foreignKey: 'plant_id',
   as: 'plant',
 });
 
-PlantHarvests.belongsTo(PlantHarvestInformation, {
+PlantHarvest.belongsTo(PlantHarvestInformation, {
   foreignKey: 'harvest_info_id',
   as: 'harvest_info',
 });
 
-Plants.belongsTo(PlantInformation, {
+Plant.belongsTo(PlantInformation, {
   foreignKey: 'name',
   targetKey: 'name',
   as: 'information',
 });
 
-PlantInformation.hasMany(Plants, {
+PlantInformation.hasMany(Plant, {
   foreignKey: 'name',
   sourceKey: 'name',
   as: 'plants',

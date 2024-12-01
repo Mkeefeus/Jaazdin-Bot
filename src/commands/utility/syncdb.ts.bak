@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { PlantHarvestInformation, PlantHarvests, PlantInformation, Plants } from "~/db/models/Plants";
+import { PlantHarvestInformation, PlantHarvest, PlantInformation, Plants } from "~/db/models/Plants";
 import { isBotDev } from "~/functions/helpers";
 import { db } from "~/db/db";
 import { Ingredients, Ingredient, IngredientCategory } from "~/db/models/Ingredients";
@@ -23,8 +23,8 @@ async function syncPlantsDatabase(interaction: ChatInputCommandInteraction) {
     await PlantHarvestInformation.sync(syncOptions);
     console.log("PlantHarvestInformation table created");
 
-    await PlantHarvests.sync(syncOptions);
-    console.log("PlantHarvests table created");
+    await PlantHarvest.sync(syncOptions);
+    console.log("PlantHarvest table created");
 
     // Wait a moment to ensure tables are ready
     await new Promise((resolve) => setTimeout(resolve, 1000));

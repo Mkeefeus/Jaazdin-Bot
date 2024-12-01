@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Sequelize } from 'sequelize';
-import { Users } from '~/db/models/Users';
+import { User } from '~/db/models/User';
 
 const MAX_CHARACTERS = 2;
 const MAX_LENGTH = 200;
@@ -31,7 +31,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     discordId = interaction.user.id;
   }
 
-  const numUserChars = await Users.count({
+  const numUserChars = await User.count({
     where: Sequelize.where(Sequelize.fn('lower', Sequelize.col('discord_id')), discordId),
   });
 
@@ -41,7 +41,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   // Add the character to the database
-  Users.create({
+  User.create({
     discord_id: discordId,
     character_name: name.toLowerCase(),
   });

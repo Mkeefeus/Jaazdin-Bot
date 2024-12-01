@@ -7,7 +7,7 @@ import {
   userMention,
 } from 'discord.js';
 import { Op } from 'sequelize';
-import { Job, JobTier } from '~/db/models/Jobs';
+import { Job, JobTier } from '~/db/models/Job';
 import { formatNames } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()

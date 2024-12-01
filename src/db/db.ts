@@ -14,6 +14,10 @@ export const db =
       acquire: 30000,
       idle: 10000,
     },
+    define: {
+      timestamps: true,
+      underscored: true,
+    },
   });
 
 // Ensure only one connection
