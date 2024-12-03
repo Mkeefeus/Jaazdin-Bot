@@ -20,8 +20,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     },
   });
 
-  console.log(domainData);
-
   await Religion.create({
     name: name,
     domain_id: domainData?.dataValues.id,
