@@ -43,9 +43,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
   await interaction.respond(
     filtered
-      .map((job) => ({
-        name: formatNames(job.dataValues.name), // Display nicely formatted
-        value: job.dataValues.name, // Keep lowercase for database lookup
+      .map((domain) => ({
+        name: formatNames(domain.dataValues.name), // Display nicely formatted
+        value: domain.dataValues.name, // Keep lowercase for database lookup
       }))
       .sort((a, b) => a.name.localeCompare(b.name))
   );

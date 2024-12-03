@@ -1,10 +1,17 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder, userMention } from 'discord.js';
+import {
+  AutocompleteInteraction,
+  ChatInputCommandInteraction,
+  Colors,
+  EmbedBuilder,
+  SlashCommandBuilder,
+  userMention,
+} from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
 import { formatNames } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()
   .setName('addreligion')
-  .setDescription('Will remove a religion from the active religions')
+  .setDescription('Will add a religion from the active religions')
   .addStringOption((option) => option.setName('name').setDescription('The name of the religion.').setRequired(true))
   .addStringOption((option) =>
     option.setName('domain').setDescription('The domain of the religion').setRequired(true).setAutocomplete(true)
@@ -45,9 +52,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await interaction.respond(
     filtered
       .slice(0, 25)
-      .map((job) => ({
-        name: formatNames(job.dataValues.name), // Display nicely formatted
-        value: job.dataValues.name, // Keep lowercase for database lookup
+      .map((domain) => ({
+        name: formatNames(domain.dataValues.name), // Display nicely formatted
+        value: domain.dataValues.name, // Keep lowercase for database lookup
       }))
       .sort((a, b) => a.name.localeCompare(b.name))
   );
