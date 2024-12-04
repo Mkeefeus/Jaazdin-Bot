@@ -34,6 +34,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const filePath = path.join(modelsPath, file);
     const fileUrl = new URL(`file://${filePath}`).href;
     const model = await import(fileUrl);
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
     const keys = Object.keys(model).filter((key) => key !== 'seed');
     for (const key of keys) {
       if (dropTables && model[key].sync) {
