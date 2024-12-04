@@ -1,31 +1,41 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandBuilder, userMention } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 
+const rollOptionDefinitions = {
+  r: { key: 'reroll', type: 'string' },
+  rr: { key: 'recursiveReroll', type: 'string' },
+  x: { key: 'explode', type: 'string' },
+  xo: { key: 'explodeOnce', type: 'string' },
+  k: { key: 'keepHighest', type: 'number' },
+  kh: { key: 'keepHighest', type: 'number' },
+  kl: { key: 'keepLowest', type: 'number' },
+  dl: { key: 'dropLowest', type: 'number' },
+  dh: { key: 'dropHighest', type: 'number' },
+  min: { key: 'replaceWithMinimum', type: 'number' },
+  max: { key: 'replaceWithMaximum', type: 'number' },
+  cs: { key: 'countSuccesses', type: 'string' },
+  cf: { key: 'countFailures', type: 'number' },
+  even: { key: 'countEvens', type: 'boolean' },
+  odd: { key: 'countOdds', type: 'boolean' },
+  df: { key: 'deductFailures', type: 'string' },
+  sf: { key: 'subtractFailures', type: 'boolean' },
+  ms: { key: 'marginOfSuccess', type: 'number' },
+} as const;
+
 type RollOptions = {
-  dieModifier?: number;
-  reroll?: string;
-  recursiveReroll?: string;
-  explode?: boolean;
-  explodeCount?: number;
-  keepHighest?: number;
-  keepLowest?: number;
-  dropHighest?: number;
-  dropLowest?: number;
-  replaceWithMinimum?: number;
-  replaceWithMaximum?: number;
-  countSuccesses?: string;
-  countEvens?: boolean;
-  countOdds?: boolean;
-  countFailures?: number;
-  deductFailures?: string;
-  subtractFailures?: boolean;
-  marginOfSuccess?: number;
-  message?: string;
-};
+  [K in (typeof rollOptionDefinitions)[keyof typeof rollOptionDefinitions]['key']]?: (typeof rollOptionDefinitions)[keyof typeof rollOptionDefinitions]['type'] extends 'number'
+    ? number
+    : (typeof rollOptionDefinitions)[keyof typeof rollOptionDefinitions]['type'] extends 'string'
+      ? string
+      : (typeof rollOptionDefinitions)[keyof typeof rollOptionDefinitions]['type'] extends 'boolean'
+        ? boolean
+        : never;
+} & Record<never, never>;
 
 type RollData = {
   dieCount: number;
   dieType: number;
+  dieModifiers?: number | number[];
   rollOptions?: RollOptions;
 };
 
@@ -39,101 +49,43 @@ export const data = new SlashCommandBuilder()
       .setRequired(true)
   );
 
-type ValidOptions =
-  | '+'
-  | '-'
-  | 'r'
-  | 'rr'
-  | 'x'
-  | 'xo'
-  | 'k'
-  | 'kh'
-  | 'kl'
-  | 'dl'
-  | 'dh'
-  | 'min'
-  | 'max'
-  | 'cs'
-  | 'cf'
-  | 'even'
-  | 'odd'
-  | 'df'
-  | 'sf'
-  | 'ms';
-
-const charToOption: { [key in ValidOptions]: keyof RollOptions } = {
-  '+': 'dieModifier',
-  '-': 'dieModifier',
-  r: 'reroll',
-  rr: 'recursiveReroll',
-  x: 'explode',
-  xo: 'explodeCount',
-  k: 'keepHighest',
-  kh: 'keepHighest',
-  kl: 'keepLowest',
-  dl: 'dropLowest',
-  dh: 'dropHighest',
-  min: 'replaceWithMinimum',
-  max: 'replaceWithMaximum',
-  cs: 'countSuccesses',
-  cf: 'countFailures',
-  even: 'countEvens',
-  odd: 'countOdds',
-  df: 'deductFailures',
-  sf: 'subtractFailures',
-  ms: 'marginOfSuccess',
-};
-
-function separateOptions(modifiers: string): { pattern: string; operator: string; number: string }[] {
-  // Sort validPatterns so longer patterns come first (e.g., "kh" before "k")
-  const validPatterns = Object.keys(charToOption)
-    .sort((a, b) => b.length - a.length) // Sort by length, descending
+function parseRollOptions(modifiers: string): RollOptions {
+  const validPatterns = Object.keys(rollOptionDefinitions)
+    .sort((a, b) => b.length - a.length)
     .map((pattern) => pattern.replace(/[+\\-]/g, '\\$&'));
 
   const optionRegex = new RegExp(`(${validPatterns.join('|')})([<>=+-]?)(\\d+)?`, 'g');
+  const rollOptions = {} as RollOptions;
 
-  const matches: { pattern: string; operator: string; number: string }[] = [];
   let match;
-
   while ((match = optionRegex.exec(modifiers)) !== null) {
-    matches.push({
-      pattern: match[1] || '', // The matched pattern
-      operator: match[2] || '', // The operator (<, >, =, +, or -)
-      number: match[3] || '', // The numeric part
-    });
-  }
+    const pattern = match[1];
+    const definition = rollOptionDefinitions[pattern as keyof typeof rollOptionDefinitions];
 
-  return matches;
-}
+    if (!definition) continue;
 
-function isValidOption(option: string): option is ValidOptions {
-  return option in charToOption;
-}
-function parseRollData(options: { pattern: string; operator: string; number: string }[]): RollOptions | undefined {
-  const rollData: RollOptions = {};
-  for (const option of options) {
-    // maybe switch this for a switch statement. Its kinda dirty but I think it will be easier when we go to execute the roll
-    // type safety here is screwed, figure out a way to fix it
-    if (!isValidOption(option.pattern)) {
-      throw new Error('Invalid option');
-    }
-    switch (option.pattern) {
-      case '+':
-        if (!option.number) {
-          throw new Error('Invalid option, number not found for dieModifier');
-        }
-        rollData['dieModifier'] = Number(option.number);
+    const operator = match[2] || '';
+    const numberStr = match[3] || '';
+
+    switch (definition.type) {
+      case 'number': {
+        const numberValue = numberStr ? Number(numberStr) : 1;
+        (rollOptions[definition.key as keyof RollOptions] as number) = numberValue;
         break;
-      case '-':
-        if (!option.number) {
-          throw new Error('Invalid option, number not found for dieModifier');
-        }
-        rollData['dieModifier'] = Number(option.number);
+      }
+      case 'string': {
+        const stringValue = operator + numberStr || 'true';
+        (rollOptions[definition.key as keyof RollOptions] as string) = stringValue;
         break;
-      // etc
+      }
+      case 'boolean': {
+        (rollOptions[definition.key as keyof RollOptions] as boolean) = true;
+        break;
+      }
     }
   }
-  return rollData;
+
+  return rollOptions;
 }
 
 function parseFormula(formula: string): RollData | undefined {
@@ -148,9 +100,17 @@ function parseFormula(formula: string): RollData | undefined {
     dieCount,
     dieType,
   };
-  const splitModifiers = separateOptions(modifiers);
-  console.log(splitModifiers);
-  parsedRoll.rollOptions = parseRollData(splitModifiers);
+  // Extract +/- modifier
+  const regex = /([+-]\d+)/g;
+  const matches = modifiers.match(regex) || [];
+  if (matches.length > 1) {
+    parsedRoll.dieModifiers = matches.map(Number);
+  } else if (matches.length === 1) {
+    parsedRoll.dieModifiers = Number(matches[0]);
+  }
+  // cleanup options string
+  const options = modifiers.replace(regex, '').replace(/\s/g, '').trim();
+  parsedRoll.rollOptions = parseRollOptions(options);
   return parsedRoll;
 }
 
@@ -171,7 +131,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const embed = new EmbedBuilder()
     .setTitle('Roll Result')
     .setDescription(`\`\`\`json\n${JSON.stringify(rollData, null, 2)}\n\`\`\``)
-    .setColor(0x00AE86);
+    .setColor(0x00ae86);
 
-  await interaction.editReply({ embeds: [embed] });
+  await interaction.editReply({ content: userMention(interaction.user.id), embeds: [embed] });
 }
