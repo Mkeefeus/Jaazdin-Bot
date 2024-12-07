@@ -34,27 +34,28 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   let follower_count = interaction.options.getInteger('followercount');
 
-	let domain_id = 0;
+  let domain = 0;
 
   if (follower_count == null) follower_count = selectedReligion?.dataValues.follower_count;
 
   if (new_name == null) new_name = old_name;
 
-	// TODO fix domain not changing. 
-  if (domainName == null) domain_id = selectedReligion?.dataValues.domain_id;
-  else {
+  // TODO fix domain not changing.
+  if (domainName == null) {
+    domain = selectedReligion?.dataValues.domain_id;
+  } else {
     const domainData = await Domain.findOne({
       where: {
         name: domainName,
       },
     });
 
-    domain_id = domainData?.dataValues.domain_id;
+    domain = domainData?.dataValues.id;
   }
 
   selectedReligion?.update({
     name: new_name,
-    domain: domain_id,
+    domain_id: domain,
     follower_count: follower_count,
   });
 
