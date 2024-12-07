@@ -6,33 +6,46 @@ import {
   SlashCommandBuilder,
   userMention,
 } from 'discord.js';
-import { Religion } from '~/db/models/Religion';
+import { Domain, Religion } from '~/db/models/Religion';
 import { formatNames } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()
-  .setName('destroyreligion')
-  .setDescription('Will remove a religion from the active religions')
+  .setName('showreligion')
+  .setDescription('Show all information about selected religion')
   .addStringOption((option) =>
     option.setName('name').setDescription('The name of the religion').setRequired(true).setAutocomplete(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
-
-  await Religion.destroy({
+  const selectedReligion = await Religion.findOne({
     where: {
       name: name,
     },
   });
 
-  const title = `Religion ${name}`;
-  const message = `${name} was successfully removed from the religion list!`;
+  const message = await showReligion(selectedReligion);
 
-  // await interaction.reply(message);
   await interaction.reply({
     content: userMention(interaction.user.id),
-    embeds: [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Yellow)],
+    embeds: [message],
   });
+}
+
+async function showReligion(religion: Religion | null) : Promise<EmbedBuilder> {
+  //get domain name
+  const domainData = await Domain.findOne({
+    where: {
+      id: religion?.dataValues.domain_id,
+    },
+  });
+
+  const title = `${religion?.dataValues.name}`;
+  const message = `Domain: ${domainData?.dataValues.name}
+    Follower Count: ${religion?.dataValues.follower_count}
+    `;
+
+  return new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Yellow);
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
@@ -55,4 +68,5 @@ export default {
   data,
   execute,
   autocomplete,
+  showReligion,
 };

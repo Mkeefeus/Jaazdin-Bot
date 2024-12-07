@@ -1,13 +1,12 @@
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
-  Colors,
-  EmbedBuilder,
   SlashCommandBuilder,
   userMention,
 } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
 import { formatNames } from '~/functions/helpers';
+import showReligion from './showReligion';
 
 export const data = new SlashCommandBuilder()
   .setName('addreligion')
@@ -27,19 +26,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     },
   });
 
-  await Religion.create({
+  const selectedReligion = await Religion.create({
     name: name,
     domain_id: domainData?.dataValues.id,
     follower_count: 0,
   });
 
-  const title = `Religion ${name}`;
-  const message = `${name} was successfully added to the religion list!`;
+  const message = await showReligion.showReligion(selectedReligion);
 
-  // await interaction.reply(message);
   await interaction.reply({
     content: userMention(interaction.user.id),
-    embeds: [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Yellow)],
+    embeds: [message],
   });
 }
 

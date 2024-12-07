@@ -1,13 +1,12 @@
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
-  Colors,
-  EmbedBuilder,
   SlashCommandBuilder,
   userMention,
 } from 'discord.js';
 import { Religion } from '~/db/models/Religion';
 import { formatNames } from '~/functions/helpers';
+import showReligion from './showReligion';
 
 export const data = new SlashCommandBuilder()
   .setName('changefollowers')
@@ -33,12 +32,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     follower_count: selectedReligion?.dataValues.follower_count + follower_count,
   });
 
-  const title = `Religion ${name}`;
-  const message = `${name} was successfully successfully updated!`;
+  const message = await showReligion.showReligion(selectedReligion);
 
   await interaction.reply({
     content: userMention(interaction.user.id),
-    embeds: [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Yellow)],
+    embeds: [message],
   });
 }
 

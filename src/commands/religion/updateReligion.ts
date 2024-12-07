@@ -1,13 +1,12 @@
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
-  Colors,
-  EmbedBuilder,
   SlashCommandBuilder,
   userMention,
 } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
 import { formatNames } from '~/functions/helpers';
+import showReligion from './showReligion';
 
 export const data = new SlashCommandBuilder()
   .setName('updatereligion')
@@ -40,7 +39,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (new_name == null) new_name = old_name;
 
-  // TODO fix domain not changing.
   if (domainName == null) {
     domain = selectedReligion?.dataValues.domain_id;
   } else {
@@ -59,13 +57,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     follower_count: follower_count,
   });
 
-  const title = `Religion ${new_name}`;
-  const message = `${new_name} was successfully successfully updated!`;
+  const message = await showReligion.showReligion(selectedReligion);
 
-  // await interaction.reply(message);
   await interaction.reply({
     content: userMention(interaction.user.id),
-    embeds: [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Yellow)],
+    embeds: [message],
   });
 }
 
