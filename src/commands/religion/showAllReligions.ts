@@ -5,6 +5,14 @@ import showReligion from './showReligion';
 export const data = new SlashCommandBuilder().setName('showallreligions').setDescription('Shows all active religions');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  const allMessages = await showAllReligions();
+  await interaction.reply({
+    content: userMention(interaction.user.id),
+    embeds: allMessages,
+  });
+}
+
+async function showAllReligions(): Promise<EmbedBuilder[]> {
   const religions = await Religion.findAll({ order: [['follower_count', 'DESC']] });
 
   const allMessages = [];
@@ -19,13 +27,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     allMessages.push(new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.DarkRed));
   }
 
-  await interaction.reply({
-    content: userMention(interaction.user.id),
-    embeds: allMessages,
-  });
+  return allMessages;
 }
 
 export default {
   data,
   execute,
+  showAllReligions
 };

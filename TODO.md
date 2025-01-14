@@ -138,7 +138,7 @@ if database allows tracking if they've bought this week to display
 @params Name of timer
 @params length in weeks
 
--
+- allows a user to create a timer that will 
 
 `updateTimer`
 
