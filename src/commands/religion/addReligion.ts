@@ -20,6 +20,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
   const domain = interaction.options.getString('domain')?.toLowerCase() as string;
 
+  //todo check to see if religion name doesn't already exist. 
+
   const domainData = await Domain.findOne({
     where: {
       name: domain,

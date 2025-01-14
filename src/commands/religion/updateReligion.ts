@@ -51,6 +51,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     domain = domainData?.dataValues.id;
   }
 
+  //todo check to see if the name to update doesn't already exist.
+
   selectedReligion?.update({
     name: new_name,
     domain_id: domain,

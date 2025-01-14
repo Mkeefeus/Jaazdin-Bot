@@ -172,6 +172,8 @@ birthdays should be included, but not required in the userdb
 ## Religions
 
 `addReligion`
+@params religionName
+@params Domain
 
 - creates a new religion
 
@@ -183,6 +185,7 @@ birthdays should be included, but not required in the userdb
 
 `updateReligion`
 @params religionName
+@params newReligionName
 @params followerAmount
 @params domain
 
@@ -194,6 +197,9 @@ birthdays should be included, but not required in the userdb
 - deletes all data about that one religion.
 - requires confirmation
 
-`showReligions`
+`showReligion`
+@params religionName
+- previews one religion and their followers and domain.
 
-- previews all religions and their followers.
+`showAllReligions`
+- previews all religions and their followers and domains.
