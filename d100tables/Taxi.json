@@ -14,7 +14,7 @@
     }
   },
   {
-    "bonus": "You can immediately make a research check local to Lake Solino.",
+    "bonus": "You can immediately attempt a research check, advantage if it is on something local to Lake Solino.",
     "roll": {
       "min": 41,
       "max": 55
@@ -35,7 +35,7 @@
     }
   },
   {
-    "bonus": "You can immediately make a research check local to the Collection.",
+    "bonus": "You can immediately make a research check, advantage if it is on something local to the Collection.",
     "roll": {
       "min": 86,
       "max": 95
@@ -70,7 +70,7 @@
     }
   },
   {
-    "bonus": "You can immediately make a research check on anything.",
+    "bonus": "You can immediately make a research check on anything with advantage",
     "roll": {
       "min": 136,
       "max": 300

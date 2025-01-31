@@ -7,7 +7,7 @@
     }
   },
   {
-    "bonus": "Purchase any Adventuring Gear for 25% off (stacks up to 100%)",
+    "bonus": "Purchase any Adventuring Gear for 25% off (stacks up to 90%)",
     "roll": {
       "min": 21,
       "max": 40
@@ -28,14 +28,14 @@
     }
   },
   {
-    "bonus": "Purchase any Adventuring Gear for 50% off (stacks up to 100%)",
+    "bonus": "Purchase any Adventuring Gear for 50% off (stacks up to 90%)",
     "roll": {
       "min": 71,
       "max": 85
     }
   },
   {
-    "bonus": "Gain 10% off any purchase from the Docks (Stacks up to 100%)",
+    "bonus": "Gain 10% off any purchase from the Docks (Stacks up to 90%)",
     "roll": {
       "min": 86,
       "max": 95
@@ -56,7 +56,7 @@
     }
   },
   {
-    "bonus": "Gain 20% off any Weapon, Armor, Adventuring Gear, or Tool (stacks up to 100%)",
+    "bonus": "Gain 20% off any Weapon, Armor, Adventuring Gear, or Tool (stacks up to 90%)",
     "roll": {
       "min": 116,
       "max": 125
@@ -70,7 +70,7 @@
     }
   },
   {
-    "bonus": "Gain 20% any purchase from the Docks (Stacks up to 100%)",
+    "bonus": "Gain 20% any purchase from the Docks (Stacks up to 90%)",
     "roll": {
       "min": 136,
       "max": 300

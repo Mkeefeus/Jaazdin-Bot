@@ -7,14 +7,14 @@
     }
   },
   {
-    "bonus": "Attempt a research check on something in the town.",
+    "bonus": "Attempt a research check, advantage if it is on something in town.",
     "roll": {
       "min": 21,
       "max": 40
     }
   },
   {
-    "bonus": "Attempt a research check on something in the country.",
+    "bonus": "Attempt a research check, advantage if it is on something in the country.",
     "roll": {
       "min": 41,
       "max": 55
@@ -35,7 +35,7 @@
     }
   },
   {
-    "bonus": "Attempt a research check on something on the plane.",
+    "bonus": "Attempt a research check, advantage if it is on something on the plane.",
     "roll": {
       "min": 86,
       "max": 95

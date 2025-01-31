@@ -14,7 +14,7 @@
     }
   },
   {
-    "bonus": "Gain a 10% discount on your next trade fleet purchase.",
+    "bonus": "Gain a 10% discount on your next trade fleet purchase. (Max 90%)",
     "roll": {
       "min": 41,
       "max": 55
@@ -42,7 +42,7 @@
     }
   },
   {
-    "bonus": "Gain a 20% discount on your next trade fleet purchase.",
+    "bonus": "Gain a 20% discount on your next trade fleet purchase. (Max 90%)",
     "roll": {
       "min": 96,
       "max": 105

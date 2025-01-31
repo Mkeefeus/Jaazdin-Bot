@@ -35,7 +35,7 @@
     }
   },
   {
-    "bonus": "The next time you purchase something in downtime, it is 5% cheaper (Stacks up to 50%)",
+    "bonus": "The next time you purchase something in downtime, it is 5% cheaper (Stacks up to 90%)",
     "roll": {
       "min": 86,
       "max": 95
