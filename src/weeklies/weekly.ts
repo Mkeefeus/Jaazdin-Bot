@@ -13,12 +13,13 @@ async function executeWeeklyTasks() {
   for (const file of weeklyFiles) {
     if (file === path.basename(__filename)) continue;
     const { update, post } = (await import(path.join(__dirname, file))) as WeeklyFunctions;
-    if (update) {
-      update();
+    if (!update || !post) {
+      //Some sort of warning
+      console.log(`Missing update or post method for ${file}.`);
+      return;
     }
-    if (post) {
-      post();
-    }
+    await update();
+    await post();
   }
 }
 
@@ -36,5 +37,5 @@ export default function setupWeeklyTasks() {
       executeWeeklyTasks();
       await LastWeeklyRunTime.update({ value: now }, { where: { id: lastRun?.getDataValue('id') }, silent: true });
     }
-  }, 60000);
+  }, 6000);
 }
