@@ -5,27 +5,27 @@ import { formatNames } from '~/functions/helpers';
 const MAX_PLANTS_PER_USER = 150;
 
 export const data = new SlashCommandBuilder()
-  .setName('plant')
+  .setName('addplant')
   .setDescription('Plant a new plant in your garden')
   .addStringOption((option) =>
     option.setName('name').setDescription('The type of plant to grow').setRequired(true).setAutocomplete(true)
   )
   .addStringOption((option) =>
-    option
-      .setName('fertilizer')
-      .setDescription('Type of fertilizer to use')
-      .setRequired(false)
-      .addChoices(
-        { name: 'None', value: FertilizerType.NONE },
-        { name: 'Normal - Basic yield boost', value: FertilizerType.NORMAL },
-        { name: 'Robust - Balanced yield and growth', value: FertilizerType.ROBUST },
-        { name: 'Fortifying - Strong yield boost', value: FertilizerType.FORTIFYING },
-        { name: 'Enriching - Superior yield and growth', value: FertilizerType.ENRICHING },
-        { name: 'Speed-Grow - Fast growth', value: FertilizerType.SPEEDGROW },
-        { name: 'Miracle-Grow - Premium all-around', value: FertilizerType.MIRACLEGROW },
-        { name: 'Mystery-Grow - Random powerful effects', value: FertilizerType.MYSTERYGROW }
-      )
-  );
+    option.setName('character').setDescription('The character this plant belongs to').setRequired(true)
+  )
+  .addStringOption((option) =>
+    option.setName('fertilizer').setDescription('Type of fertilizer to use').setRequired(false).addChoices(
+      { name: 'None', value: FertilizerType.NONE },
+      // { name: 'Normal - Basic yield boost', value: FertilizerType.NORMAL },
+      { name: 'Robust - Balanced yield and growth', value: FertilizerType.ROBUST },
+      { name: 'Fortifying - Strong yield boost', value: FertilizerType.FORTIFYING },
+      { name: 'Enriching - Superior yield and growth', value: FertilizerType.ENRICHING },
+      { name: 'Speed-Grow - Fast growth', value: FertilizerType.SPEEDGROW },
+      { name: 'Miracle-Grow - Premium all-around', value: FertilizerType.MIRACLEGROW },
+      { name: 'Mystery-Grow - Random powerful effects', value: FertilizerType.MYSTERYGROW }
+    )
+  )
+  .addUserOption((option) => option.setName('owner').setDescription('The owner of the plant').setRequired(false));
 
 async function createPlantEmbed(
   plantInfo: PlantInformation,
@@ -86,9 +86,22 @@ async function getUserPlantCount(userId: string): Promise<number> {
   });
 }
 
+const plantInfoCache: Record<string, PlantInformation> = {};
+
+export async function loadPlantInformation() {
+  const plantInfo = await PlantInformation.findAll();
+  for (const plant of plantInfo) {
+    plantInfoCache[plant.name] = plant;
+  }
+}
+
 export async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused().toLowerCase();
-  const plants = await PlantInformation.findAll();
+  // const plants = await PlantInformation.findAll();
+  if (Object.keys(plantInfoCache).length === 0) {
+    await loadPlantInformation();
+  }
+  const plants = Object.values(plantInfoCache);
 
   const filtered = plants.filter((plant) => plant.dataValues.name.includes(focusedValue));
 
@@ -102,7 +115,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   try {
-    const userId = interaction.user.id;
+    const userId = interaction.options.getUser('owner', false)?.id || interaction.user.id;
 
     const currentPlants = await getUserPlantCount(userId);
     if (currentPlants >= MAX_PLANTS_PER_USER) {
@@ -116,6 +129,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // Get the exact name from the autocomplete value (already lowercase)
     const plantName = interaction.options.getString('name', true).toLowerCase();
     const fertilizerType = (interaction.options.getString('fertilizer') || FertilizerType.NONE) as FertilizerType;
+    const characterName = interaction.options.getString('character', true).toLowerCase();
 
     const plantInfo = await PlantInformation.findOne({
       where: { name: plantName },
@@ -143,6 +157,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await Plant.create({
       name: plantName,
       user: userId,
+      character: characterName,
       planted_at: new Date(),
       fertilizer_type: fertilizerType,
       yield_multiplier: yieldMult,

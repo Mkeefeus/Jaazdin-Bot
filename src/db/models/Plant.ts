@@ -3,7 +3,7 @@ import { db } from 'db/db';
 
 export enum FertilizerType {
   NONE = 'NONE',
-  NORMAL = 'NORMAL',
+  // NORMAL = 'NORMAL',
   ROBUST = 'ROBUST',
   FORTIFYING = 'FORTIFYING',
   ENRICHING = 'ENRICHING',
@@ -19,12 +19,12 @@ export const FERTILIZER_EFFECTS = {
     description: 'No fertilizer applied',
     persistent: false,
   },
-  [FertilizerType.NORMAL]: {
-    yieldMultiplier: 1.1,
-    growthMultiplier: 1.0,
-    description: 'Slightly increases harvest yield',
-    persistent: false, // Basic fertilizer doesn't persist
-  },
+  // [FertilizerType.NORMAL]: {
+  //   yieldMultiplier: 1.1,
+  //   growthMultiplier: 1.0,
+  //   description: 'Slightly increases harvest yield',
+  //   persistent: false, // Basic fertilizer doesn't persist
+  // },
   [FertilizerType.ROBUST]: {
     yieldMultiplier: 1.25,
     growthMultiplier: 1.1,
@@ -67,6 +67,7 @@ export class Plant extends Model {
   declare id: number;
   declare name: string;
   declare user: string;
+  declare character: string;
   declare planted_at: Date;
   declare fertilizer_type: FertilizerType;
   declare yield_multiplier: number;
@@ -108,6 +109,10 @@ Plant.init(
       allowNull: false,
     },
     user: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    character: {
       type: DataTypes.STRING,
       allowNull: false,
     },

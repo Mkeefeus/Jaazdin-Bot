@@ -8,16 +8,25 @@ async function post() {
 
   for (let i = 0; i < religions.length; i++) {
     let message = `${religions[i].dataValues.name} has ${religions[i].dataValues.follower_count} followers.`;
-    // show the dominant religion effect. 
-    if (i == 0) {
-      const domainData = await Domain.findOne({
-        where: {
-          id: religions[i].dataValues.domain_id,
-        },
-      });
-       message += `\nDominant effect: `+  domainData?.dataValues.dominant_effect;
+    // show the dominant religion effect.
+    // if (i == 0) {
+    //   const domainData = await Domain.findOne({
+    //     where: {
+    //       id: religions[i].dataValues.domain_id,
+    //     },
+    //   });
+    //    message += `\nDominant effect: `+  domainData?.dataValues.dominant_effect;
+    // }
+    if (i != 0) {
+      return;
     }
-    //show each religion. 
+    const domainData = await Domain.findOne({
+      where: {
+        id: religions[i].dataValues.domain_id,
+      },
+    });
+    message += `\nDominant effect: ` + domainData?.dataValues.dominant_effect;
+    //show each religion.
     console.log(message);
   }
 }
