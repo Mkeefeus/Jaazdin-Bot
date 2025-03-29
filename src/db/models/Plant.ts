@@ -12,66 +12,90 @@ export enum FertilizerType {
   MYSTERYGROW = 'MYSTERYGROW',
 }
 
-export const FERTILIZER_EFFECTS = {
-  [FertilizerType.NONE]: {
-    yieldMultiplier: 1.0,
-    growthMultiplier: 1.0,
-    description: 'No fertilizer applied',
-    persistent: false,
-  },
-  // [FertilizerType.NORMAL]: {
-  //   yieldMultiplier: 1.1,
-  //   growthMultiplier: 1.0,
-  //   description: 'Slightly increases harvest yield',
-  //   persistent: false, // Basic fertilizer doesn't persist
-  // },
-  [FertilizerType.ROBUST]: {
-    yieldMultiplier: 1.25,
-    growthMultiplier: 1.1,
-    description: 'Moderately increases yield and slightly speeds growth',
-    persistent: true, // Persists through harvests
-  },
-  [FertilizerType.FORTIFYING]: {
-    yieldMultiplier: 1.5,
-    growthMultiplier: 1.0,
-    description: 'Significantly increases harvest yield',
-    persistent: false,
-  },
-  [FertilizerType.ENRICHING]: {
-    yieldMultiplier: 1.75,
-    growthMultiplier: 1.15,
-    description: 'Greatly increases yield and speeds growth',
-    persistent: true,
-  },
-  [FertilizerType.SPEEDGROW]: {
-    yieldMultiplier: 2.0,
-    growthMultiplier: 1.5,
-    description: 'Significantly speeds up growth',
-    persistent: false,
-  },
-  [FertilizerType.MIRACLEGROW]: {
-    yieldMultiplier: 2.0,
-    growthMultiplier: 1.25,
-    description: 'Doubles yield and speeds growth',
-    persistent: true,
-  },
-  [FertilizerType.MYSTERYGROW]: {
-    yieldMultiplier: 0, // Set dynamically
-    growthMultiplier: 0, // Set dynamically
-    description: 'Random powerful effects with unpredictable persistence',
-    persistent: false, // Set dynamically when used
-  },
-};
+export enum PersistentFertilizers {
+  NONE = 'NONE',
+  ROBUST = 'ROBUST',
+  FORTIFYING = 'FORTIFYING',
+  ENRICHING = 'ENRICHING'
+}
+
+// type FertilizerData = {
+//   [key in FertilizerType]: {
+//     persistent: boolean;
+//     // yieldModifier: number;
+//     // growthModifier: {
+//     //   operator: string;
+//     //   value: number | (() => number);
+//     // };
+//     getData: ((plantId: number) => [number, number])
+//   };
+// };
+
+// export const FERTILIZER_DATA: FertilizerData = {
+//   [FertilizerType.NONE]: {
+//     getData: (plantId: number) => {
+//     }
+//     persistent: true,
+//   },
+//   [FertilizerType.ROBUST]: {
+//     yieldModifier: 1,
+//     growthModifier: {
+//       operator: 'add',
+//       value: 0,
+//     },
+//     persistent: true,
+//   },
+//   [FertilizerType.FORTIFYING]: {
+//     yieldModifier: 0,
+//     growthModifier: {
+//       operator: 'subtract',
+//       value: 1,
+//     },
+//     persistent: true,
+//   },
+//   [FertilizerType.ENRICHING]: {
+//     yieldModifier: 0,
+//     growthModifier: {
+//       operator: 'add',
+//       value: 0,
+//     },
+//     persistent: true,
+//   },
+//   [FertilizerType.SPEEDGROW]: {
+//     yieldModifier: 0,
+//     growthModifier: {
+//       operator: 'equals',
+//       value: 1,
+//     },
+//     persistent: false,
+//   },
+//   [FertilizerType.MIRACLEGROW]: {
+//     yieldModifier: 0,
+//     growthModifier: {
+//       operator: 'add',
+//       value: 0,
+//     },
+//     persistent: false,
+//   },
+//   [FertilizerType.MYSTERYGROW]: {
+//     yieldModifier: 0,
+//     growthModifier: {
+//       operator: 'add',
+//       value: 0,
+//     },
+//     persistent: false,
+//   },
+// };
 
 export class Plant extends Model {
   declare id: number;
   declare name: string;
   declare user: string;
   declare character: string;
-  declare planted_at: Date;
+  // declare planted_at: Date;
   declare fertilizer_type: FertilizerType;
-  declare yield_multiplier: number;
-  declare growth_multiplier: number;
+  declare yield: number;
+  declare completed_at: Date;
   declare has_persistent_fertilizer: boolean;
 }
 
@@ -116,25 +140,37 @@ Plant.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    planted_at: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
+    // planted_at: {
+    //   type: DataTypes.DATE,
+    //   allowNull: false,
+    //   defaultValue: DataTypes.NOW,
+    // },
     fertilizer_type: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: FertilizerType.NONE,
     },
-    yield_multiplier: {
+    yield: {
       type: DataTypes.FLOAT,
       allowNull: false,
       defaultValue: 1.0,
     },
-    growth_multiplier: {
-      type: DataTypes.FLOAT,
+    completed_at: {
+      type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: 1.0,
+      defaultValue: () => {
+        const now = new Date();
+        const nextMonday = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate() + ((8 - now.getDay()) % 7 || 7),
+          0,
+          0,
+          0,
+          0
+        );
+        return nextMonday;
+      },
     },
     has_persistent_fertilizer: {
       type: DataTypes.BOOLEAN,
@@ -266,13 +302,13 @@ PlantHarvest.belongsTo(Plant);
 
 PlantHarvest.belongsTo(PlantHarvestInformation);
 
-Plant.belongsTo(PlantInformation);
+// Plant.belongsTo(PlantInformation);
 
-PlantInformation.hasMany(Plant, {
-  foreignKey: 'name',
-  sourceKey: 'name',
-  as: 'plants',
-});
+// PlantInformation.hasMany(Plant, {
+//   foreignKey: 'name',
+//   sourceKey: 'name',
+//   as: 'plants',
+// });
 
 async function seed() {
   const plantData = await import('~/../plantInformation.json');

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
-import { Plant, PlantInformation, FertilizerType, FERTILIZER_EFFECTS } from '~/db/models/Plant';
+import { Plant, PlantInformation, FertilizerType, PlantHarvestInformation } from '~/db/models/Plant';
 import { formatNames } from '~/functions/helpers';
 
 const MAX_PLANTS_PER_USER = 150;
@@ -14,27 +14,32 @@ export const data = new SlashCommandBuilder()
     option.setName('character').setDescription('The character this plant belongs to').setRequired(true)
   )
   .addStringOption((option) =>
-    option.setName('fertilizer').setDescription('Type of fertilizer to use').setRequired(false).addChoices(
-      { name: 'None', value: FertilizerType.NONE },
-      // { name: 'Normal - Basic yield boost', value: FertilizerType.NORMAL },
-      { name: 'Robust - Balanced yield and growth', value: FertilizerType.ROBUST },
-      { name: 'Fortifying - Strong yield boost', value: FertilizerType.FORTIFYING },
-      { name: 'Enriching - Superior yield and growth', value: FertilizerType.ENRICHING },
-      { name: 'Speed-Grow - Fast growth', value: FertilizerType.SPEEDGROW },
-      { name: 'Miracle-Grow - Premium all-around', value: FertilizerType.MIRACLEGROW },
-      { name: 'Mystery-Grow - Random powerful effects', value: FertilizerType.MYSTERYGROW }
-    )
+    option
+      .setName('fertilizer')
+      .setDescription('Type of fertilizer to use')
+      .setRequired(false)
+      .addChoices(
+        { name: 'None', value: FertilizerType.NONE },
+        { name: 'Robust', value: FertilizerType.ROBUST },
+        { name: 'Fortifying', value: FertilizerType.FORTIFYING },
+        { name: 'Enriching', value: FertilizerType.ENRICHING },
+        { name: 'Speed-Grow', value: FertilizerType.SPEEDGROW },
+        { name: 'Miracle-Grow', value: FertilizerType.MIRACLEGROW },
+        { name: 'Mystery-Grow', value: FertilizerType.MYSTERYGROW }
+      )
+  )
+  .addBooleanOption((option) =>
+    option.setName('persistent').setDescription('Whether the fertilizer is persistent').setRequired(false)
   )
   .addUserOption((option) => option.setName('owner').setDescription('The owner of the plant').setRequired(false));
 
 async function createPlantEmbed(
   plantInfo: PlantInformation,
   owner: string,
-  fertilizerType: FertilizerType,
-  yieldMult: number,
-  growthMult: number
+  fertilizerType: FertilizerType
+  // yieldMult: number,
+  // growthMult: number
 ): Promise<EmbedBuilder> {
-  const fertilizerEffect = FERTILIZER_EFFECTS[fertilizerType];
   const embed = new EmbedBuilder()
     .setTitle('🌱 New Plant Added!')
     .setColor(0x2ecc71)
@@ -50,20 +55,20 @@ async function createPlantEmbed(
         name: '🧪 Fertilizer',
         value: `${fertilizerType.charAt(0) + fertilizerType.slice(1).toLowerCase()}`,
         inline: true,
-      },
-      {
-        name: '📈 Effects',
-        value: [
-          `Yield: ${((yieldMult - 1) * 100).toFixed(0)}%`,
-          `Growth: ${((growthMult - 1) * 100).toFixed(0)}%`,
-        ].join('\n'),
-        inline: true,
-      },
-      {
-        name: 'ℹ️ Description',
-        value: fertilizerEffect.description,
-        inline: false,
       }
+      // {
+      //   name: '📈 Effects',
+      //   value: [
+      //     `Yield: ${((yieldMult - 1) * 100).toFixed(0)}%`,
+      //     `Growth: ${((growthMult - 1) * 100).toFixed(0)}%`,
+      //   ].join('\n'),
+      //   inline: true,
+      // },
+      // {
+      //   name: 'ℹ️ Description',
+      //   value: formatNames(fertilizerType),
+      //   inline: false,
+      // }
     );
   }
   return embed.setTimestamp();
@@ -113,6 +118,16 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   );
 }
 
+function getMondayWeeksFromNow(weeks: number): Date {
+  const today = new Date();
+  const dayOfWeek = today.getUTCDay(); // 0 (Sun) to 6 (Sat)
+  const daysUntilMonday = dayOfWeek === 1 ? 0 : (dayOfWeek === 0 ? 1 : 8 - dayOfWeek); // Days to next Monday
+  
+  const targetDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + daysUntilMonday + (weeks - 1) * 7, 0, 0, 0, 0));
+  
+  return targetDate;
+}
+
 export async function execute(interaction: ChatInputCommandInteraction) {
   try {
     const userId = interaction.options.getUser('owner', false)?.id || interaction.user.id;
@@ -130,21 +145,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const plantName = interaction.options.getString('name', true).toLowerCase();
     const fertilizerType = (interaction.options.getString('fertilizer') || FertilizerType.NONE) as FertilizerType;
     const characterName = interaction.options.getString('character', true).toLowerCase();
+    const persistent = interaction.options.getBoolean('persistent') || false;
 
     const plantInfo = await PlantInformation.findOne({
       where: { name: plantName },
     });
-
-    let yieldMult = 1.0;
-    let growthMult = 1.0;
-
-    if (fertilizerType === FertilizerType.MYSTERYGROW) {
-      console.log('Mystery grow. Fix this shit.');
-    } else {
-      const effects = FERTILIZER_EFFECTS[fertilizerType];
-      yieldMult = effects.yieldMultiplier;
-      growthMult = effects.growthMultiplier;
-    }
 
     if (!plantInfo) {
       await interaction.reply({
@@ -154,17 +159,49 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
+    const harvestInfo = await PlantHarvestInformation.findOne({
+      where: { plant_id: plantInfo.id },
+    });
+
+    if (!harvestInfo) {
+      await interaction.reply({
+        content: 'Failed to get harvest info!',
+        ephemeral: true,
+      });
+      return;
+    }
+
+    let harvestYield = harvestInfo.harvest_amount;
+    let completedDate = getMondayWeeksFromNow(harvestInfo.harvest_time);
+
+    switch (fertilizerType) {
+      case FertilizerType.ROBUST:
+        harvestYield += 1;
+        break;
+      case FertilizerType.FORTIFYING:
+        if (harvestInfo.harvest_time == 1) {
+          break;
+        }
+        completedDate = getMondayWeeksFromNow(harvestInfo.harvest_time - 1);
+        break;
+      case FertilizerType.SPEEDGROW:
+        completedDate = getMondayWeeksFromNow(1);
+        break;
+      default:
+        break;
+    }
+
     await Plant.create({
       name: plantName,
       user: userId,
       character: characterName,
-      planted_at: new Date(),
       fertilizer_type: fertilizerType,
-      yield_multiplier: yieldMult,
-      growth_multiplier: growthMult,
+      yield: harvestYield,
+      completed_at: completedDate,
+      has_persistent_fertilizer: persistent,
     });
 
-    const embed = await createPlantEmbed(plantInfo, userId, fertilizerType, yieldMult, growthMult);
+    const embed = await createPlantEmbed(plantInfo, userId, fertilizerType);
 
     await interaction.reply({
       embeds: [embed],
