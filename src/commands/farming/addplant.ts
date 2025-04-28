@@ -34,18 +34,16 @@ export const data = new SlashCommandBuilder()
   .addUserOption((option) => option.setName('owner').setDescription('The owner of the plant').setRequired(false));
 
 async function createPlantEmbed(
-  plantInfo: PlantInformation,
+  plant: Plant,
   owner: string,
   fertilizerType: FertilizerType
-  // yieldMult: number,
-  // growthMult: number
 ): Promise<EmbedBuilder> {
   const embed = new EmbedBuilder()
     .setTitle('🌱 New Plant Added!')
     .setColor(0x2ecc71)
     .addFields(
-      { name: 'Plant Type', value: formatNames(plantInfo.dataValues.name), inline: true },
-      { name: 'Time to Maturity', value: `${plantInfo.dataValues.maturity_time} weeks`, inline: true },
+      { name: 'Plant Type', value: formatNames(plant.getDataValue('name')), inline: true },
+      { name: 'Time to Maturity', value: `${plant.getDataValue('weeks_remaining')} weeks`, inline: true },
       { name: 'Owner', value: `<@${owner}>`, inline: true }
     );
 
@@ -56,31 +54,9 @@ async function createPlantEmbed(
         value: `${fertilizerType.charAt(0) + fertilizerType.slice(1).toLowerCase()}`,
         inline: true,
       }
-      // {
-      //   name: '📈 Effects',
-      //   value: [
-      //     `Yield: ${((yieldMult - 1) * 100).toFixed(0)}%`,
-      //     `Growth: ${((growthMult - 1) * 100).toFixed(0)}%`,
-      //   ].join('\n'),
-      //   inline: true,
-      // },
-      // {
-      //   name: 'ℹ️ Description',
-      //   value: formatNames(fertilizerType),
-      //   inline: false,
-      // }
     );
   }
   return embed.setTimestamp();
-  // return new EmbedBuilder()
-  //   .setTitle("🌱 New Plant Added!")
-  //   .setColor(0x2ecc71)
-  //   .addFields(
-  //     { name: "Plant Type", value: formatNames(plantInfo.dataValues.name), inline: true },
-  //     { name: "Time to Maturity", value: `${plantInfo.dataValues.maturity_time} weeks`, inline: true },
-  //     { name: "Owner", value: `<@${owner}>`, inline: true },
-  //   )
-  //   .setTimestamp();
 }
 
 async function getUserPlantCount(userId: string): Promise<number> {
@@ -102,7 +78,6 @@ export async function loadPlantInformation() {
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused().toLowerCase();
-  // const plants = await PlantInformation.findAll();
   if (Object.keys(plantInfoCache).length === 0) {
     await loadPlantInformation();
   }
@@ -191,17 +166,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         break;
     }
 
-    await Plant.create({
+    const plant = await Plant.create({
       name: plantName,
       user: userId,
       character: characterName,
       fertilizer_type: fertilizerType,
       yield: harvestYield,
-      completed_at: completedDate,
+      weeks_remaining: harvestInfo.harvest_time,
       has_persistent_fertilizer: persistent,
     });
 
-    const embed = await createPlantEmbed(plantInfo, userId, fertilizerType);
+    const embed = await createPlantEmbed(plant, userId, fertilizerType);
 
     await interaction.reply({
       embeds: [embed],

@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from 'db/db';
+import { CreatedAt } from 'sequelize-typescript';
 
 export enum FertilizerType {
   NONE = 'NONE',
@@ -16,76 +17,8 @@ export enum PersistentFertilizers {
   NONE = 'NONE',
   ROBUST = 'ROBUST',
   FORTIFYING = 'FORTIFYING',
-  ENRICHING = 'ENRICHING'
+  ENRICHING = 'ENRICHING',
 }
-
-// type FertilizerData = {
-//   [key in FertilizerType]: {
-//     persistent: boolean;
-//     // yieldModifier: number;
-//     // growthModifier: {
-//     //   operator: string;
-//     //   value: number | (() => number);
-//     // };
-//     getData: ((plantId: number) => [number, number])
-//   };
-// };
-
-// export const FERTILIZER_DATA: FertilizerData = {
-//   [FertilizerType.NONE]: {
-//     getData: (plantId: number) => {
-//     }
-//     persistent: true,
-//   },
-//   [FertilizerType.ROBUST]: {
-//     yieldModifier: 1,
-//     growthModifier: {
-//       operator: 'add',
-//       value: 0,
-//     },
-//     persistent: true,
-//   },
-//   [FertilizerType.FORTIFYING]: {
-//     yieldModifier: 0,
-//     growthModifier: {
-//       operator: 'subtract',
-//       value: 1,
-//     },
-//     persistent: true,
-//   },
-//   [FertilizerType.ENRICHING]: {
-//     yieldModifier: 0,
-//     growthModifier: {
-//       operator: 'add',
-//       value: 0,
-//     },
-//     persistent: true,
-//   },
-//   [FertilizerType.SPEEDGROW]: {
-//     yieldModifier: 0,
-//     growthModifier: {
-//       operator: 'equals',
-//       value: 1,
-//     },
-//     persistent: false,
-//   },
-//   [FertilizerType.MIRACLEGROW]: {
-//     yieldModifier: 0,
-//     growthModifier: {
-//       operator: 'add',
-//       value: 0,
-//     },
-//     persistent: false,
-//   },
-//   [FertilizerType.MYSTERYGROW]: {
-//     yieldModifier: 0,
-//     growthModifier: {
-//       operator: 'add',
-//       value: 0,
-//     },
-//     persistent: false,
-//   },
-// };
 
 export class Plant extends Model {
   declare id: number;
@@ -95,8 +28,10 @@ export class Plant extends Model {
   // declare planted_at: Date;
   declare fertilizer_type: FertilizerType;
   declare yield: number;
-  declare completed_at: Date;
+  // declare completed_at: Date;
+  declare weeks_remaining: number;
   declare has_persistent_fertilizer: boolean;
+  @CreatedAt declare createdAt: Date;
 }
 
 export class PlantInformation extends Model {
@@ -140,11 +75,6 @@ Plant.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // planted_at: {
-    //   type: DataTypes.DATE,
-    //   allowNull: false,
-    //   defaultValue: DataTypes.NOW,
-    // },
     fertilizer_type: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -155,22 +85,10 @@ Plant.init(
       allowNull: false,
       defaultValue: 1.0,
     },
-    completed_at: {
-      type: DataTypes.DATE,
+    weeks_remaining: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: () => {
-        const now = new Date();
-        const nextMonday = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate() + ((8 - now.getDay()) % 7 || 7),
-          0,
-          0,
-          0,
-          0
-        );
-        return nextMonday;
-      },
+      defaultValue: 1,
     },
     has_persistent_fertilizer: {
       type: DataTypes.BOOLEAN,

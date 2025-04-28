@@ -8,81 +8,60 @@ import {
   ComponentType,
   ButtonInteraction,
 } from 'discord.js';
-import { Plant, PlantInformation } from '~/db/models/Plant.js';
+import { Model } from 'sequelize';
+import { Plant } from '~/db/models/Plant.js';
 import { formatNames } from '~/functions/helpers';
 
-const ITEMS_PER_PAGE = 3;
-
-interface PlantDisplay {
-  id: number;
-  name: string;
-  plantedAt: Date;
-  fertilizerType: string;
-  yieldMultiplier: number;
-  growthMultiplier: number;
-  owner: string;
-}
+const ITEMS_PER_PAGE = 5;
 
 export const data = new SlashCommandBuilder()
   .setName('showplants')
   .setDescription('Shows all plants or just your plants')
   .addBooleanOption((option) => option.setName('self').setDescription('Show only your plants').setRequired(false));
 
-async function getPlants(userId: string | null = null): Promise<PlantDisplay[]> {
-  const whereClause = userId ? { user: userId } : {};
-  const plants = await Plant.findAll({
-    where: whereClause,
-    include: [
-      {
-        model: PlantInformation,
-        as: 'information',
-      },
-    ],
-    order: [['planted_at', 'DESC']],
-  });
-
-  return plants.map((plant) => ({
-    id: plant.getDataValue('id'),
-    name: plant.getDataValue('name'),
-    plantedAt: plant.getDataValue('planted_at'),
-    fertilizerType: plant.getDataValue('fertilizer_type'),
-    yieldMultiplier: plant.getDataValue('yield_multiplier') || 1.0,
-    growthMultiplier: plant.getDataValue('growth_multiplier') || 1.0,
-    owner: plant.getDataValue('user'),
-  }));
-}
-
-function createPlantsEmbed(
-  plants: PlantDisplay[],
-  page: number,
-  totalPages: number,
-  showingSelf: boolean
-): EmbedBuilder {
+function createPlantsEmbed(plants: Plant[], page: number, showingSelf: boolean): [EmbedBuilder, number] {
   const start = page * ITEMS_PER_PAGE;
   const end = Math.min(start + ITEMS_PER_PAGE, plants.length);
-  const currentPlants = plants.slice(start, end);
+
+  // Group plants by their properties
+  const groupedPlants = plants.reduce(
+    (acc, plant) => {
+      const ageInWeeks = Math.floor((Date.now() - plant.createdAt.getTime()) / (1000 * 60 * 60 * 24 * 7));
+      const key = `${plant.name}-${ageInWeeks}-${plant.character}-${plant.fertilizer_type}`;
+      if (!acc[key]) {
+        acc[key] = { ...plant.get({ plain: true }), count: 1 }; // Use `get({ plain: true })` to get a plain object
+      } else {
+        acc[key].count += 1;
+      }
+      return acc;
+    },
+    {} as Record<string, Omit<Plant, keyof Model> & { count: number }>
+  );
+
+  const totalPages = Math.ceil(Object.keys(groupedPlants).length / ITEMS_PER_PAGE);
+
+  const currentPlants = Object.values(groupedPlants).slice(start, end);
 
   const embed = new EmbedBuilder()
-    .setTitle('🌱 Your Garden')
+    .setTitle('🌱')
     .setColor(0x2ecc71)
     .setDescription(showingSelf ? 'Showing your plants' : 'Showing all plants')
     .setFooter({ text: `Page ${page + 1} of ${totalPages}` });
 
   currentPlants.forEach((plant) => {
-    const ageInWeeks = (Date.now() - plant.plantedAt.getTime()) / (1000 * 60 * 60 * 24 * 7);
-    const fertilizerInfo =
-      plant.fertilizerType !== 'NONE'
-        ? `\n🧪 ${plant.fertilizerType} (Yield: ${((plant.yieldMultiplier - 1) * 100).toFixed(0)}%, Growth: ${((plant.growthMultiplier - 1) * 100).toFixed(0)}%)`
-        : '';
+    const ageInWeeks = (Date.now() - plant.createdAt.getTime()) / (1000 * 60 * 60 * 24 * 7);
+    const fertilizerInfo = plant.fertilizer_type !== 'NONE' ? `\n🧪 ${formatNames(plant.fertilizer_type)}` : '';
 
     embed.addFields({
-      name: `${formatNames(plant.name)} (ID: ${plant.id})`,
-      value: [`Age: ${ageInWeeks.toFixed(1)} weeks`, `Owner: <@${plant.owner}>${fertilizerInfo}`].join('\n'),
+      name: `${formatNames(plant.name) + `${plant.count > 1 ? ` (${plant.count})` : ''}`}`,
+      value: [`Age: ${ageInWeeks.toFixed(0)} weeks`, `Owner: ${formatNames(plant.character)}${fertilizerInfo}`].join(
+        '\n'
+      ),
       inline: false,
     });
   });
 
-  return embed;
+  return [embed, totalPages];
 }
 
 function createButtons(
@@ -129,13 +108,20 @@ function createButtons(
   return [row, filterRow];
 }
 
+async function getPlants(userId: string | null): Promise<Plant[]> {
+  const plants = await Plant.findAll({
+    where: userId ? { user: userId } : {},
+    order: [['created_at', 'DESC']],
+  });
+  return plants;
+}
+
 export async function execute(interaction: ChatInputCommandInteraction) {
   let currentPage = 0;
   let showingSelf = interaction.options.getBoolean('self') ?? false;
 
   try {
     const plants = await getPlants(showingSelf ? interaction.user.id : null);
-    const totalPages = Math.ceil(plants.length / ITEMS_PER_PAGE);
 
     if (plants.length === 0) {
       await interaction.reply({
@@ -145,7 +131,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
-    const embed = createPlantsEmbed(plants, currentPage, totalPages, showingSelf);
+    const [embed, totalPages] = createPlantsEmbed(plants, currentPage, showingSelf);
     const components = createButtons(currentPage, totalPages, showingSelf);
 
     const response = await interaction.reply({
@@ -184,10 +170,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         case 'toggle': {
           showingSelf = !showingSelf;
           const newPlants = await getPlants(showingSelf ? interaction.user.id : null);
-          const newTotalPages = Math.ceil(newPlants.length / ITEMS_PER_PAGE);
           currentPage = 0;
 
-          const newEmbed = createPlantsEmbed(newPlants, currentPage, newTotalPages, showingSelf);
+          const [newEmbed, newTotalPages] = createPlantsEmbed(newPlants, currentPage, showingSelf);
           const newComponents = createButtons(currentPage, newTotalPages, showingSelf);
 
           await i.update({
@@ -199,7 +184,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       }
 
       const currentPlants = await getPlants(showingSelf ? interaction.user.id : null);
-      const updatedEmbed = createPlantsEmbed(currentPlants, currentPage, totalPages, showingSelf);
+      const [updatedEmbed, _] = createPlantsEmbed(currentPlants, currentPage, showingSelf);
       const updatedComponents = createButtons(currentPage, totalPages, showingSelf);
 
       await i.update({
