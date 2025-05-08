@@ -70,7 +70,7 @@
         }
     },
     {
-        "bonus": "Progress one Blueprint or Invention by 15 x your Proficency Bonus.",
+        "bonus": "Progress one Blueprint or Invention by 15 x your Proficiency Bonus.",
         "roll": {
             "min": 136,
             "max": 300

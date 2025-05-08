@@ -1,20 +1,20 @@
 [
     {
-        "bonus": "GP Die +1 & 10gp.",
+        "bonus": "GGP Die +1 & 10gp.",
         "roll": {
             "min": 1,
             "max": 20
         }
     },
     {
-        "bonus": "One Cart is upgraded in wages.",
+        "bonus": "You or an ally gain advantage on Initiative rolls on your next quest.",
         "roll": {
             "min": 21,
             "max": 40
         }
     },
     {
-        "bonus": "You can immediately attempt a research check, advantage if it is on something local to Lake Solino.",
+        "bonus": "The time it takes to learn a Weapon is reduced by 1 week.",
         "roll": {
             "min": 41,
             "max": 55
@@ -28,21 +28,21 @@
         }
     },
     {
-        "bonus": "Two Carts are upgraded in wages.",
+        "bonus": "You immediately gain progress towards a Weapon Form of your choice equal to your Job Tier",
         "roll": {
             "min": 71,
             "max": 85
         }
     },
     {
-        "bonus": "You can immediately make a research check, advantage if it is on something local to the Collection.",
+        "bonus": "You or an ally gain advantage on all Strength checks on your next quest.",
         "roll": {
             "min": 86,
             "max": 95
         }
     },
     {
-        "bonus": "Three Carts are upgraded in wages.",
+        "bonus": "The time it takes to learn a Weapon is reduced by your Prof bonus.",
         "roll": {
             "min": 96,
             "max": 105
@@ -56,7 +56,7 @@
         }
     },
     {
-        "bonus": "Four Carts are upgraded in wages.",
+        "bonus": "Gain +1 AC on your next quest.",
         "roll": {
             "min": 116,
             "max": 125
@@ -70,7 +70,7 @@
         }
     },
     {
-        "bonus": "You can immediately make a research check on anything with advantage",
+        "bonus": "You immediately gain progress towards a Weapon Form of your choice equal to twice your Job Tier.",
         "roll": {
             "min": 136,
             "max": 300

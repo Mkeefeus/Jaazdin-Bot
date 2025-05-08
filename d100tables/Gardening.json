@@ -35,7 +35,7 @@
         }
     },
     {
-        "bonus": "Speed up any Plant by 1 week, by two weeks if you are proficient in Nature or Survival, by 3 weeks if you are profcient in both or have expertise in either.",
+        "bonus": "Speed up any Plant by 1 week, by two weeks if you are proficient in Nature or Survival, by 3 weeks if you are proficient in both or have expertise in either.",
         "roll": {
             "min": 86,
             "max": 95
