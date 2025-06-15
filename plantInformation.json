@@ -521,18 +521,6 @@
           "renewable": true
         }
       ]
-    },
-    {
-      "name": "Test Plant",
-      "maturityTime": 0,
-      "harvest": [
-        {
-          "harvestTime": 0,
-          "harvestAmount": 3,
-          "harvestName": "Test Fruit",
-          "renewable": true
-        }
-      ]
     }
   ]
 }

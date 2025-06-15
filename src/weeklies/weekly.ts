@@ -36,6 +36,9 @@ export default function setupWeeklyTasks() {
     } else if (now >= nextRuntime) {
       executeWeeklyTasks();
       await LastWeeklyRunTime.update({ value: now }, { where: { id: lastRun?.getDataValue('id') }, silent: true });
+    } else {
+      //always run tasks for dev purposes
+      // executeWeeklyTasks();
     }
-  }, 60000);
+  }, 6000);
 }
