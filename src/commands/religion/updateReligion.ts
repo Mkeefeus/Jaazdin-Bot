@@ -51,7 +51,21 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     domain = domainData?.dataValues.id;
   }
 
-  //todo check to see if the name to update doesn't already exist.
+  // Check to see if the new name to update doesn't already exist
+  if (new_name !== old_name) {
+    const existingReligion = await Religion.findOne({
+      where: {
+        name: new_name,
+      },
+    });
+    if (existingReligion) {
+      await interaction.reply({
+        content: `A religion with the name "${formatNames(new_name)}" already exists.`,
+        ephemeral: true,
+      });
+      return;
+    }
+  }
 
   selectedReligion?.update({
     name: new_name,

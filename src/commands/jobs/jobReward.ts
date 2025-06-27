@@ -7,6 +7,7 @@ import {
   userMention,
 } from 'discord.js';
 import { Op } from 'sequelize';
+import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
 import { formatNames } from '~/functions/helpers';
 
@@ -45,15 +46,20 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const modifiedRoll = tier > 3 ? roll + (Math.min(tier, 7) - 3) * 10 : roll;
+  let modifiedRoll = tier > 3 ? roll + (Math.min(tier, 7) - 3) * 10 : roll;
 
-  /*
-  const boatsInTown = await Boats.findAll()
-  const effectiveBoats = boatsInTown.filter((boat) => boatIsRunning && boatHasBonusForJob && boatInTown)
+  const effectiveBoats = await Boat.findAll({
+    where: {
+      isInTown: true, // <-- was inTown, should be isInTown
+      isRunning: true,
+      jobsAffected: {
+        [Op.contains]: [jobName],
+      },
+    },
+  });
   for (const boat of effectiveBoats) {
     modifiedRoll += boat.isTier2 ? 15 : 10;
   }
-  */
 
   const rolledTier = await JobTier.findOne({
     where: {
@@ -68,8 +74,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier}, Final Roll: ${modifiedRoll}`;
-  const message = `${rolledTier.getDataValue('bonus')}`;
+  // string of all the boats that affected the roll
+  const boatNames = effectiveBoats.map((boat) => boat.boatName).join(', ');
+
+  const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier} ${boatNames ? `\n\n**Boats:**\n${boatNames}` : ''}, Final Roll: ${modifiedRoll}`;
+  const message = `${rolledTier.getDataValue('bonus')} ${boatNames ? `\n\n**Boats affecting the roll:**\n${boatNames}` : ''}`;
 
   // await interaction.reply(message);
   await interaction.reply({

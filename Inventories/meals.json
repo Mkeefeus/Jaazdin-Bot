@@ -1,0 +1,365 @@
+{
+    "meals": [
+        {
+            "name": "Road Syrup",
+            "rarity": "Common",
+            "price": {
+                "min": 18,
+                "max": 22
+            }
+        },
+        {
+            "name": "Harmony Tea",
+            "rarity": "Common",
+            "price": {
+                "min": 18,
+                "max": 22
+            }
+        },
+        {
+            "name": "Coffee",
+            "rarity": "Common",
+            "price": {
+                "min": 2,
+                "max": 6
+            }
+        },
+        {
+            "name": "Fire Belly Mead",
+            "rarity": "Common",
+            "price": {
+                "min": 36,
+                "max": 44
+            }
+        },
+        {
+            "name": "Frost Cactus Fruit",
+            "rarity": "Common",
+            "price": {
+                "min": 36,
+                "max": 40
+            }
+        },
+        {
+            "name": "Moonspring Skittles",
+            "rarity": "Common",
+            "price": {
+                "min": 55,
+                "max": 65
+            }
+        },
+        {
+            "name": "Lemon Salt Crackers",
+            "rarity": "Common",
+            "price": {
+                "min": 18,
+                "max": 27
+            }
+        },
+        {
+            "name": "Road Tack",
+            "rarity": "Common",
+            "price": {
+                "min": 8,
+                "max": 12
+            }
+        },
+        {
+            "name": "Cheer Cookies",
+            "rarity": "Common",
+            "price": {
+                "min": 8,
+                "max": 12
+            }
+        },
+        {
+            "name": "Rainbow Fillet",
+            "rarity": "Common",
+            "price": {
+                "min": 8,
+                "max": 12
+            }
+        },
+        {
+            "name": "Stardust Shellfish",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 90,
+                "max": 110
+            }
+        },
+        {
+            "name": "Mooncloud Jelly",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 90,
+                "max": 110
+            }
+        },
+        {
+            "name": "Lion's Liquor",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 50,
+                "max": 70
+            }
+        },
+        {
+            "name": "Volcanic Ashecream",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 70,
+                "max": 90
+            }
+        },
+        {
+            "name": "Iceflower Flakes",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 70,
+                "max": 80
+            }
+        },
+        {
+            "name": "Powdered Butterfly Wings",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 70,
+                "max": 90
+            }
+        },
+        {
+            "name": "Lionmane Tea",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 70,
+                "max": 90
+            }
+        },
+        {
+            "name": "Ice Spring Wine",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 110,
+                "max": 130
+            }
+        },
+        {
+            "name": "Drake Egg Nog",
+            "rarity": "Uncommon",
+            "price": {
+                "min": 140,
+                "max": 180
+            }
+        },
+        {
+            "name": "Vacuous Veal",
+            "rarity": "Rare",
+            "price": {
+                "min": 170,
+                "max": 190
+            }
+        },
+        {
+            "name": "Hot Dog",
+            "rarity": "Rare",
+            "price": {
+                "min": 170,
+                "max": 190
+            }
+        },
+        {
+            "name": "Dwarf Liver",
+            "rarity": "Rare",
+            "price": {
+                "min": 175,
+                "max": 200
+            }
+        },
+        {
+            "name": "Death Platter",
+            "rarity": "Rare",
+            "price": {
+                "min": 10,
+                "max": 20
+            }
+        },
+        {
+            "name": "Clearmind Tea",
+            "rarity": "Rare",
+            "price": {
+                "min": 160,
+                "max": 190
+            }
+        },
+        {
+            "name": "Baked Loaf",
+            "rarity": "Rare",
+            "price": {
+                "min": 160,
+                "max": 190
+            }
+        },
+        {
+            "name": "Carnivore's Delight",
+            "rarity": "Rare",
+            "price": {
+                "min": 200,
+                "max": 220
+            }
+        },
+        {
+            "name": "Ocean's Bounty",
+            "rarity": "Rare",
+            "price": {
+                "min": 200,
+                "max": 220
+            }
+        },
+        {
+            "name": "Figgy Pudding",
+            "rarity": "Rare",
+            "price": {
+                "min": 170,
+                "max": 190
+            }
+        },
+        {
+            "name": "Devil's Skewer",
+            "rarity": "Very Rare",
+            "price": {
+                "min": 240,
+                "max": 260
+            }
+        },
+        {
+            "name": "Dark Sunrise",
+            "rarity": "Very Rare",
+            "price": {
+                "min": 250,
+                "max": 275
+            }
+        },
+        {
+            "name": "Flare du Fluer",
+            "rarity": "Very Rare",
+            "price": {
+                "min": 230,
+                "max": 280
+            }
+        },
+        {
+            "name": "Giant Steak",
+            "rarity": "Very Rare",
+            "price": {
+                "min": 250,
+                "max": 300
+            }
+        },
+        {
+            "name": "Swift Foot Stew",
+            "rarity": "Very Rare",
+            "price": {
+                "min": 240,
+                "max": 280
+            }
+        },
+        {
+            "name": "Divine Cream",
+            "rarity": "Very Rare",
+            "price": {
+                "min": 300,
+                "max": 320
+            }
+        },
+        {
+            "name": "Irontrack Salad",
+            "rarity": "Very Rare",
+            "price": {
+                "min": 250,
+                "max": 260
+            }
+        },
+        {
+            "name": "Roast Beast",
+            "rarity": "Very Rare",
+            "price": {
+                "min": 320,
+                "max": 360
+            }
+        },
+        {
+            "name": "Mystery Mushroom Powder",
+            "rarity": "Legendary",
+            "price": {
+                "min": 400,
+                "max": 440
+            }
+        },
+        {
+            "name": "Blood Cookies",
+            "rarity": "Legendary",
+            "price": {
+                "min": 410,
+                "max": 450
+            }
+        },
+        {
+            "name": "Great Bean and Giant Toast",
+            "rarity": "Legendary",
+            "price": {
+                "min": 380,
+                "max": 420
+            }
+        },
+        {
+            "name": "Ironrock Candy",
+            "rarity": "Legendary",
+            "price": {
+                "min": 400,
+                "max": 450
+            }
+        },
+        {
+            "name": "Grand Panacea",
+            "rarity": "Legendary",
+            "price": {
+                "min": 500,
+                "max": 600
+            }
+        },
+        {
+            "name": "Golden Crab Cake",
+            "rarity": "Legendary",
+            "price": {
+                "min": 450,
+                "max": 500
+            }
+        },
+        {
+            "name": "BLT",
+            "rarity": "Legendary",
+            "price": {
+                "min": 400,
+                "max": 450
+            }
+        },
+        {
+            "name": "Adventurer's Stew",
+            "rarity": "Legendary",
+            "price": {
+                "min": 425,
+                "max": 475
+            }
+        },
+        {
+            "name": "Who Hash",
+            "rarity": "Legendary",
+            "price": {
+                "min": 400,
+                "max": 500
+            }
+        }
+
+    ]
+}

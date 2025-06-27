@@ -20,7 +20,18 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
   const domain = interaction.options.getString('domain')?.toLowerCase() as string;
 
-  //todo check to see if religion name doesn't already exist. 
+  // Check if religion name already exists
+  const existingReligion = await Religion.findOne({
+    where: { name },
+  });
+
+  if (existingReligion) {
+    await interaction.reply({
+      content: `A religion with the name "${name}" already exists.`,
+      ephemeral: true,
+    });
+    return;
+  }
 
   const domainData = await Domain.findOne({
     where: {

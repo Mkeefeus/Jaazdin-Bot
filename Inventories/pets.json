@@ -1,0 +1,1625 @@
+{
+    "pets":
+    [
+        {
+            "name": "Axe Beak",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Boar",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Cave Badger",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Constrictor Snake",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Cow",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Deep Rothe",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Diatryma",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Dimetrodon",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Draft Horse",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Elk",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Fastieth",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Badger",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Bat",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Centipede",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Frog",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Lizard",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Owl",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Poisonous Snake",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Riding Lizard",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Snail",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Wolf Spider",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Golden Stage",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Hadrosaurus",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Panther",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Pteranodon",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Riding Horse",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Sled Dog",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Velociraptor",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Walrus",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Wolf",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Zebra",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Ape",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Black Bear",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Crocodile",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Canary",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Dragonfly",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Goat",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Sea Eel",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Sea Horse",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Wasp",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Jaculi",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Koi Prawn",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Reef Shark",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Warhorse",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Brown Bear",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Clawfoot",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Deinonychus",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Dire Wolf",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Eagle",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Flying Spider",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Hyena",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Octopus",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Raven",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Rocktopus",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Spider",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Swan",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Toad",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Vulture",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Ice Spider",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Lion",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Moorbounder",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Snow Leopard",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Tiger",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Young Winter Wolf",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Allosaurus",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Auroch",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Cave Bear",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Boar",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Constrictor Snake",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Crayfish",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Elk",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant White Morary Eel",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Polar Bear",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Hunter Shark",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Ice Spider Queen",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Plesiosaurus",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Quetzalcoatlus",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Relic Sloth",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Rhinoceros",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Saber-toothed Tiger",
+            "cr": 2,
+            "price": {
+                "min": 900,
+                "max": 1100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Amphisbaena",
+            "cr": 3,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Ankylosaurus",
+            "cr": 3,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Lightning Eel",
+            "cr": 3,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Scorpion",
+            "cr": 3,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Snapping Turtle",
+            "cr": 3,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Killer Whale",
+            "cr": 3,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Spotted Lion",
+            "cr": 3,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Elephant",
+            "cr": 4,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Coral Snake",
+            "cr": 4,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Subterranean Lizard",
+            "cr": 4,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Walrus",
+            "cr": 4,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Stegosaurus",
+            "cr": 4,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Brontosaurus",
+            "cr": 5,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Elder Giant Lizard",
+            "cr": 5,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Crocodile",
+            "cr": 5,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Shark",
+            "cr": 5,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Hulking Crab",
+            "cr": 5,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Moonshark",
+            "cr": 5,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Titanothere",
+            "cr": 5,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Triceratops",
+            "cr": 5,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Mammoth",
+            "cr": 6,
+            "price": {
+                "min": 2800,
+                "max": 3000
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Giant Ape",
+            "cr": 7,
+            "price": {
+                "min": 2900,
+                "max": 3100
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Huge Giant Crab",
+            "cr": 8,
+            "price": {
+                "min": 3000,
+                "max": 3200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Sperm Whale",
+            "cr": 8,
+            "price": {
+                "min": 3000,
+                "max": 3200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Tyrannosaurus Rex",
+            "cr": 8,
+            "price": {
+                "min": 3000,
+                "max": 3200
+            },
+            "type": "Beast"
+        },
+        {
+            "name": "Bone Whelk",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Gray Scavver",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Male Steeder",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Wretched Sorrowsworn",
+            "cr": 0.25,
+            "price": {
+                "min": 125,
+                "max": 175
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Amphisbaena (Monstrosity)",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Cockatrice",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Dark Mantle",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Hippocamp",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Rust Monster",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Zorbo",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Crag Cat",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Death Dog",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Female Steeder",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Hippogriff",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Nyx-Fleece Ram",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Su-Monster",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Aurumvorax",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Giant Tick",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Grick",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Griffon",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Mimic",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Shadow Mastiff ",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Shell Shark",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Skyjek Roc",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Two-Headed Cerberus",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Carrion Stalker",
+            "cr": 3,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Cave Fisher",
+            "cr": 3,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Displacer Beast",
+            "cr": 3,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Fleecemane Lion",
+            "cr": 3,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Owlbear",
+            "cr": 3,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Phase Spider",
+            "cr": 3,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Trapper",
+            "cr": 3,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Girallon",
+            "cr": 4,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Kamadan",
+            "cr": 4,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Bulette",
+            "cr": 5,
+            "price": {
+                "min": 1400,
+                "max": 1600
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Catoblepas",
+            "cr": 5,
+            "price": {
+                "min": 1400,
+                "max": 1600
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Egg Hunter Adult",
+            "cr": 5,
+            "price": {
+                "min": 1400,
+                "max": 1600
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Gorgon",
+            "cr": 5,
+            "price": {
+                "min": 1400,
+                "max": 1600
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Roper",
+            "cr": 5,
+            "price": {
+                "min": 1400,
+                "max": 1600
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Sea Lion",
+            "cr": 5,
+            "price": {
+                "min": 1400,
+                "max": 1600
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Grick Alpha",
+            "cr": 7,
+            "price": {
+                "min": 2800,
+                "max": 3000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Hydra",
+            "cr": 8,
+            "price": {
+                "min": 2900,
+                "max": 3100
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Telepathic Pentacle",
+            "cr": 8,
+            "price": {
+                "min": 2900,
+                "max": 3100
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Unspeakable Horror",
+            "cr": 8,
+            "price": {
+                "min": 2900,
+                "max": 3100
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Ceratops",
+            "cr": 9,
+            "price": {
+                "min": 18000,
+                "max": 20000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Areosaur",
+            "cr": 10,
+            "price": {
+                "min": 19000,
+                "max": 21000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Froghemoth",
+            "cr": 11,
+            "price": {
+                "min": 20000,
+                "max": 22000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Necrotic Centipede",
+            "cr": 11,
+            "price": {
+                "min": 20000,
+                "max": 22000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Remorhaz",
+            "cr": 11,
+            "price": {
+                "min": 20000,
+                "max": 22000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Void Scavver",
+            "cr": 11,
+            "price": {
+                "min": 20000,
+                "max": 22000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Gray Render",
+            "cr": 12,
+            "price": {
+                "min": 21000,
+                "max": 23000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Ironscale Hydra",
+            "cr": 12,
+            "price": {
+                "min": 21000,
+                "max": 23000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Altisaur",
+            "cr": 13,
+            "price": {
+                "min": 22000,
+                "max": 24000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Skywimmer",
+            "cr": 13,
+            "price": {
+                "min": 22000,
+                "max": 24000
+            },
+            "type": "Monstrosity"
+        },
+        {
+            "name": "Gazer",
+            "cr": 0.5,
+            "price": {
+                "min": 140,
+                "max": 190
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Gibbering Mouther",
+            "cr": 2,
+            "price": {
+                "min": 1000,
+                "max": 1200
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Flying Horror",
+            "cr": 3,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Chaos Quadrapod",
+            "cr": 4,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Scuttling Serpentmaw",
+            "cr": 4,
+            "price": {
+                "min": 1200,
+                "max": 1400
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Feyr",
+            "cr": 5,
+            "price": {
+                "min": 1300,
+                "max": 1500
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Light Devourer",
+            "cr": 6,
+            "price": {
+                "min": 2800,
+                "max": 3000
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Shadow Horror",
+            "cr": 9,
+            "price": {
+                "min": 19000,
+                "max": 21000
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Slithering Bloodfin",
+            "cr": 9,
+            "price": {
+                "min": 19000,
+                "max": 21000
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Death Embrace",
+            "cr": 11,
+            "price": {
+                "min": 21000,
+                "max": 23000
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Neothelid",
+            "cr": 13,
+            "price": {
+                "min": 49000,
+                "max": 51000
+            },
+            "type": "Aberration"
+        },
+        {
+            "name": "Oblex Spawn",
+            "cr": 0.25,
+            "price": {
+                "min": 140,
+                "max": 150
+            },
+            "type": "Ooze"
+        },
+        {
+            "name": "Slithering Tracker",
+            "cr": 3,
+            "price": {
+                "min": 1200,
+                "max": 1300
+            },
+            "type": "Ooze"
+        },
+        {
+            "name": "Bag Jelly",
+            "cr": 1,
+            "price": {
+                "min": 150,
+                "max": 160
+            },
+            "type": "Ooze"
+        },
+        {
+            "name": "Dragonblood Ooze",
+            "cr": 5,
+            "price": {
+                "min": 1300,
+                "max": 1400
+            },
+            "type": "Ooze"
+        },
+        {
+            "name": "Pseudodragon",
+            "cr": 0.25,
+            "price": {
+                "min": 140,
+                "max": 150
+            },
+            "type": "Dragon"
+        },
+        {
+            "name": "Ambush Drake",
+            "cr": 0.5,
+            "price": {
+                "min": 150,
+                "max": 160
+            },
+            "type": "Dragon"
+        },
+        {
+            "name": "Dragonnel",
+            "cr": 2,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Dragon"
+        },
+        {
+            "name": "Guard Drake",
+            "cr": 2,
+            "price": {
+                "min": 1100,
+                "max": 1300
+            },
+            "type": "Dragon"
+        },
+        {
+            "name": "Wyvern",
+            "cr": 6,
+            "price": {
+                "min": 3000,
+                "max": 3300
+            },
+            "type": "Dragon"
+        },
+        {
+            "name": "Jabberwock",
+            "cr": 13,
+            "price": {
+                "min": 50000,
+                "max": 51000
+            },
+            "type": "Dragon"
+        }
+    ]
+}
