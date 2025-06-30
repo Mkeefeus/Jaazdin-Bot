@@ -28,9 +28,6 @@ async function post() {
       .setFooter({ text: `Rank #${i + 1}` });
 
     embeds.push(embed);
-
-    //show each religion.
-    console.log(message);
   }
 
   if (!client.isReady()) {

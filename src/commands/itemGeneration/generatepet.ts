@@ -87,8 +87,6 @@ export async function getRandomPetByRarityAndType(rarity: string, creatureType: 
     },
   });
 
-  console.log(validPets);
-
   if (validPets.length === 0) return null;
   return validPets[Math.floor(Math.random() * validPets.length)];
 }

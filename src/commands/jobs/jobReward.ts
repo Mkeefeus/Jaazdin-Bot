@@ -50,7 +50,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const effectiveBoats = await Boat.findAll({
     where: {
-      isInTown: true, // <-- was inTown, should be isInTown
+      isInTown: true,
       isRunning: true,
       jobsAffected: {
         [Op.contains]: [jobName],
@@ -80,7 +80,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier} ${boatNames ? `\n\n**Boats:**\n${boatNames}` : ''}, Final Roll: ${modifiedRoll}`;
   const message = `${rolledTier.getDataValue('bonus')} ${boatNames ? `\n\n**Boats affecting the roll:**\n${boatNames}` : ''}`;
 
-  // await interaction.reply(message);
   await interaction.reply({
     content: userMention(interaction.user.id),
     embeds: [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Green)],
