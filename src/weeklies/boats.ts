@@ -124,15 +124,21 @@ async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]> {
         else if (roll >= 16 && roll <= 18) rarity = 'Very Rare';
         else if (roll >= 19) rarity = 'Legendary';
         // Determine pet type by 1d20 roll
-        const typeRoll = randomInt(1, 20);
+        let pet = null;
         let type: string;
-        if (typeRoll >= 1 && typeRoll <= 8) type = 'Beast';
-        else if (typeRoll >= 9 && typeRoll <= 13) type = 'Monstrosity';
-        else if (typeRoll >= 14 && typeRoll <= 17) type = 'Aberration';
-        else if (typeRoll >= 18 && typeRoll <= 19) type = 'Ooze';
-        else type = 'Dragon';
-        const pet = await getRandomPetByRarityAndType(rarity, type);
-        if (pet) {
+        do {
+          const typeRoll = randomInt(1, 20);
+          if (typeRoll >= 1 && typeRoll <= 8) type = 'Beast';
+          else if (typeRoll >= 9 && typeRoll <= 13) type = 'Monstrosity';
+          else if (typeRoll >= 14 && typeRoll <= 17) type = 'Aberration';
+          else if (typeRoll >= 18 && typeRoll <= 19) type = 'Ooze';
+          else type = 'Dragon';
+          pet = await getRandomPetByRarityAndType(rarity, type);
+        } while (!pet);
+        const existing = result.find((item) => item.itemName === pet.name);
+        if (existing) {
+          existing.quantity += 1;
+        } else {
           const price = randomInt(pet.price_min, pet.price_max);
           result.push({ itemName: pet.name, price, quantity: 1 });
         }
@@ -253,7 +259,7 @@ async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]> {
       }
       return result;
     }
-    case 'seeds': {
+    case 'plants': {
       const result: ShipmentItem[] = [];
       // 6 seeds: 2 start Common, 2 Uncommon, 2 Rare. Roll 1d4 for each; on a 3 upgrade rarity by 1 tier, on a 4 upgrade by 2 tiers.
       const baseRarities = ['Common', 'Common', 'Uncommon', 'Uncommon', 'Rare', 'Rare'];
@@ -333,16 +339,13 @@ async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]> {
         const roll = randomInt(1, 6);
         if (roll === 5) rarity = 'Rare';
         else if (roll === 6) rarity = 'Very Rare';
-        const metal = await getRandomMetalByRarity(rarity);
+        const metal = await getRandomMetalByRarityExcludingPlanes(rarity, 'Material');
         if (metal) {
-          const metal = await getRandomMetalByRarityExcludingPlanes(rarity, ['Material']);
-          if (metal) {
-            const existing = result.find((item) => item.itemName === metal.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName: metal.name, price: randomInt(metal.price_min, metal.price_max), quantity: 1 });
-            }
+          const existing = result.find((item) => item.itemName === metal.name);
+          if (existing) {
+            existing.quantity += 1;
+          } else {
+            result.push({ itemName: metal.name, price: randomInt(metal.price_min, metal.price_max), quantity: 1 });
           }
         }
       }
@@ -469,7 +472,7 @@ async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]> {
 async function update() {
   // 1. Advance all running boats by 1 week
   await Boat.update(
-    { weeksLeft: (Boat.sequelize as import('sequelize').Sequelize).literal('weeksLeft - 1') },
+    { weeksLeft: (Boat.sequelize as import('sequelize').Sequelize).literal('weeks_left - 1') },
     { where: { isRunning: true } }
   );
 
@@ -543,7 +546,7 @@ async function post() {
   });
 
   const embeds: EmbedBuilder[] = [];
-  const CHANNEL_ID = 'YOUR_CHANNEL_ID_HERE'; // Replace with your Discord channel ID
+  const CHANNEL_ID = '1309206984196755506';
 
   // Embed for boats not in town
   if (boatsNotInTown.length > 0) {
@@ -568,10 +571,10 @@ async function post() {
 
     //
     if (boat.jobsAffected && Array.isArray(boat.jobsAffected) && boat.jobsAffected.length > 0) {
-      desc += `${boat.jobsAffected.join(', ')} have their gp wage die amount +1.\n`;
+      desc += `${boat.jobsAffected.join(', ')} have their gp wage die amount +1.\n\n`;
     }
 
-    if (boat.isTier2 && boat.tier2Ability) desc += `**Tier 2 Ability:** ${boat.tier2Ability}\n`;
+    if (boat.isTier2 && boat.tier2Ability) desc += `**Tier 2 Ability:** ${boat.tier2Ability}\n\n`;
     if (goods.length > 0) {
       desc += `**Shipment:**\n${goods
         .map((item) => `• ${item.itemName} (x${item.quantity}) — ${item.price} gp`)
@@ -580,13 +583,7 @@ async function post() {
       desc += `No shipment generated.`;
     }
 
-    embeds.push(
-      new EmbedBuilder()
-        .setTitle(boat.boatName)
-        .setDescription(desc)
-        .setColor(0x2e86c1)
-        .setFooter({ text: `Boat Table: ${boat.tableToGenerate || 'N/A'}` })
-    );
+    embeds.push(new EmbedBuilder().setTitle(boat.boatName).setDescription(desc).setColor(0x2e86c1));
   }
 
   if (!client.isReady()) {

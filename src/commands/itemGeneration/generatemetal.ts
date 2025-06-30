@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Metal } from '../../db/models/Metal';
+import { Op } from 'sequelize';
 
 export const data = new SlashCommandBuilder()
   .setName('generatemetal')
@@ -54,13 +55,13 @@ export async function getRandomMetalByRarity(rarity: string) {
 // Utility function: get a random metal by rarity, excluding certain planes
 export async function getRandomMetalByRarityExcludingPlanes(
   rarity: string,
-  excludedPlanes: string[]
+  excludedPlane: string
 ) {
   // Assumes Metal model has a 'plane' property
   const validMetals = await Metal.findAll({
     where: {
       rarity,
-      plane: { $notIn: excludedPlanes }
+      plane: { [Op.ne]: excludedPlane }
     }
   });
   if (validMetals.length === 0) return null;

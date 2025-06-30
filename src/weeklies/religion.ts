@@ -18,17 +18,17 @@ async function post() {
           id: religions[i].dataValues.domain_id,
         },
       });
-      message += `\nDominant effect: ` + domainData?.dataValues.dominant_effect;
-
-      // Create an embed for each religion
-      const embed = new EmbedBuilder()
-        .setTitle(religions[i].dataValues.name)
-        .setDescription(message)
-        .setColor(i === 0 ? '#FFD700' : '#00BFFF') // Gold for top, blue for others
-        .setFooter({ text: `Rank #${i + 1}` });
-
-      embeds.push(embed);
+      message += `\n\n**Dominant effect:** ` + domainData?.dataValues.dominant_effect;
     }
+    // Create an embed for each religion
+    const embed = new EmbedBuilder()
+      .setTitle(religions[i].dataValues.name)
+      .setDescription(message)
+      .setColor(i === 0 ? '#FFD700' : '#00BFFF') // Gold for top, blue for others
+      .setFooter({ text: `Rank #${i + 1}` });
+
+    embeds.push(embed);
+
     //show each religion.
     console.log(message);
   }

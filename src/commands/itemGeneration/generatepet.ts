@@ -1,13 +1,14 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Pet } from '../../db/models/Pet';
+import { Op } from 'sequelize';
 
 // Rarity boundaries by CR
 const RARITY_BOUNDS = [
-  { name: 'Common', min: 0, max: 4 },
-  { name: 'Uncommon', min: 5, max: 10 },
-  { name: 'Rare', min: 11, max: 15 },
-  { name: 'Very Rare', min: 16, max: 20 },
-  { name: 'Legendary', min: 21, max: Infinity },
+  { name: 'Common', min: 0, max: 1 },
+  { name: 'Uncommon', min: 2, max: 5 },
+  { name: 'Rare', min: 6, max: 8 },
+  { name: 'Very Rare', min: 9, max: 11 },
+  { name: 'Legendary', min: 12, max: 13 },
 ];
 
 function getPetRarity(cr: number): string {
@@ -82,9 +83,11 @@ export async function getRandomPetByRarityAndType(rarity: string, creatureType: 
   const validPets = await Pet.findAll({
     where: {
       type: creatureType,
-      cr: { $gte: bounds.min, $lte: bounds.max },
+      cr: { [Op.gte]: bounds.min, [Op.lte]: bounds.max },
     },
   });
+
+  console.log(validPets);
 
   if (validPets.length === 0) return null;
   return validPets[Math.floor(Math.random() * validPets.length)];
