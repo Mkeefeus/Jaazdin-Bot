@@ -25,13 +25,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
       limit: 25,
     });
 
-    // Optionally, filter by character if already supplied
-    const char = interaction.options.getString('character');
-    const filtered = char ? timers.filter((t) => t.character?.toLowerCase() === char.toLowerCase()) : timers;
-
     // Filter by what the user is typing
     const value = focusedOption.value?.toLowerCase() || '';
-    const choices = filtered
+    const choices = timers
       .filter((t) => t.name.toLowerCase().includes(value) && t.id !== undefined)
       .map((t) => ({
         name: `${formatNames(t.name)} (${formatNames(t.character)}, ${t.weeks_remaining} weeks left)`,
