@@ -1,6 +1,7 @@
 import { db } from '~/db/db';
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { isBotDev } from '~/functions/helpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
   .setName('sql')
@@ -8,7 +9,7 @@ export const data = new SlashCommandBuilder()
   .addStringOption((option) => option.setName('query').setDescription('The SQL query to execute').setRequired(true));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  const hasRole = isBotDev(interaction);
+  const hasRole = checkUserRole(interaction, Roles.BOT_DEV);
   if (!hasRole) {
     await interaction.reply('You do not have permission to use this command');
     return;

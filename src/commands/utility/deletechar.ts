@@ -8,7 +8,8 @@ import {
   Interaction,
 } from 'discord.js';
 import { User } from '~/db/models/User';
-import { formatNames, isBotDev } from '~/functions/helpers';
+import { formatNames, checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
   .setName('deletechar')
@@ -18,7 +19,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!isBotDev(interaction)) {
+  if (!checkUserRole(interaction, Roles.BOT_DEV)) {
     await interaction.reply('You do not have permission to use this command.');
     return;
   }

@@ -1,7 +1,8 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
 import { Op } from 'sequelize';
 import { PlantHarvestInformation, PlantInformation } from '~/db/models/Plant';
-import { isBotDev } from '~/functions/helpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
   .setName('plantdebug')
@@ -13,7 +14,7 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (!interaction.member) return;
 
-  const hasRole = isBotDev(interaction);
+  const hasRole = checkUserRole(interaction, Roles.BOT_DEV);
   if (!hasRole) {
     await interaction.reply({
       content: 'You do not have permission to use this command',

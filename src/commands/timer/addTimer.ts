@@ -1,42 +1,86 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
+import { checkUserRole, formatNames } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
   .setName('addtimer')
   .setDescription('will create a new timer')
   .addStringOption((option) => option.setName('name').setDescription('The name of the timer.').setRequired(true))
   .addIntegerOption((option) =>
-    option
-      .setName('length')
-      .setDescription('The amount of weeks before the timer ends')
-      .setRequired(true)
-      .setMinValue(0)
+    option.setName('weeks').setDescription('The amount of weeks before the timer ends').setRequired(true).setMinValue(1)
   )
   .addStringOption((option) =>
     option
-      .setName('discord_id')
-      .setDescription('The discord id of the user, leave blank if yourself')
-      .setRequired(false)
+      .setName('type')
+      .setDescription('The type of the timer.')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Building', value: 'building' },
+        { name: 'Plant', value: 'plant' },
+        { name: 'Item', value: 'item' },
+        { name: 'Other', value: 'other' }
+      )
+  )
+  .addStringOption((option) =>
+    option.setName('character').setDescription('The character associated with the timer').setRequired(true)
+  )
+  .addUserOption((option) =>
+    option.setName('player').setDescription('The discord id of the player, leave blank if yourself').setRequired(false)
   );
 
+const ICON_MAP: Record<string, string> = {
+  'building': '🏗️',
+  'plant': '🌱',
+  'item': '📦',
+  'other': '🔧',
+};
+
 export async function execute(interaction: ChatInputCommandInteraction) {
-  const name = interaction.options.getString('name')?.toLowerCase() as string;
-  const length = interaction.options.getInteger('length') as number;
-
-  let discordId = interaction.options.getString('discord_id');
-  if (!discordId) {
-    discordId = interaction.user.id;
-  }
-
+  const name = interaction.options.getString('name')?.toLowerCase();
+  const weeks = interaction.options.getInteger('weeks');
+  const type = interaction.options.getString('type');
+  const discordId = (interaction.options.getUser('player') || interaction.user).id;
+  const char = interaction.options.getString('character')?.toLowerCase();
   //todo check to see if timer name doesn't already exist.
 
+  if (!name || !weeks || !type || !char) {
+    console.log(name, weeks, type, char);
+    return interaction.reply('Please provide all required fields.');
+  }
+
+  if (!(checkUserRole(interaction, Roles.GM) && interaction.user.id !== discordId)) {
+    // If the user is not a GM, they can only set timers for themselves
+    if (discordId !== interaction.user.id) {
+      return interaction.reply('You can only set timers for yourself unless you are a GM.');
+    }
+  }
+
   await Timer.create({
-    timer_name: name,
-    time_left: length,
-    discord_id: discordId,
+    name: name,
+    type: type,
+    weeks_remaining: weeks,
+    user: discordId,
+    character: char,
   });
 
-  await interaction.reply(`Added ${name} that will end in ${length}`);
+  await interaction.reply({
+    embeds: [
+      {
+        title: '⏳ Timer Added',
+        color: 0x4caf50,
+        fields: [
+          { name: 'Name', value: formatNames(name), inline: true },
+          { name: 'Type', value: `${ICON_MAP[type]} ${formatNames(type)}`, inline: true },
+          { name: 'Duration', value: `🕒 ${weeks} week(s)`, inline: true },
+          { name: 'Character', value: formatNames(char), inline: true },
+          { name: 'Player', value: `<@${discordId}>`, inline: true },
+        ],
+        timestamp: new Date().toISOString(),
+        footer: { text: 'Timer successfully created!' },
+      },
+    ],
+  });
 }
 
 export default {

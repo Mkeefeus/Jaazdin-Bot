@@ -1,13 +1,32 @@
 import { DataTypes, Model } from 'sequelize';
-import { db } from 'db/db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
+import { db } from '../db';
 
-export class Timer extends Model {
-  declare id: number;
-  declare timer_name: string;
-  declare time_left: number;
-  declare discord_id: string;
+interface TimerAttributes {
+  id?: number;
+  name: string;
+  weeks_remaining: number;
+  type: string;
+  user: string; // Discord ID of the user
+  character: string; // Character associated with the timer
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
+type TimerCreationAttributes = Omit<TimerAttributes, 'id' | 'createdAt' | 'updatedAt'>;
+
+export class Timer extends Model<TimerAttributes, TimerCreationAttributes> implements TimerAttributes {
+  declare id?: number;
+  declare name: string;
+  declare weeks_remaining: number;
+  declare type: string;
+  declare user: string;
+  declare character: string;
+  @CreatedAt declare createdAt?: Date;
+  @UpdatedAt declare updatedAt?: Date;
+}
+
+// --- Initialize Model ---
 Timer.init(
   {
     id: {
@@ -15,16 +34,24 @@ Timer.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    discord_id: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    timer_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    time_left: {
+    weeks_remaining: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    user: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    character: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },

@@ -1,24 +1,24 @@
 import { ChatInputCommandInteraction, GuildMemberRoleManager } from 'discord.js';
+import { Roles } from '~/types/roles';
 
-const WHITELISTED_ROLES = ['1309210371797680149'];
+const RoleMap = {
+  [Roles.BOT_DEV]: process.env.BOT_DEV_ROLE_ID,
+  [Roles.GM]: process.env.GM_ROLE_ID,
+  [Roles.PLAYER]: process.env.PLAYER_ROLE_ID,
+  [Roles.DM]: process.env.DM_ROLE_ID,
+};
 
-export function isBotDev(interaction: ChatInputCommandInteraction) {
+export function checkUserRole(interaction: ChatInputCommandInteraction, role: Roles) {
   if (!interaction.member) {
-    return;
+    return false;
   }
-  let hasRole = false;
-
-  if (Array.isArray(interaction.member.roles)) {
-    if (interaction.member.roles.some((role) => WHITELISTED_ROLES.includes(role))) {
-      hasRole = true;
-    }
-  } else {
-    const roleManager = interaction.member.roles as GuildMemberRoleManager;
-    if (WHITELISTED_ROLES.some((role) => roleManager.cache.has(role))) {
-      hasRole = true;
-    }
+  const roleManager = interaction.member.roles as GuildMemberRoleManager;
+  if (!roleManager || !roleManager.cache || !RoleMap[role]) {
+    return false;
   }
-  return hasRole;
+  return Array.isArray(interaction.member.roles)
+    ? interaction.member.roles.includes(RoleMap[role])
+    : roleManager.cache.has(RoleMap[role]);
 }
 
 // Helper to format plant names for display (capitalize words)

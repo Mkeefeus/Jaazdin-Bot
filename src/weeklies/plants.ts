@@ -56,7 +56,7 @@ async function post() {
   if (finishedPlants.length === 0 && replantedPlants.length === 0) {
     return;
   }
-  const CHANNEL_ID = '1309206984196755506';
+  const CHANNEL_ID = process.env.BOT_CHANNEL_ID as string;
   const userIdsToMention = new Set<string>(); // Use a Set to store unique user IDs for mentions
 
   // --- Construct Finished Plants Embed ---

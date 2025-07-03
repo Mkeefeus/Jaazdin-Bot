@@ -1,40 +1,88 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
-import { formatNames } from '~/functions/helpers';
+import { checkUserRole, formatNames } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
   .setName('removetimer')
-  .setDescription('will delete an existing timer')
-  .addStringOption((option) =>
-    option.setName('name').setDescription('The name of the timer').setRequired(true).setAutocomplete(true)
+  .setDescription('Removes an existing timer')
+  .addUserOption((option) =>
+    option.setName('player').setDescription('The discord id of the player, leave blank if yourself').setRequired(true)
   )
+  .addStringOption((option) =>
+    option.setName('timer').setDescription('The name of the timer to remove.').setRequired(true).setAutocomplete(true)
+  );
+
+export async function autocomplete(interaction: AutocompleteInteraction) {
+  const focusedOption = interaction.options.getFocused(true);
+  const player = (interaction.options.get('player')?.value as string) || interaction.user.id;
+  console.log(player);
+
+  if (focusedOption.name === 'timer') {
+    // Find all timers for the selected user
+    const timers = await Timer.findAll({
+      where: { user: player },
+      limit: 25,
+    });
+
+    // Optionally, filter by character if already supplied
+    const char = interaction.options.getString('character');
+    const filtered = char ? timers.filter((t) => t.character?.toLowerCase() === char.toLowerCase()) : timers;
+
+    // Filter by what the user is typing
+    const value = focusedOption.value?.toLowerCase() || '';
+    const choices = filtered
+      .filter((t) => t.name.toLowerCase().includes(value) && t.id !== undefined)
+      .map((t) => ({
+        name: `${formatNames(t.name)} (${formatNames(t.character)}, ${t.weeks_remaining} weeks left)`,
+        value: (t.id as number).toString(), // Ensure value is always defined
+      }));
+    await interaction.respond(choices);
+  }
+}
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  const name = interaction.options.getString('name')?.toLowerCase() as string;
+  const timerId = interaction.options.getString('timer')?.toLowerCase();
+  const discordId = (interaction.options.getUser('player') || interaction.user).id;
 
-  await Timer.destroy({
+  if (!timerId) {
+    return interaction.reply('Please provide both the timer name and player.');
+  }
+
+  // Only GMs can remove timers for others
+  if (!(checkUserRole(interaction, Roles.GM) && interaction.user.id !== discordId)) {
+    if (discordId !== interaction.user.id) {
+      return interaction.reply('You can only remove your own timers unless you are a GM.');
+    }
+  }
+
+  const timer = await Timer.findOne({
     where: {
-      timer_name: name,
+      id: timerId,
+      user: discordId,
     },
   });
 
-  await interaction.reply(`${name} timer was deleted.`);
-}
+  if (!timer) {
+    return interaction.reply(`Failed to find timer`);
+  }
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
-  const focusedValue = interaction.options.getFocused().toLowerCase();
-  const timers = await Timer.findAll();
+  await timer.destroy();
 
-  const filtered = timers.filter((timer) => timer.dataValues.timer_name.toLowerCase().startsWith(focusedValue));
-
-  await interaction.respond(
-    filtered
-      .map((timer) => ({
-        name: formatNames(timer.dataValues.timer_name), // Display nicely formatted
-        value: timer.dataValues.timer_name, // Keep lowercase for database lookup
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  );
+  await interaction.reply({
+    embeds: [
+      {
+        title: '🗑️ Timer Removed',
+        color: 0xf44336,
+        fields: [
+          { name: 'Name', value: formatNames(timer.name), inline: true },
+          { name: 'Player', value: `<@${discordId}>`, inline: true },
+        ],
+        timestamp: new Date().toISOString(),
+        footer: { text: 'Timer successfully removed!' },
+      },
+    ],
+  });
 }
 
 export default {

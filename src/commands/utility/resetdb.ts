@@ -1,8 +1,9 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { isBotDev } from '~/functions/helpers';
+import { checkUserRole } from '~/functions/helpers';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readdir } from 'fs/promises';
+import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
   .setName('resetdb')
@@ -17,7 +18,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  const hasRole = isBotDev(interaction);
+  const hasRole = checkUserRole(interaction, Roles.BOT_DEV);
   if (!hasRole) {
     await interaction.reply('You do not have permission to use this command');
     return;
