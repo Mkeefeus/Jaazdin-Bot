@@ -53,16 +53,13 @@ export async function getRandomMetalByRarity(rarity: string) {
 }
 
 // Utility function: get a random metal by rarity, excluding certain planes
-export async function getRandomMetalByRarityExcludingPlanes(
-  rarity: string,
-  excludedPlane: string
-) {
+export async function getRandomMetalByRarityExcludingPlanes(rarity: string, excludedPlane: string) {
   // Assumes Metal model has a 'plane' property
   const validMetals = await Metal.findAll({
     where: {
       rarity,
-      plane: { [Op.ne]: excludedPlane }
-    }
+      plane: { [Op.ne]: excludedPlane },
+    },
   });
   if (validMetals.length === 0) return null;
   return validMetals[Math.floor(Math.random() * validMetals.length)];

@@ -38,11 +38,8 @@ function getValueChoices(field: string): { name: string; value: string }[] {
       { name: 'Miracle-Grow', value: FertilizerType.MIRACLEGROW },
       { name: 'Mystery-Grow', value: FertilizerType.MYSTERYGROW }
     );
-  } else if(field === 'has_persistent_fertilizer') {
-    choices.push(
-      { name: 'Yes', value: 'true' },
-      { name: 'No', value: 'false' }
-    );
+  } else if (field === 'has_persistent_fertilizer') {
+    choices.push({ name: 'Yes', value: 'true' }, { name: 'No', value: 'false' });
   }
   return choices;
 }
@@ -59,10 +56,12 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
       return;
     }
     const choices = plants.map((plant) => {
-      if (!plant.id) {{
-        console.error(`Plant with name ${plant.name} has no ID.`);
-        return { name: 'Error: Plant ID not found', value: 'error' };
-      }}
+      if (!plant.id) {
+        {
+          console.error(`Plant with name ${plant.name} has no ID.`);
+          return { name: 'Error: Plant ID not found', value: 'error' };
+        }
+      }
       return {
         name: `${formatNames(plant.character)}'s ${formatNames(plant.name)} x${plant.quantity} (${plant.weeks_remaining} weeks remaining)`,
         value: plant.id.toString(),
@@ -88,5 +87,5 @@ export async function execute(interaction: AutocompleteInteraction) {
 
 export default {
   data,
-  autocomplete
-}
+  autocomplete,
+};

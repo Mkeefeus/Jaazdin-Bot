@@ -57,7 +57,10 @@ interface PlantAttributes {
   plant_information?: PlantInformation; // For easier typing in associations
 }
 // For attributes that are optional during creation (like auto-incremented IDs)
-type PlantCreationAttributes = Optional<PlantAttributes, 'id' | 'createdAt' | 'updatedAt'| 'harvest_information' | 'plant_information'>;
+type PlantCreationAttributes = Optional<
+  PlantAttributes,
+  'id' | 'createdAt' | 'updatedAt' | 'harvest_information' | 'plant_information'
+>;
 
 // --- Models ---
 

@@ -33,5 +33,5 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
 export default {
   data,
   execute,
-  showAllReligions
+  showAllReligions,
 };

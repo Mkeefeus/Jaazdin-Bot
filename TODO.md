@@ -138,7 +138,7 @@ if database allows tracking if they've bought this week to display
 @params Name of timer
 @params length in weeks
 
-- allows a user to create a timer that will 
+- allows a user to create a timer that will
 
 `updateTimer`
 
@@ -199,7 +199,9 @@ birthdays should be included, but not required in the userdb
 
 `showReligion`
 @params religionName
+
 - previews one religion and their followers and domain.
 
 `showAllReligions`
+
 - previews all religions and their followers and domains.

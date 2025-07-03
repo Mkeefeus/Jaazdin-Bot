@@ -9,7 +9,7 @@
 
 ## Things that get updated
 
-- Boats 
+- Boats
 - Buildings
 - Plants
 - Items

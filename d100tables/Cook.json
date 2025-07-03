@@ -1,79 +1,79 @@
 [
-    {
-        "bonus": "GP Die +1 & 10gp.",
-        "roll": {
-            "min": 1,
-            "max": 20
-        }
-    },
-    {
-        "bonus": "Learn Common Recipe or produce common meal.",
-        "roll": {
-            "min": 21,
-            "max": 40
-        }
-    },
-    {
-        "bonus": "Gain 1d4 Common meat, roll 1d12 to determine type.",
-        "roll": {
-            "min": 41,
-            "max": 55
-        }
-    },
-    {
-        "bonus": "Increase your Wage progression by +1.",
-        "roll": {
-            "min": 56,
-            "max": 70
-        }
-    },
-    {
-        "bonus": "Learn Uncommon Recipe or produce an Uncommon or lower meal.",
-        "roll": {
-            "min": 71,
-            "max": 85
-        }
-    },
-    {
-        "bonus": "Gain 1d4 Uncommon meat, roll 1d12 to determine type.",
-        "roll": {
-            "min": 86,
-            "max": 95
-        }
-    },
-    {
-        "bonus": "Learn Rare Recipe or produce a rare or lower meal.",
-        "roll": {
-            "min": 96,
-            "max": 105
-        }
-    },
-    {
-        "bonus": "GP Die +3 and +30gp.",
-        "roll": {
-            "min": 106,
-            "max": 115
-        }
-    },
-    {
-        "bonus": "Gain 1d4 Rare meat, roll 1d12 to determine type.",
-        "roll": {
-            "min": 116,
-            "max": 125
-        }
-    },
-    {
-        "bonus": "Increase your Wage progression by +2.",
-        "roll": {
-            "min": 126,
-            "max": 135
-        }
-    },
-    {
-        "bonus": "Learn Very Rare Recipe or produce a very rare or lower Meal.",
-        "roll": {
-            "min": 136,
-            "max": 300
-        }
+  {
+    "bonus": "GP Die +1 & 10gp.",
+    "roll": {
+      "min": 1,
+      "max": 20
     }
+  },
+  {
+    "bonus": "Learn Common Recipe or produce common meal.",
+    "roll": {
+      "min": 21,
+      "max": 40
+    }
+  },
+  {
+    "bonus": "Gain 1d4 Common meat, roll 1d12 to determine type.",
+    "roll": {
+      "min": 41,
+      "max": 55
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +1.",
+    "roll": {
+      "min": 56,
+      "max": 70
+    }
+  },
+  {
+    "bonus": "Learn Uncommon Recipe or produce an Uncommon or lower meal.",
+    "roll": {
+      "min": 71,
+      "max": 85
+    }
+  },
+  {
+    "bonus": "Gain 1d4 Uncommon meat, roll 1d12 to determine type.",
+    "roll": {
+      "min": 86,
+      "max": 95
+    }
+  },
+  {
+    "bonus": "Learn Rare Recipe or produce a rare or lower meal.",
+    "roll": {
+      "min": 96,
+      "max": 105
+    }
+  },
+  {
+    "bonus": "GP Die +3 and +30gp.",
+    "roll": {
+      "min": 106,
+      "max": 115
+    }
+  },
+  {
+    "bonus": "Gain 1d4 Rare meat, roll 1d12 to determine type.",
+    "roll": {
+      "min": 116,
+      "max": 125
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +2.",
+    "roll": {
+      "min": 126,
+      "max": 135
+    }
+  },
+  {
+    "bonus": "Learn Very Rare Recipe or produce a very rare or lower Meal.",
+    "roll": {
+      "min": 136,
+      "max": 300
+    }
+  }
 ]

@@ -133,7 +133,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     const plantData = {
       name: plantName,
-      plant_info_id: plantInfo.id,  
+      plant_info_id: plantInfo.id,
       plant_harvest_info_id: harvestInfo.id,
       fertilizer_type: (interaction.options.getString('fertilizer') || FertilizerType.NONE) as FertilizerType,
       character: interaction.options.getString('character', true).toLowerCase(),

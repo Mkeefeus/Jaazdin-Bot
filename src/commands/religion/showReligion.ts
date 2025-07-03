@@ -32,7 +32,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-async function showReligion(religion: Religion | null) : Promise<EmbedBuilder> {
+async function showReligion(religion: Religion | null): Promise<EmbedBuilder> {
   //get domain name
   const domainData = await Domain.findOne({
     where: {

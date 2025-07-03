@@ -30,10 +30,10 @@ export const data = new SlashCommandBuilder()
   );
 
 const ICON_MAP: Record<string, string> = {
-  'building': '🏗️',
-  'plant': '🌱',
-  'item': '📦',
-  'other': '🔧',
+  building: '🏗️',
+  plant: '🌱',
+  item: '📦',
+  other: '🔧',
 };
 
 export async function execute(interaction: ChatInputCommandInteraction) {

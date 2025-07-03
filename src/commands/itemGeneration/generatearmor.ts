@@ -13,7 +13,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   // Dynamically fetch rarities from the metal generator
   const { Metal } = await import('../../db/models/Metal');
   const metals = await Metal.findAll({ attributes: ['rarity'] });
-  const uniqueRarities = Array.from(new Set(metals.map(m => m.rarity)));
+  const uniqueRarities = Array.from(new Set(metals.map((m) => m.rarity)));
   const focused = interaction.options.getFocused().toLowerCase();
 
   const filtered = uniqueRarities
@@ -31,7 +31,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const result = await generateRandomArmorWithMetal(rarity);
   if (!result) {
-    await interaction.reply({ content: `No valid armor/metal combination found for rarity: ${rarity}`, ephemeral: true });
+    await interaction.reply({
+      content: `No valid armor/metal combination found for rarity: ${rarity}`,
+      ephemeral: true,
+    });
     return;
   }
 
@@ -54,9 +57,7 @@ export async function generateRandomArmorWithMetal(rarity: string) {
   if (!metal) return null;
 
   const allArmors = await Armor.findAll();
-  const validArmors = allArmors.filter(
-    (armor) => !armor.invalidMetals || !armor.invalidMetals.includes(metal.name)
-  );
+  const validArmors = allArmors.filter((armor) => !armor.invalidMetals || !armor.invalidMetals.includes(metal.name));
   if (validArmors.length === 0) return null;
 
   const armor = validArmors[Math.floor(Math.random() * validArmors.length)];

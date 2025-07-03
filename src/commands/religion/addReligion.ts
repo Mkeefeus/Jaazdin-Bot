@@ -1,9 +1,4 @@
-import {
-  AutocompleteInteraction,
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-  userMention,
-} from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder, userMention } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
 import { formatNames } from '~/functions/helpers';
 import showReligion from './showReligion';
