@@ -58,78 +58,19 @@ Create Table `fertilizer_types`
 
 - Help command
 
-## Buildings
-
-`/addBuilding`
-@params discord_ID
-@params Name of building
-@params length in weeks
-@params tier of building
-
-- same as before
-
-`/showBuildings`
-
-- same as before
-
-`/update building`
-@params discord_ID
-@params Name of building
-@params length in weeks
-@params tier of building
-
-- same as before
-
-## Items
-
-`/addItem`
-@params character
-@params Name of item
-@params length in weeks
-
-- same as before
-
-`/combineItems`
-@params item1 rarity
-@params item2 rarity
-@params character
-@params Name of item
-
-- grab the 2 rarities to determine how much runick it would cost.
-- set the length in weeks to be the higher of the rarity +1 weeks.
-- calls add item command.
-
-`/removeItem`
-@params item_ID
-
-`/showItems`
-
-- same as before
-
-`/update Items`
-@params character
-@params Name of building
-@params length in weeks
-@params tier of building
-
-- same as before
-
 ## Boats
 
-migrate boats logic to bot
+`/updateboat`
+- change if running
+- set different weeks away amount
 
-migrate jobs logic to bot
 
-`/updateboatitem`
-
-`/buyItem` [boat] [item] [character]
+`/buyItem` [boat] [item] 
 
 boat:
 dropdown with current boats in town
 item:
 items in boat
-character:
-if database allows tracking if they've bought this week to display
 
 ## Misc
 

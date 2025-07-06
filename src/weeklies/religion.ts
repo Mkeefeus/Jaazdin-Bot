@@ -42,7 +42,6 @@ async function post() {
       for (let i = 0; i < embeds.length; i += 10) {
         await channel.send({ embeds: embeds.slice(i, i + 10) });
       }
-      console.log(`Religion update sent to channel ${channel.id}`);
     } else {
       console.log('Target channel is not a text channel or not found.');
     }
