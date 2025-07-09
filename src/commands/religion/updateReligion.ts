@@ -13,7 +13,7 @@ export const data = new SlashCommandBuilder()
   .addStringOption((option) =>
     option.setName('domain').setDescription('The domain of the religion').setAutocomplete(true)
   )
-  .addIntegerOption((option) => option.setName('followercount').setDescription('The new number of followers'));
+  .addStringOption((option) => option.setName('followercount').setDescription('The new number of followers'));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const old_name = interaction.options.getString('oldname')?.toLowerCase() as string;
@@ -25,25 +25,51 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   let new_name = interaction.options.getString('newname')?.toLowerCase() as string;
   const domainName = interaction.options.getString('domain')?.toLowerCase() as string;
-
-  let follower_count = interaction.options.getInteger('followercount');
-
+  let follower_count = interaction.options.getString('followercount');
   let domain = 0;
+  let newFollowerCount = 0;
 
-  if (follower_count == null) follower_count = selectedReligion?.dataValues.follower_count;
+  if (!selectedReligion) {
+    await interaction.reply({
+      content: `Religion "${formatNames(old_name)}" not found.`,
+      ephemeral: true,
+    });
+    return;
+  }
 
   if (new_name == null) new_name = old_name;
 
   if (domainName == null) {
-    domain = selectedReligion?.dataValues.domain_id;
+    domain = selectedReligion.dataValues.domain_id;
   } else {
     const domainData = await Domain.findOne({
       where: {
         name: domainName,
       },
     });
-
     domain = domainData?.dataValues.id;
+  }
+
+  if (follower_count == null) {
+    follower_count = selectedReligion.dataValues.follower_count;
+  } else {
+    // Allow +x, -x, =x logic for follower count
+    const changeRaw = interaction.options.get('followercount')?.value?.toString();
+    const changeRegex = /^([+-=])(\d+)$/;
+    if (changeRaw && changeRegex.test(changeRaw)) {
+      const match = changeRegex.exec(changeRaw);
+      if (match) {
+        const operator = match[1];
+        const value = parseInt(match[2], 10);
+        if (operator === '+') {
+          newFollowerCount = selectedReligion.dataValues.follower_count + value;
+        } else if (operator === '-') {
+          newFollowerCount = selectedReligion.dataValues.follower_count - value;
+        } else if (operator === '=') {
+          newFollowerCount = value;
+        }
+      }
+    }
   }
 
   // Check to see if the new name to update doesn't already exist
@@ -62,10 +88,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
   }
 
-  selectedReligion?.update({
+  await selectedReligion.update({
     name: new_name,
     domain_id: domain,
-    follower_count: follower_count,
+    follower_count: newFollowerCount,
   });
 
   const message = await showReligion.showReligion(selectedReligion);
