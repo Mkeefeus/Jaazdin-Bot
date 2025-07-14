@@ -7,14 +7,14 @@
     }
   },
   {
-    "bonus": "You or an ally gain advantage on Initiative rolls on your next quest.",
+    "bonus": "The time it takes to learn a Weapon is reduced by 1 week.",
     "roll": {
       "min": 21,
       "max": 40
     }
   },
   {
-    "bonus": "The time it takes to learn a Weapon is reduced by 1 week.",
+    "bonus": "You or an ally gain advantage on Initiative rolls on your next quest.",
     "roll": {
       "min": 41,
       "max": 55

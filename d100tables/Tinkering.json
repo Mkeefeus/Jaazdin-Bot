@@ -35,7 +35,7 @@
     }
   },
   {
-    "bonus": "You can immediately work on 1 Blueprint or Invention crafting check.",
+    "bonus": "Immediately Can work on 1 Tinkers Tools check.",
     "roll": {
       "min": 86,
       "max": 95
@@ -56,7 +56,7 @@
     }
   },
   {
-    "bonus": "You can immediately work on 2 Blueprint or Invention crafting checks.",
+    "bonus": "Immediately can make 2 Tinkers Tools checks.",
     "roll": {
       "min": 116,
       "max": 125
@@ -70,7 +70,7 @@
     }
   },
   {
-    "bonus": "Progress one Blueprint or Invention by 15 x your Proficiency Bonus.",
+    "bonus": "Progress one Blueprint, Invention, or another check requiring Tinkers Tools by 15 x your Proficiency Bonus.",
     "roll": {
       "min": 136,
       "max": 300

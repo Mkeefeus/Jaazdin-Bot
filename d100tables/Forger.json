@@ -7,14 +7,14 @@
     }
   },
   {
-    "bonus": "Gain the 1d100 effect of any other profession with your current roll.",
+    "bonus": "Remove 1 Heat from yourself, another player, or an organization.",
     "roll": {
       "min": 21,
       "max": 40
     }
   },
   {
-    "bonus": "Remove 1 Heat from yourself, another player, or an organization. ",
+    "bonus": "Gain the 1d100 effect of any other profession with your current roll.",
     "roll": {
       "min": 41,
       "max": 55

@@ -14,7 +14,7 @@
     }
   },
   {
-    "bonus": "Increase the progress of one magic item being crafted by 30 or combined by 1 week",
+    "bonus": "Increase the progress of one magic item being crafted by 20 or combined by 1 week. If you do not have the required spell slot for progressing that item, this value is halved.",
     "roll": {
       "min": 41,
       "max": 55
@@ -35,14 +35,14 @@
     }
   },
   {
-    "bonus": "Make use of one built faculty's tier 3 ability.",
+    "bonus": "Make use of one built faculty's tier 3 ability, or make an Arcana check and gain gold equal to your check plus your job Tier.",
     "roll": {
       "min": 86,
       "max": 95
     }
   },
   {
-    "bonus": "Increase the progress of one magic item being crafted by 60 or combined by 2 weeks",
+    "bonus": "Increase the progress of one magic item being crafted by 40 or combined by 2 weeks. If you do not have the required spell slot for progressing that item, this value is halved.",
     "roll": {
       "min": 96,
       "max": 105
@@ -70,7 +70,7 @@
     }
   },
   {
-    "bonus": "Make use of two built faculty's Tier 3 ability.",
+    "bonus": "Make use of two built faculty's tier 3 abilities, or make an Arcana check and gain gold equal to twice your check plus your job Tier.",
     "roll": {
       "min": 136,
       "max": 300

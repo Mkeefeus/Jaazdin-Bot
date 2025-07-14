@@ -7,7 +7,7 @@
     }
   },
   {
-    "bonus": "The next Language Proficiency learned is learned 1 week faster.",
+    "bonus": "Make a History Check.",
     "roll": {
       "min": 21,
       "max": 40
@@ -28,7 +28,7 @@
     }
   },
   {
-    "bonus": "You can immediately make a History check.",
+    "bonus": "Can immediately make a History Check with Advantage.",
     "roll": {
       "min": 71,
       "max": 85

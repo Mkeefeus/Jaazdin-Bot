@@ -7,35 +7,35 @@
     }
   },
   {
-    "bonus": "Lower the cost of a future construction by 100gp (Stacks up to 1000gp) or gain one additional wage die.",
+    "bonus": "GP Die +2 & 20gp",
     "roll": {
       "min": 21,
       "max": 40
     }
   },
   {
-    "bonus": "Increase your Wage progression by +1.",
+    "bonus": "Lower the cost of future construction by 100gp or gain one additional wage die plus your job tier.",
     "roll": {
       "min": 41,
       "max": 55
     }
   },
   {
-    "bonus": "Lower the cost of a future construction by 200gp (Stacks up to 1000gp) or gain two additional wage dice.",
+    "bonus": "Increase your Wage Progress by 1.",
     "roll": {
       "min": 56,
       "max": 70
     }
   },
   {
-    "bonus": "GP Die +3 + 30gp.",
+    "bonus": "GP Die +3 & 30gp.",
     "roll": {
       "min": 71,
       "max": 85
     }
   },
   {
-    "bonus": "GP Die +4 +40gp.",
+    "bonus": "GP Die +4 & 40gp.",
     "roll": {
       "min": 86,
       "max": 95

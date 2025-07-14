@@ -56,7 +56,7 @@
     }
   },
   {
-    "bonus": "Gain a tithe from your Religion equal to twice the number of followers in GP.",
+    "bonus": "You and 1 ally gain the effects of Death Ward for the next quest you go on.",
     "roll": {
       "min": 116,
       "max": 125
@@ -70,7 +70,7 @@
     }
   },
   {
-    "bonus": "You and one ally gain the effect of Death Ward for the next quest you go on.",
+    "bonus": "Gain a tithe from your Religion equal to twice the number of followers in GP, up to 150 followers.",
     "roll": {
       "min": 136,
       "max": 300

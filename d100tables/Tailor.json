@@ -7,14 +7,14 @@
     }
   },
   {
-    "bonus": "You can make one Weaver's/Leatherworker's check or you can make a Weaver's/Leatherworker's and add your current Tier to the bonus, gain GP equal to the roll. ",
+    "bonus": "You can make one Weaver's/Leatherworker's check or you can make a Weaver's/Leatherworker's and add your current Tier to the bonus, gain GP equal to the roll.",
     "roll": {
       "min": 21,
       "max": 40
     }
   },
   {
-    "bonus": "Gain +10 progress towards an Enchanted Thread.",
+    "bonus": "Gain +20 progress towards an Enchanted Thread.",
     "roll": {
       "min": 41,
       "max": 55
@@ -28,21 +28,21 @@
     }
   },
   {
-    "bonus": "You can make one Weaver's/Leatherworker's check with advantage or you can make a Weaver's/Leatherworker's and add your current Tier to the bonus, gain GP equal to twice the roll. ",
+    "bonus": "You can make one Weaver's/Leatherworker's check with advantage or you can make a Weaver's/Leatherworker's and add your current Tier to the bonus, gain GP equal to twice the roll.",
     "roll": {
       "min": 71,
       "max": 85
     }
   },
   {
-    "bonus": "Gain +20 progress towards an Enchanted Thread.",
+    "bonus": "Gain +30 progress towards an Enchanted Thread.",
     "roll": {
       "min": 86,
       "max": 95
     }
   },
   {
-    "bonus": "You can make one Weaver's/Leatherworker's check with advantage and +5 or you can make a Weaver's/Leatherworker's and add your current Tier to the bonus, gain GP equal to three times the roll. ",
+    "bonus": "You can make one Weaver's/Leatherworker's check with advantage and +5 or you can make a Weaver's/Leatherworker's and add your current Tier to the bonus, gain GP equal to three times the roll.",
     "roll": {
       "min": 96,
       "max": 105
@@ -56,7 +56,7 @@
     }
   },
   {
-    "bonus": "Gain +30 progress towards an Enchanted Thread.",
+    "bonus": "Gain +40 progress towards an Enchanted Thread.",
     "roll": {
       "min": 116,
       "max": 125
@@ -70,7 +70,7 @@
     }
   },
   {
-    "bonus": "Gain +40 progress towards an Enchanted Thread.",
+    "bonus": "You can make one Weaver's/Leatherworker's check with advantage and + your job tier or you can make a Weaver's/Leatherworker's and add your current Tier to the bonus, gain GP equal to four times the roll.",
     "roll": {
       "min": 136,
       "max": 300
