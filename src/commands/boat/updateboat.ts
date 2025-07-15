@@ -100,9 +100,11 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
         .readdirSync(D100TABLES_PATH)
         .filter((file) => file.endsWith('.json'))
         .map((file) => file.replace('.json', ''));
-    } catch {}
+    } catch {
+      console.log('failed to find job');
+    }
     const input = focusedOption.value
-      .replace(/[\[\]",]/g, '')
+      .replace(/[[\]",]/g, '')
       .trim()
       .toLowerCase();
     const filtered = jobNames

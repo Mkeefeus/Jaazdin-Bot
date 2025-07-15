@@ -82,6 +82,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
+    console.log(boat);
+
     await interaction.reply({
       content: `Boat "${boatName}" added successfully!`,
       ephemeral: true,
@@ -109,7 +111,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
   // Suggest jobs that match the current input (case-insensitive)
   const input = focused
-    .replace(/[\[\]",]/g, '')
+    .replace(/[[\]",]/g, '')
     .trim()
     .toLowerCase();
   const filtered = jobNames

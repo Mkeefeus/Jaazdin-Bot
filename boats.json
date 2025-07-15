@@ -10,7 +10,7 @@
     "tableToGenerate": "pets",
     "isRunning": true,
     "isTier2": true,
-    "weeksLeft": 4,
+    "weeksLeft": 2,
     "isInTown": false
   },
   {
@@ -24,8 +24,8 @@
     "tableToGenerate": "smuggle",
     "isRunning": true,
     "isTier2": false,
-    "weeksLeft": 4,
-    "isInTown": false
+    "weeksLeft": 1,
+    "isInTown": true
   },
   {
     "boatName": "Freedom's Gambit",
@@ -52,8 +52,8 @@
     "tableToGenerate": "meals",
     "isRunning": true,
     "isTier2": true,
-    "weeksLeft": 11,
-    "isInTown": false
+    "weeksLeft": 1,
+    "isInTown": true
   },
   {
     "boatName": "South Quezzillian Trade Fleet",
@@ -66,7 +66,7 @@
     "tableToGenerate": "NA",
     "isRunning": true,
     "isTier2": false,
-    "weeksLeft": 12,
+    "weeksLeft": 2,
     "isInTown": false
   },
   {
@@ -80,8 +80,8 @@
     "tableToGenerate": "weaponry",
     "isRunning": true,
     "isTier2": true,
-    "weeksLeft": 3,
-    "isInTown": false
+    "weeksLeft": 2,
+    "isInTown": true
   },
   {
     "boatName": "The Gilded Conch",
@@ -94,7 +94,7 @@
     "tableToGenerate": "magicItems",
     "isRunning": true,
     "isTier2": true,
-    "weeksLeft": 7,
+    "weeksLeft": 1,
     "isInTown": false
   },
   {
@@ -108,7 +108,7 @@
     "tableToGenerate": "reagents",
     "isRunning": true,
     "isTier2": true,
-    "weeksLeft": 3,
+    "weeksLeft": 1,
     "isInTown": false
   },
   {
@@ -122,8 +122,8 @@
     "tableToGenerate": "poisonsPotions",
     "isRunning": true,
     "isTier2": true,
-    "weeksLeft": 8,
-    "isInTown": false
+    "weeksLeft": 4,
+    "isInTown": true
   },
   {
     "boatName": "Tl’a’ikith",
@@ -136,7 +136,7 @@
     "tableToGenerate": "otherworld",
     "isRunning": true,
     "isTier2": true,
-    "weeksLeft": 6,
+    "weeksLeft": 5,
     "isInTown": false
   },
   {
@@ -150,7 +150,7 @@
     "tableToGenerate": "plants",
     "isRunning": true,
     "isTier2": true,
-    "weeksLeft": 5,
+    "weeksLeft": 4,
     "isInTown": false
   }
 ]
