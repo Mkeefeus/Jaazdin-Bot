@@ -1,5 +1,8 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Spell } from '~/db/models/Spell';
+import { createItemEmbed } from '~/functions/boatHelpers';
+
+//TODO player command only.
 
 const SPELL_SCHOOLS = [
   'Abjuration',
@@ -80,10 +83,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // Convert school letter back to full name for display
     const schoolName = SCHOOL_LETTER_MAP[randomSpell.school] || randomSpell.school;
 
-    await interaction.reply({
-      content: `🎲 **Random Spell:** **${randomSpell.name}** (Level ${randomSpell.level}, ${schoolName})`,
-      ephemeral: false,
-    });
+    const embed = createItemEmbed(
+      `Random Spell`,
+      randomSpell.name,
+      [
+        { name: 'Level', value: randomSpell.level.toString() },
+        { name: 'School', value: schoolName }
+      ],
+      0x9b59b6
+    );
+
+    await interaction.reply({ embeds: [embed] });
   } catch (error) {
     await interaction.reply({
       content: `Failed to generate random spell: ${error}`,

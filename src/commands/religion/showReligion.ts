@@ -4,10 +4,12 @@ import {
   Colors,
   EmbedBuilder,
   SlashCommandBuilder,
-  userMention,
 } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
-import { formatNames } from '~/functions/helpers';
+import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
+import { replyWithUserMention, formatNames } from '~/functions/helpers';
+
+//TODO player command only.
 
 export const data = new SlashCommandBuilder()
   .setName('showreligion')
@@ -18,18 +20,16 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
-  const selectedReligion = await Religion.findOne({
-    where: {
-      name: name,
-    },
-  });
+  
+  // Use helper to find religion with error handling
+  const selectedReligion = await findReligionByName(interaction, name);
+  if (!selectedReligion) {
+    return;
+  }
 
   const message = await showReligion(selectedReligion);
 
-  await interaction.reply({
-    content: userMention(interaction.user.id),
-    embeds: [message],
-  });
+  await replyWithUserMention(interaction, [message]);
 }
 
 async function showReligion(religion: Religion | null): Promise<EmbedBuilder> {
@@ -40,7 +40,7 @@ async function showReligion(religion: Religion | null): Promise<EmbedBuilder> {
     },
   });
 
-  const title = `${religion?.dataValues.name}`;
+  const title = formatNames(religion?.dataValues.name || '');
   const message = `Domain: ${domainData?.dataValues.name}
     Follower Count: ${religion?.dataValues.follower_count}
     `;
@@ -49,19 +49,7 @@ async function showReligion(religion: Religion | null): Promise<EmbedBuilder> {
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  const focusedValue = interaction.options.getFocused().toLowerCase();
-  const religions = await Religion.findAll();
-
-  const filtered = religions.filter((religion) => religion.dataValues.name.toLowerCase().startsWith(focusedValue));
-
-  await interaction.respond(
-    filtered
-      .map((religion) => ({
-        name: formatNames(religion.dataValues.name), // Display nicely formatted
-        value: religion.dataValues.name, // Keep lowercase for database lookup
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  );
+  await religionCommandAutocomplete(interaction);
 }
 
 export default {

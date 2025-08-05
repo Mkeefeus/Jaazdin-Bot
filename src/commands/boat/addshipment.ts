@@ -1,6 +1,9 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
 import { Shipment } from '~/db/models/Shipment';
-import { Boat } from '~/db/models/Boat';
+import { boatNameAutocomplete, formatShipmentInfo } from '~/functions/boatHelpers';
+import { formatNames } from '~/functions/helpers';
+
+//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('addshipment')
@@ -24,8 +27,18 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       quantity,
     });
 
+    // Show updated shipment list
+    const shipmentInfo = await formatShipmentInfo(boatName);
+    
+    const embed = new EmbedBuilder()
+      .setTitle(`✅ Shipment Added to ${formatNames(boatName)}`)
+      .setDescription(
+        `Added **${formatNames(itemName)}** (x${quantity}, ${price}gp each)\n\n${shipmentInfo}`
+      )
+      .setColor(0x00ff00);
+
     await interaction.reply({
-      content: `Shipment item **${itemName}** (x${quantity}, ${price}gp each) added to boat **${boatName}**.`,
+      embeds: [embed],
       ephemeral: true,
     });
   } catch (error) {
@@ -38,15 +51,5 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 // Autocomplete for boat name
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  const focused = interaction.options.getFocused().toLowerCase();
-  const boats = await Boat.findAll({
-    attributes: ['boatName'],
-    where: { isRunning: true },
-  });
-  const filtered = boats
-    .map((b) => b.boatName)
-    .filter((name) => name.toLowerCase().startsWith(focused))
-    .slice(0, 25)
-    .map((name) => ({ name, value: name }));
-  await interaction.respond(filtered);
+  await boatNameAutocomplete(interaction, true); // Only running boats
 }

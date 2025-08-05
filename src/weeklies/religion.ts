@@ -9,25 +9,41 @@ async function post() {
   const embeds = [];
   const CHANNEL_ID = '1309206984196755506';
 
-  for (let i = 0; i < religions.length; i++) {
-    let message = `${religions[i].dataValues.name} has ${religions[i].dataValues.follower_count} followers.`;
+  if (religions.length === 0) {
+    embeds.push(new EmbedBuilder().setTitle('Religion Rankings').setDescription('No religions found.').setColor('#FFD700'));
+  } else {
+    // Dominant religion gets its own detailed embed
+    const dominantReligion = religions[0];
+    const domainData = await Domain.findOne({
+      where: {
+        id: dominantReligion.dataValues.domain_id,
+      },
+    });
 
-    if (i == 0) {
-      const domainData = await Domain.findOne({
-        where: {
-          id: religions[i].dataValues.domain_id,
-        },
-      });
-      message += `\n\n**Dominant effect:** ` + domainData?.dataValues.dominant_effect;
+    const dominantEmbed = new EmbedBuilder()
+      .setTitle(`👑 Dominant Religion: ${dominantReligion.dataValues.name}`)
+      .setDescription(
+        `**Followers:** ${dominantReligion.dataValues.follower_count}\n\n` +
+        `**Dominant Effect:** ${domainData?.dataValues.dominant_effect || 'None'}`
+      )
+      .setColor('#FFD700');
+
+    embeds.push(dominantEmbed);
+
+    // Other religions in a simple list
+    if (religions.length > 1) {
+      const otherReligions = religions.slice(1);
+      const religionList = otherReligions
+        .map((religion) => `**${religion.dataValues.name}** - ${religion.dataValues.follower_count} followers`)
+        .join('\n');
+
+      const listEmbed = new EmbedBuilder()
+        .setTitle('Other Religions')
+        .setDescription(religionList)
+        .setColor('#00BFFF');
+
+      embeds.push(listEmbed);
     }
-    // Create an embed for each religion
-    const embed = new EmbedBuilder()
-      .setTitle(religions[i].dataValues.name)
-      .setDescription(message)
-      .setColor(i === 0 ? '#FFD700' : '#00BFFF') // Gold for top, blue for others
-      .setFooter({ text: `Rank #${i + 1}` });
-
-    embeds.push(embed);
   }
 
   if (!client.isReady()) {

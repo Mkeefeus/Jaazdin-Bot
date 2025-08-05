@@ -2,6 +2,8 @@ import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
 import { Op } from 'sequelize';
 
+//TODO gm command only.
+
 export const data = new SlashCommandBuilder()
   .setName('setboatsrunning')
   .setDescription('Set all boats to running or not, with optional exceptions')
@@ -14,6 +16,7 @@ export const data = new SlashCommandBuilder()
       .setDescription('Comma-separated boat names to leave unchanged (optional)')
       .setRequired(false)
   );
+  //TODO: for boats names use autocomplete to suggest existing boat names
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const running = interaction.options.getBoolean('running', true);

@@ -4,12 +4,21 @@ import {
   EmbedBuilder,
   AutocompleteInteraction,
   Colors,
-  userMention,
 } from 'discord.js';
 import { Op } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
-import { formatNames } from '~/functions/helpers';
+import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/functions/helpers';
+
+// Helper function to convert job name from database format to boat format
+function convertJobNameForBoats(jobName: string): string {
+  // Convert from database format (lowercase) to boat format (title case)
+  return jobName.split(' ').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+  ).join(' ');
+}
+
+//TODO player command only.
 
 export const data = new SlashCommandBuilder()
   .setName('jobreward')
@@ -48,12 +57,16 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   let modifiedRoll = tier > 3 ? roll + (Math.min(tier, 7) - 3) * 10 : roll;
 
+  // Convert job name to match the format used in boat jobsAffected (capitalize words)
+  const capitalizedJobName = convertJobNameForBoats(jobName);
+
   const effectiveBoats = await Boat.findAll({
     where: {
       isInTown: true,
       isRunning: true,
+      // SQLite-compatible JSON search using LIKE with JSON array string matching
       jobsAffected: {
-        [Op.contains]: [jobName],
+        [Op.like]: `%"${capitalizedJobName}"%`,
       },
     },
   });
@@ -80,27 +93,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier} ${boatNames ? `\n\n**Boats:**\n${boatNames}` : ''}, Final Roll: ${modifiedRoll}`;
   const message = `${rolledTier.getDataValue('bonus')} ${boatNames ? `\n\n**Boats affecting the roll:**\n${boatNames}` : ''}`;
 
-  await interaction.reply({
-    content: userMention(interaction.user.id),
-    embeds: [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Green)],
-  });
+  await replyWithUserMention(interaction, [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Green)]);
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  const focusedValue = interaction.options.getFocused().toLowerCase();
-  const jobs = await Job.findAll();
-
-  const filtered = jobs.filter((job) => job.dataValues.name.toLowerCase().startsWith(focusedValue));
-
-  await interaction.respond(
-    filtered
-      .slice(0, 25)
-      .map((job) => ({
-        name: formatNames(job.dataValues.name), // Display nicely formatted
-        value: job.dataValues.name, // Keep lowercase for database lookup
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  );
+  await jobNameAutocomplete(interaction);
 }
 
 export default {

@@ -2,6 +2,8 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from '
 import { Boat } from '~/db/models/Boat';
 import { Shipment } from '~/db/models/Shipment';
 
+//TODO player command only.
+
 export const data = new SlashCommandBuilder()
   .setName('showboats')
   .setDescription('Show all boats and their current status');

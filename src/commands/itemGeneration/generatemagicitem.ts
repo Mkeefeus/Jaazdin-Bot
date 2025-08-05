@@ -1,5 +1,13 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { MagicItem } from '../../db/models/MagicItem';
+import { 
+  getRandomItemByTable, 
+  createItemEmbed, 
+  genericTableAutocomplete,
+  calculateSimpleItemPrice
+} from '~/functions/boatHelpers';
+
+//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatemagicitem')
@@ -9,44 +17,34 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  // Dynamically fetch unique tables from the database
-  const items = await MagicItem.findAll({ attributes: ['table'] });
-  const uniqueTables = Array.from(new Set(items.map((i) => i.table)));
-  const focused = interaction.options.getFocused().toLowerCase();
-
-  const filtered = uniqueTables
-    .filter((t) => t.toLowerCase().startsWith(focused))
-    .map((t) => ({
-      name: `Table ${t.toUpperCase()}`,
-      value: t,
-    }));
-
-  await interaction.respond(filtered);
+  await genericTableAutocomplete(
+    interaction, 
+    '~/db/models/MagicItem',
+    'table',
+    (table) => `Table ${table.toUpperCase()}`
+  );
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const table = interaction.options.getString('table', true);
 
-  const itemChosen = await getRandomMagicItemByTable(table);
-  if (!itemChosen) {
-    await interaction.reply({ content: `No items found for table ${table}.`, ephemeral: true });
+  const item = await getRandomItemByTable<MagicItem>('~/db/models/MagicItem', table);
+  if (!item) {
+    await interaction.reply({
+      content: `No items found for table ${table}.`,
+      ephemeral: true,
+    });
     return;
   }
 
-  await interaction.reply({
-    embeds: [
-      {
-        title: `Random Magic Item (Table ${table.toUpperCase()})`,
-        description: `**Item:** ${itemChosen.name}`,
-        color: 0x8e44ad,
-      },
-    ],
-  });
-}
+  const price = calculateSimpleItemPrice(item);
 
-// Utility function for use in other scripts
-export async function getRandomMagicItemByTable(table: string) {
-  const items = await MagicItem.findAll({ where: { table } });
-  if (!items || items.length === 0) return null;
-  return items[Math.floor(Math.random() * items.length)];
+  const embed = createItemEmbed(
+    `Random Magic Item (Table ${table.toUpperCase()})`,
+    item.name,
+    [{ name: 'Price', value: `${price} gp` }],
+    0x8e44ad
+  );
+
+  await interaction.reply({ embeds: [embed] });
 }

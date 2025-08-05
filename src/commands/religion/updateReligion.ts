@@ -1,89 +1,71 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder, userMention } from 'discord.js';
-import { Domain, Religion } from '~/db/models/Religion';
-import { formatNames } from '~/functions/helpers';
+import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { findReligionByName, findDomainByName, parseFollowerCountChange, checkReligionExists, religionCommandAutocomplete } from '~/functions/religionHelpers';
+import { replyWithUserMention } from '~/functions/helpers';
 import showReligion from './showReligion';
+
+//TODO player command only.
 
 export const data = new SlashCommandBuilder()
   .setName('updatereligion')
   .setDescription('Will update a religion from the active religions')
   .addStringOption((option) =>
-    option.setName('oldname').setDescription('The old name of the religion').setRequired(true).setAutocomplete(true)
+    option.setName('name').setDescription('The name of the religion').setRequired(true).setAutocomplete(true)
   )
-  .addStringOption((option) => option.setName('newname').setDescription('The name of the religion.'))
+  .addStringOption((option) => option.setName('newname').setDescription('The new name of the religion (optional)'))
   .addStringOption((option) =>
     option.setName('domain').setDescription('The domain of the religion').setAutocomplete(true)
   )
-  .addStringOption((option) => option.setName('followercount').setDescription('The new number of followers'));
+  .addStringOption((option) => option.setName('followercount').setDescription('The follower count (+x to add, -x to subtract, =x to set exactly)'));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  const old_name = interaction.options.getString('oldname')?.toLowerCase() as string;
-  const selectedReligion = await Religion.findOne({
-    where: {
-      name: old_name,
-    },
-  });
-
-  let new_name = interaction.options.getString('newname')?.toLowerCase() as string;
-  const domainName = interaction.options.getString('domain')?.toLowerCase() as string;
-  let follower_count = interaction.options.getString('followercount');
-  let domain = 0;
-  let newFollowerCount = 0;
-
+  const name = interaction.options.getString('name')?.toLowerCase() as string;
+  
+  // Use helper to find religion with error handling
+  const selectedReligion = await findReligionByName(interaction, name);
   if (!selectedReligion) {
-    await interaction.reply({
-      content: `Religion "${formatNames(old_name)}" not found.`,
-      ephemeral: true,
-    });
     return;
   }
 
-  if (new_name == null) new_name = old_name;
+  let new_name = interaction.options.getString('newname')?.toLowerCase() as string;
+  const domainName = interaction.options.getString('domain')?.toLowerCase() as string;
+  const follower_count = interaction.options.getString('followercount');
+  let domain = 0;
+  let newFollowerCount = 0;
+
+  if (new_name == null) new_name = name;
 
   if (domainName == null) {
     domain = selectedReligion.dataValues.domain_id;
   } else {
-    const domainData = await Domain.findOne({
-      where: {
-        name: domainName,
-      },
-    });
-    domain = domainData?.dataValues.id;
+    const domainData = await findDomainByName(domainName);
+    if (!domainData) {
+      await interaction.reply({
+        content: `Domain "${domainName}" not found.`,
+        ephemeral: true,
+      });
+      return;
+    }
+    domain = domainData.dataValues.id;
   }
 
   if (follower_count == null) {
-    follower_count = selectedReligion.dataValues.follower_count;
+    newFollowerCount = selectedReligion.dataValues.follower_count;
   } else {
-    // Allow +x, -x, =x logic for follower count
-    const changeRaw = interaction.options.get('followercount')?.value?.toString();
-    const changeRegex = /^([+-=])(\d+)$/;
-    if (changeRaw && changeRegex.test(changeRaw)) {
-      const match = changeRegex.exec(changeRaw);
-      if (match) {
-        const operator = match[1];
-        const value = parseInt(match[2], 10);
-        if (operator === '+') {
-          newFollowerCount = selectedReligion.dataValues.follower_count + value;
-        } else if (operator === '-') {
-          newFollowerCount = selectedReligion.dataValues.follower_count - value;
-        } else if (operator === '=') {
-          newFollowerCount = value;
-        }
-      }
+    // Use helper to parse follower count change
+    const result = parseFollowerCountChange(follower_count, selectedReligion.dataValues.follower_count);
+    if (result.error) {
+      await interaction.reply({
+        content: result.error,
+        ephemeral: true,
+      });
+      return;
     }
+    newFollowerCount = result.value;
   }
 
   // Check to see if the new name to update doesn't already exist
-  if (new_name !== old_name) {
-    const existingReligion = await Religion.findOne({
-      where: {
-        name: new_name,
-      },
-    });
-    if (existingReligion) {
-      await interaction.reply({
-        content: `A religion with the name "${formatNames(new_name)}" already exists.`,
-        ephemeral: true,
-      });
+  if (new_name !== name) {
+    if (await checkReligionExists(interaction, new_name)) {
       return;
     }
   }
@@ -96,45 +78,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const message = await showReligion.showReligion(selectedReligion);
 
-  await interaction.reply({
-    content: userMention(interaction.user.id),
-    embeds: [message],
-  });
+  await replyWithUserMention(interaction, [message]);
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  const focusedValue = interaction.options.getFocused().toLowerCase();
-  const focusedOption = interaction.options.getFocused(true).name;
-
-  let filtered = [];
-  if (focusedOption === 'domain') {
-    const domains = await Domain.findAll();
-
-    filtered = domains.filter((domain) => domain.dataValues.name.toLowerCase().startsWith(focusedValue));
-    await interaction.respond(
-      filtered
-        .slice(0, 25)
-        .map((domain) => ({
-          name: formatNames(domain.dataValues.name), // Display nicely formatted
-          value: domain.dataValues.name, // Keep lowercase for database lookup
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name))
-    );
-  }
-  if (focusedOption === 'oldname') {
-    const religions = await Religion.findAll();
-
-    filtered = religions.filter((religion) => religion.dataValues.name.toLowerCase().startsWith(focusedValue));
-    await interaction.respond(
-      filtered
-        .slice(0, 25)
-        .map((religion) => ({
-          name: formatNames(religion.dataValues.name), // Display nicely formatted
-          value: religion.dataValues.name, // Keep lowercase for database lookup
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name))
-    );
-  }
+  await religionCommandAutocomplete(interaction);
 }
 
 export default {

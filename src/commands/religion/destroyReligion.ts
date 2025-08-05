@@ -1,13 +1,13 @@
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
-  Colors,
-  EmbedBuilder,
   SlashCommandBuilder,
-  userMention,
 } from 'discord.js';
 import { Religion } from '~/db/models/Religion';
-import { formatNames } from '~/functions/helpers';
+import { formatNames, createConfirmationButtons, createConfirmationEmbed, handleConfirmationWorkflow } from '~/functions/helpers';
+import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
+
+//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('destroyreligion')
@@ -19,36 +19,42 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
 
-  await Religion.destroy({
-    where: {
-      name: name,
+  // Use helper to find religion with error handling
+  const religion = await findReligionByName(interaction, name);
+  if (!religion) {
+    return;
+  }
+
+  // Build religion details for confirmation
+  const details = `**Followers:** ${religion.dataValues.follower_count}`;
+
+  // Create confirmation elements
+  const row = createConfirmationButtons();
+  const confirmEmbed = createConfirmationEmbed(
+    'Confirm Religion Destruction',
+    formatNames(religion.dataValues.name),
+    details
+  );
+
+  // Handle the confirmation workflow
+  await handleConfirmationWorkflow(
+    interaction,
+    confirmEmbed,
+    row,
+    async () => {
+      await Religion.destroy({ where: { name } });
+
+      return {
+        title: 'Religion Destroyed',
+        description: `${formatNames(name)} was successfully removed from the religion list!`
+      };
     },
-  });
-
-  const title = `Religion ${name}`;
-  const message = `${name} was successfully removed from the religion list!`;
-
-  // await interaction.reply(message);
-  await interaction.reply({
-    content: userMention(interaction.user.id),
-    embeds: [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Yellow)],
-  });
+    'Religion destruction cancelled.'
+  );
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  const focusedValue = interaction.options.getFocused().toLowerCase();
-  const religions = await Religion.findAll();
-
-  const filtered = religions.filter((religion) => religion.dataValues.name.toLowerCase().startsWith(focusedValue));
-
-  await interaction.respond(
-    filtered
-      .map((religion) => ({
-        name: formatNames(religion.dataValues.name), // Display nicely formatted
-        value: religion.dataValues.name, // Keep lowercase for database lookup
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  );
+  await religionCommandAutocomplete(interaction);
 }
 
 export default {

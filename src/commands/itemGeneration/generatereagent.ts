@@ -1,5 +1,13 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Reagent } from '../../db/models/Reagent';
+import { 
+  genericRarityAutocomplete,
+  genericTypeAutocomplete,
+  createItemEmbed,
+  calculateSimpleItemPrice
+} from '~/functions/boatHelpers';
+
+//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatereagent')
@@ -18,27 +26,9 @@ export const data = new SlashCommandBuilder()
 export async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
   if (focusedOption.name === 'rarity') {
-    const reagents = await Reagent.findAll({ attributes: ['rarity'] });
-    const uniqueRarities = Array.from(new Set(reagents.map((r) => r.rarity)));
-    const focused = focusedOption.value.toLowerCase();
-    const filtered = uniqueRarities
-      .filter((r) => r && r.toLowerCase().startsWith(focused))
-      .map((r) => ({
-        name: r.charAt(0).toUpperCase() + r.slice(1),
-        value: r,
-      }));
-    await interaction.respond(filtered);
+    await genericRarityAutocomplete(interaction, '~/db/models/Reagent');
   } else if (focusedOption.name === 'creaturetype') {
-    const reagents = await Reagent.findAll({ attributes: ['type'] });
-    const uniqueTypes = Array.from(new Set(reagents.map((r) => r.type)));
-    const focused = focusedOption.value.toLowerCase();
-    const filtered = uniqueTypes
-      .filter((t) => t && t.toLowerCase().startsWith(focused))
-      .map((t) => ({
-        name: t.charAt(0).toUpperCase() + t.slice(1),
-        value: t,
-      }));
-    await interaction.respond(filtered);
+    await genericTypeAutocomplete(interaction, '~/db/models/Reagent', 'type');
   }
 }
 
@@ -55,15 +45,19 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  await interaction.reply({
-    embeds: [
-      {
-        title: `Random Reagent (${rarity.charAt(0).toUpperCase() + rarity.slice(1)}, ${creatureType.charAt(0).toUpperCase() + creatureType.slice(1)})`,
-        description: `**Reagent:** ${reagentChosen.name}\n**Rarity:** ${reagentChosen.rarity}\n**Creature Type:** ${reagentChosen.type}`,
-        color: 0x16a085,
-      },
+  const price = calculateSimpleItemPrice(reagentChosen);
+
+  const embed = createItemEmbed(
+    `Random Reagent (${rarity.charAt(0).toUpperCase() + rarity.slice(1)}, ${creatureType.charAt(0).toUpperCase() + creatureType.slice(1)})`,
+    reagentChosen.name,
+    [
+
+      { name: 'Price', value: `${price} gp` }
     ],
-  });
+    0x16a085
+  );
+
+  await interaction.reply({ embeds: [embed] });
 }
 
 // Utility function for use in other scripts

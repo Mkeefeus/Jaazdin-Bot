@@ -40,5 +40,5 @@ export default function setupWeeklyTasks() {
       //always run tasks for dev purposes
       // executeWeeklyTasks();
     }
-  }, 6000);
+  }, 600000);
 }

@@ -1,6 +1,13 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Armor } from '../../db/models/Armor';
-import { getRandomMetalByRarity } from './generatemetal'; // Import the utility
+import { 
+  generateItemWithValidMetal,
+  genericRarityAutocomplete,
+  createItemEmbed,
+  calculateMetalItemPrice
+} from '~/functions/boatHelpers';
+
+//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatearmor')
@@ -10,20 +17,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  // Dynamically fetch rarities from the metal generator
-  const { Metal } = await import('../../db/models/Metal');
-  const metals = await Metal.findAll({ attributes: ['rarity'] });
-  const uniqueRarities = Array.from(new Set(metals.map((m) => m.rarity)));
-  const focused = interaction.options.getFocused().toLowerCase();
-
-  const filtered = uniqueRarities
-    .filter((r) => r.toLowerCase().startsWith(focused))
-    .map((r) => ({
-      name: r.charAt(0).toUpperCase() + r.slice(1),
-      value: r,
-    }));
-
-  await interaction.respond(filtered);
+  await genericRarityAutocomplete(interaction, '~/db/models/Metal');
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -39,27 +33,25 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   const { armor, metal } = result;
+  const price = calculateMetalItemPrice(armor, metal);
 
-  await interaction.reply({
-    embeds: [
-      {
-        title: `Random Armor (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,
-        description: `**Armor:** ${armor.name}\n**Metal:** ${metal.name}\n**Rarity:** ${metal.rarity}`,
-        color: 0xaaaaaa,
-      },
+  const embed = createItemEmbed(
+    `Random Armor (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,
+    `${metal.name} ${armor.name}`,
+    [
+      { name: 'Metal', value: metal.name },
+      { name: 'Price', value: `${price} gp` }
     ],
-  });
+    0xaaaaaa
+  );
+
+  await interaction.reply({ embeds: [embed] });
 }
 
 // Utility function for use in other scripts
 export async function generateRandomArmorWithMetal(rarity: string) {
-  const metal = await getRandomMetalByRarity(rarity);
-  if (!metal) return null;
-
-  const allArmors = await Armor.findAll();
-  const validArmors = allArmors.filter((armor) => !armor.invalidMetals || !armor.invalidMetals.includes(metal.name));
-  if (validArmors.length === 0) return null;
-
-  const armor = validArmors[Math.floor(Math.random() * validArmors.length)];
-  return { armor, metal };
+  const result = await generateItemWithValidMetal<Armor>('~/db/models/Armor', rarity);
+  if (!result) return null;
+  
+  return { armor: result.item, metal: result.metal };
 }

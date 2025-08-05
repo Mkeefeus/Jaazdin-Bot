@@ -1,5 +1,13 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Meal } from '../../db/models/Meal';
+import { 
+  getRandomItemByRarity, 
+  createItemEmbed, 
+  genericRarityAutocomplete,
+  calculateSimpleItemPrice
+} from '~/functions/boatHelpers';
+
+//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatemeal')
@@ -9,44 +17,31 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  // Dynamically fetch rarities from the database
-  const meals = await Meal.findAll({ attributes: ['rarity'] });
-  const uniqueRarities = Array.from(new Set(meals.map((m) => m.rarity)));
-  const focused = interaction.options.getFocused().toLowerCase();
-
-  const filtered = uniqueRarities
-    .filter((r) => r.toLowerCase().startsWith(focused))
-    .map((r) => ({
-      name: r.charAt(0).toUpperCase() + r.slice(1),
-      value: r,
-    }));
-
-  await interaction.respond(filtered);
+  await genericRarityAutocomplete(interaction, '~/db/models/Meal');
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const rarity = interaction.options.getString('rarity', true);
 
-  const mealChosen = await getRandomMealByRarity(rarity);
-  if (!mealChosen) {
-    await interaction.reply({ content: `No meals found for rarity: ${rarity}`, ephemeral: true });
+  const meal = await getRandomItemByRarity<Meal>('~/db/models/Meal', rarity);
+  if (!meal) {
+    await interaction.reply({
+      content: `No meals found for rarity: ${rarity}`,
+      ephemeral: true,
+    });
     return;
   }
 
-  await interaction.reply({
-    embeds: [
-      {
-        title: `Random Meal (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,
-        description: `**Meal:** ${mealChosen.name}\n**Rarity:** ${mealChosen.rarity}`,
-        color: 0x27ae60,
-      },
-    ],
-  });
-}
+  const price = calculateSimpleItemPrice(meal);
 
-// Utility function for use in other scripts
-export async function getRandomMealByRarity(rarity: string) {
-  const validMeals = await Meal.findAll({ where: { rarity } });
-  if (validMeals.length === 0) return null;
-  return validMeals[Math.floor(Math.random() * validMeals.length)];
+  const embed = createItemEmbed(
+    `Random Meal (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,
+    meal.name,
+    [
+      { name: 'Price', value: `${price} gp` }
+    ],
+    0x27ae60
+  );
+
+  await interaction.reply({ embeds: [embed] });
 }

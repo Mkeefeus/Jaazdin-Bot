@@ -1,15 +1,15 @@
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder, userMention } from 'discord.js';
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { Religion } from '~/db/models/Religion';
+import { replyWithUserMention } from '~/functions/helpers';
 import showReligion from './showReligion';
+
+//TODO player command only.
 
 export const data = new SlashCommandBuilder().setName('showallreligions').setDescription('Shows all active religions');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const allMessages = await showAllReligions();
-  await interaction.reply({
-    content: userMention(interaction.user.id),
-    embeds: allMessages,
-  });
+  await replyWithUserMention(interaction, allMessages);
 }
 
 async function showAllReligions(): Promise<EmbedBuilder[]> {

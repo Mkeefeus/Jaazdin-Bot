@@ -2,6 +2,8 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteracti
 import { Shipment } from '~/db/models/Shipment';
 import { Boat } from '~/db/models/Boat';
 
+//TODO gm command only.
+
 export const data = new SlashCommandBuilder()
   .setName('updateshipment')
   .setDescription('Update a shipment item for a boat (by boat and item name)')
