@@ -1,11 +1,8 @@
-import {
-  AutocompleteInteraction,
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-} from 'discord.js';
-import { Shipment } from '~/db/models/Shipment';
-import { formatNames, createConfirmationButtons, createConfirmationEmbed, handleConfirmationWorkflow } from '~/functions/helpers';
-import { findBoatByName, boatNameAutocomplete, destroyBoatWithCascade } from '~/functions/boatHelpers';
+import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { Shipment } from '~/db/models/Boat';
+import { findBoatByName, boatNameAutocomplete } from '~/functions/boatHelpers';
+import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -19,6 +16,14 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name') as string;
 
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   // Use helper to find boat with error handling
   const boat = await findBoatByName(interaction, name);
   if (!boat) {
@@ -26,48 +31,41 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   // Check if boat has shipments
-  const shipmentCount = await Shipment.count({ where: { boatName: boat.boatName } });
+  const shipments: Shipment[] = await Shipment.findAll({ where: { boatName: boat.boatName } });
 
-  // Build boat details for confirmation
-  let details = `**Status:** ${boat.isRunning ? 'Running' : 'Stopped'}\n`;
-  details += `**Location:** ${boat.isInTown ? 'In Town' : 'At Sea'}\n`;
-  if (boat.isRunning) {
-    details += `**Weeks Left:** ${boat.weeksLeft}\n`;
-  }
-  if (shipmentCount > 0) {
-    details += `**Active Shipments:** ${shipmentCount}\n`;
-  }
-  if (boat.isTier2) {
-    details += `**Tier 2 Boat:** Yes\n`;
-  }
-
-  // Create confirmation elements
-  const row = createConfirmationButtons();
-  const confirmEmbed = createConfirmationEmbed(
-    'Confirm Boat Destruction',
-    boat.boatName,
-    details,
-    shipmentCount > 0 ? 'remove all associated shipments' : undefined
-  );
-
-  // Handle the confirmation workflow
-  await handleConfirmationWorkflow(
+  const confirmed = confirmAction({
     interaction,
-    confirmEmbed,
-    row,
-    async () => {
-      // Use the cascade deletion helper
-      const result = await destroyBoatWithCascade(boat.boatName);
-
-      return {
-        title: 'Boat Destroyed',
-        description: 
-          `${formatNames(boat.boatName)} was successfully removed from the boat list!` +
-          (result.shipmentCount > 0 ? `\n\nAlso removed ${result.shipmentCount} associated shipment(s).` : '')
-      };
-    },
-    'Boat destruction cancelled.'
-  );
+    title: 'Destroy Boat',
+    description: `Are you sure you want to destroy the boat **${boat.boatName}** and all of its shipments?`,
+    confirmButtonText: 'Destroy',
+    cancelButtonText: 'Cancel',
+    fields: [
+      {
+        name: 'Boat Name',
+        value: formatNames(boat.boatName),
+        inline: true,
+      },
+      {
+        name: 'Shipments',
+        value: `${shipments.length}`,
+        inline: true,
+      },
+    ],
+    confirmEmbed: [
+      {
+        title: '✅ Boat Destroyed',
+        description: `The boat **${boat.boatName}** has been destroyed.`,
+        color: 0x4caf50, // Green
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  });
+  if (!confirmed) {
+    return;
+  }
+  // Destroy all shipments for this boat
+  await Promise.all(shipments.map((shipment) => shipment.destroy()));
+  boat.destroy();
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {

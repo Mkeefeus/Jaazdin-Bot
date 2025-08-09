@@ -1,5 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { findShipmentByBoatAndItem, handleShipmentPurchase, boatNameAutocomplete } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -10,6 +12,14 @@ export const data = new SlashCommandBuilder()
   .addStringOption((opt) => opt.setName('item').setDescription('Item name').setRequired(true).setAutocomplete(true));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const boatName = interaction.options.getString('boat', true);
   const itemName = interaction.options.getString('item', true);
 

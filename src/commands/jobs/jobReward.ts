@@ -13,9 +13,10 @@ import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/functi
 // Helper function to convert job name from database format to boat format
 function convertJobNameForBoats(jobName: string): string {
   // Convert from database format (lowercase) to boat format (title case)
-  return jobName.split(' ').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-  ).join(' ');
+  return jobName
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 }
 
 //TODO player command only.
@@ -93,7 +94,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier} ${boatNames ? `\n\n**Boats:**\n${boatNames}` : ''}, Final Roll: ${modifiedRoll}`;
   const message = `${rolledTier.getDataValue('bonus')} ${boatNames ? `\n\n**Boats affecting the roll:**\n${boatNames}` : ''}`;
 
-  await replyWithUserMention(interaction, [new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Green)]);
+  await replyWithUserMention(interaction, [
+    new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Green),
+  ]);
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {

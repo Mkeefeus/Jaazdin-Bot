@@ -7,10 +7,17 @@ async function post() {
   const religions = await Religion.findAll({ order: [['follower_count', 'DESC']] });
 
   const embeds = [];
-  const CHANNEL_ID = '1309206984196755506';
+  const CHANNEL_ID = process.env.BOT_CHANNEL_ID;
+
+  if (!CHANNEL_ID) {
+    console.error('BOT_CHANNEL_ID is not defined');
+    return;
+  }
 
   if (religions.length === 0) {
-    embeds.push(new EmbedBuilder().setTitle('Religion Rankings').setDescription('No religions found.').setColor('#FFD700'));
+    embeds.push(
+      new EmbedBuilder().setTitle('Religion Rankings').setDescription('No religions found.').setColor('#FFD700')
+    );
   } else {
     // Dominant religion gets its own detailed embed
     const dominantReligion = religions[0];
@@ -24,7 +31,7 @@ async function post() {
       .setTitle(`👑 Dominant Religion: ${dominantReligion.dataValues.name}`)
       .setDescription(
         `**Followers:** ${dominantReligion.dataValues.follower_count}\n\n` +
-        `**Dominant Effect:** ${domainData?.dataValues.dominant_effect || 'None'}`
+          `**Dominant Effect:** ${domainData?.dataValues.dominant_effect || 'None'}`
       )
       .setColor('#FFD700');
 
@@ -37,10 +44,7 @@ async function post() {
         .map((religion) => `**${religion.dataValues.name}** - ${religion.dataValues.follower_count} followers`)
         .join('\n');
 
-      const listEmbed = new EmbedBuilder()
-        .setTitle('Other Religions')
-        .setDescription(religionList)
-        .setColor('#00BFFF');
+      const listEmbed = new EmbedBuilder().setTitle('Other Religions').setDescription(religionList).setColor('#00BFFF');
 
       embeds.push(listEmbed);
     }

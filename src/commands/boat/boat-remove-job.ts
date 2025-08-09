@@ -1,5 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
 import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 import { Boat } from '~/db/models/Boat';
 
 //TODO gm command only.
@@ -7,16 +9,14 @@ import { Boat } from '~/db/models/Boat';
 export const data = new SlashCommandBuilder()
   .setName('boat-remove-job')
   .setDescription('Remove a single job from a boat')
-  .addStringOption((opt) =>
-    opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true)
-  )
+  .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
   .addStringOption((opt) =>
     opt.setName('job').setDescription('Job name to remove').setRequired(true).setAutocomplete(true)
   );
 
 export async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
   const focusedOption = interaction.options.getFocused(true);
-  
+
   if (focusedOption.name === 'boat') {
     await boatNameAutocomplete(interaction);
   } else if (focusedOption.name === 'job') {
@@ -27,7 +27,7 @@ export async function autocomplete(interaction: AutocompleteInteraction): Promis
       if (boat) {
         const currentJobs = boat.jobsAffected || [];
         const focusedValue = interaction.options.getFocused().toLowerCase();
-        
+
         const filtered = currentJobs
           .filter((job) => job.toLowerCase().includes(focusedValue))
           .slice(0, 25)
@@ -47,6 +47,14 @@ export async function autocomplete(interaction: AutocompleteInteraction): Promis
 }
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const boatName = interaction.options.getString('boat', true);
   const jobName = interaction.options.getString('job', true);
 
@@ -67,8 +75,8 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   }
 
   // Remove the job from the list
-  const updatedJobs = currentJobs.filter(job => job !== jobName);
-  
+  const updatedJobs = currentJobs.filter((job) => job !== jobName);
+
   await boat.update({
     jobsAffected: updatedJobs,
   });
@@ -85,13 +93,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   // Show remaining job list if there are any jobs left
   if (updatedJobs.length > 0) {
-    embed.addFields([
-      { name: 'Remaining Jobs', value: updatedJobs.join(', ') }
-    ]);
+    embed.addFields([{ name: 'Remaining Jobs', value: updatedJobs.join(', ') }]);
   } else {
-    embed.addFields([
-      { name: 'Jobs', value: 'No jobs assigned to this boat' }
-    ]);
+    embed.addFields([{ name: 'Jobs', value: 'No jobs assigned to this boat' }]);
   }
 
   await interaction.reply({ embeds: [embed] });

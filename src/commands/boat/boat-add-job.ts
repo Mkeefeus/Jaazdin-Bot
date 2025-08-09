@@ -1,22 +1,22 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
 import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
 import { singleJobNameAutocomplete } from '~/functions/jobHelpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('boat-add-job')
   .setDescription('Add a single job to a boat')
-  .addStringOption((opt) =>
-    opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true)
-  )
+  .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
   .addStringOption((opt) =>
     opt.setName('job').setDescription('Job name to add').setRequired(true).setAutocomplete(true)
   );
 
 export async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
   const focusedOption = interaction.options.getFocused(true);
-  
+
   if (focusedOption.name === 'boat') {
     await boatNameAutocomplete(interaction);
   } else if (focusedOption.name === 'job') {
@@ -25,6 +25,13 @@ export async function autocomplete(interaction: AutocompleteInteraction): Promis
 }
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
   const boatName = interaction.options.getString('boat', true);
   const jobName = interaction.options.getString('job', true);
 
@@ -46,7 +53,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   // Add the job to the list
   const updatedJobs = [...currentJobs, jobName];
-  
+
   await boat.update({
     jobsAffected: updatedJobs,
   });
@@ -63,9 +70,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   // Show current job list if there are multiple jobs
   if (updatedJobs.length > 1) {
-    embed.addFields([
-      { name: 'All Jobs', value: updatedJobs.join(', ') }
-    ]);
+    embed.addFields([{ name: 'All Jobs', value: updatedJobs.join(', ') }]);
   }
 
   await interaction.reply({ embeds: [embed] });

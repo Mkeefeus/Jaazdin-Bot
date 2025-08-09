@@ -1,8 +1,10 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
 import { createBoatStatusDescription, tableNamesAutocomplete } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
-//TODO gm command only. 
+//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('addboat')
@@ -13,13 +15,22 @@ export const data = new SlashCommandBuilder()
   .addStringOption((opt) => opt.setName('city').setDescription('City of origin').setRequired(false))
   .addStringOption((opt) => opt.setName('country').setDescription('Country of origin').setRequired(false))
   .addStringOption((opt) => opt.setName('tier2ability').setDescription('Tier 2 ability description').setRequired(false))
-  .addStringOption((opt) => opt.setName('table').setDescription('Table to generate (optional)').setRequired(false).setAutocomplete(true))
+  .addStringOption((opt) =>
+    opt.setName('table').setDescription('Table to generate (optional)').setRequired(false).setAutocomplete(true)
+  )
   .addBooleanOption((opt) => opt.setName('istier2').setDescription('Is this a tier 2 boat?').setRequired(false))
   .addBooleanOption((opt) => opt.setName('isrunning').setDescription('Is this boat running?').setRequired(false))
   .addIntegerOption((opt) => opt.setName('weeksleft').setDescription('Weeks left (optional)').setRequired(false))
   .addBooleanOption((opt) => opt.setName('isintown').setDescription('Is the boat in town?').setRequired(false));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
   const boatName = interaction.options.getString('name', true);
   const city = interaction.options.getString('city', false);
   const country = interaction.options.getString('country', false);
@@ -71,8 +82,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         {
           name: '📋 Next Steps',
           value: 'Use `/boat-add-job` to assign jobs to this boat.\nUse `/showboats` to view boat details.',
-          inline: false
-        }
+          inline: false,
+        },
       ]);
 
     await interaction.reply({

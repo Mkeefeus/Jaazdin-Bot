@@ -1,6 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { Boat } from '~/db/models/Boat';
-import { Shipment } from '~/db/models/Shipment';
+import { Boat, Shipment } from '~/db/models/Boat';
 
 //TODO player command only.
 

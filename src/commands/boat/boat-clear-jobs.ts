@@ -1,20 +1,35 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  AutocompleteInteraction,
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+} from 'discord.js';
 import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('boat-clear-jobs')
   .setDescription('Remove all jobs from a boat')
-  .addStringOption((opt) =>
-    opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true)
-  );
+  .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true));
 
 export async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
   await boatNameAutocomplete(interaction);
 }
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
   const boatName = interaction.options.getString('boat', true);
 
   const boat = await findBoatByName(interaction, boatName);
@@ -44,8 +59,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .setLabel('Cancel')
     .setStyle(ButtonStyle.Secondary);
 
-  const row = new ActionRowBuilder<ButtonBuilder>()
-    .addComponents(confirmButton, cancelButton);
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(confirmButton, cancelButton);
 
   const embed = new EmbedBuilder()
     .setTitle('⚠️ Confirm Clear All Jobs')
@@ -54,18 +68,20 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       { name: 'Boat', value: boat.boatName, inline: true },
       { name: 'Current Jobs', value: currentJobs.length.toString(), inline: true },
     ])
-    .setDescription(`Are you sure you want to remove all jobs from **${boat.boatName}**?\n\n**Jobs to be removed:**\n${currentJobs.join(', ')}`);
+    .setDescription(
+      `Are you sure you want to remove all jobs from **${boat.boatName}**?\n\n**Jobs to be removed:**\n${currentJobs.join(', ')}`
+    );
 
-  const response = await interaction.reply({ 
-    embeds: [embed], 
+  const response = await interaction.reply({
+    embeds: [embed],
     components: [row],
-    ephemeral: true
+    ephemeral: true,
   });
 
   try {
-    const confirmation = await response.awaitMessageComponent({ 
+    const confirmation = await response.awaitMessageComponent({
       filter: (i) => i.user.id === interaction.user.id,
-      time: 60000 
+      time: 60000,
     });
 
     if (confirmation.customId === `confirm-clear-jobs-${boat.boatName}`) {
@@ -83,22 +99,22 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         ])
         .setDescription(await createBoatStatusDescription(boat));
 
-      await confirmation.update({ 
-        embeds: [successEmbed], 
-        components: [] 
+      await confirmation.update({
+        embeds: [successEmbed],
+        components: [],
       });
     } else {
-      await confirmation.update({ 
-        content: 'Job clearing cancelled.', 
-        embeds: [], 
-        components: [] 
+      await confirmation.update({
+        content: 'Job clearing cancelled.',
+        embeds: [],
+        components: [],
       });
     }
   } catch (_error) {
-    await interaction.editReply({ 
-      content: 'Confirmation timed out. Job clearing cancelled.', 
-      embeds: [], 
-      components: [] 
+    await interaction.editReply({
+      content: 'Confirmation timed out. Job clearing cancelled.',
+      embeds: [],
+      components: [],
     });
   }
 }

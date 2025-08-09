@@ -2,11 +2,17 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
 import { checkUserRole, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
+import { TimerType } from '~/types/timertype';
+
+const NAME_MAX_LENGTH = 100;
+const CHAR_MAX_LENGTH = 15;
 
 export const data = new SlashCommandBuilder()
   .setName('addtimer')
   .setDescription('will create a new timer')
-  .addStringOption((option) => option.setName('name').setDescription('The name of the timer.').setRequired(true))
+  .addStringOption((option) =>
+    option.setName('name').setDescription('The name of the timer.').setRequired(true).setMaxLength(NAME_MAX_LENGTH)
+  )
   .addIntegerOption((option) =>
     option.setName('weeks').setDescription('The amount of weeks before the timer ends').setRequired(true).setMinValue(1)
   )
@@ -23,7 +29,11 @@ export const data = new SlashCommandBuilder()
       )
   )
   .addStringOption((option) =>
-    option.setName('character').setDescription('The character associated with the timer').setRequired(true)
+    option
+      .setName('character')
+      .setDescription('The character associated with the timer')
+      .setRequired(true)
+      .setMaxLength(CHAR_MAX_LENGTH)
   )
   .addUserOption((option) =>
     option.setName('player').setDescription('The discord id of the player, leave blank if yourself').setRequired(false)
@@ -39,7 +49,7 @@ const ICON_MAP: Record<string, string> = {
 export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase();
   const weeks = interaction.options.getInteger('weeks');
-  const type = interaction.options.getString('type');
+  const type = interaction.options.getString('type')?.toLowerCase();
   const discordId = (interaction.options.getUser('player') || interaction.user).id;
   const char = interaction.options.getString('character')?.toLowerCase();
   //todo check to see if timer name doesn't already exist.
@@ -49,6 +59,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return interaction.reply('Please provide all required fields.');
   }
 
+  if (!Object.values(TimerType).includes(type as TimerType)) {
+    return interaction.reply('Invalid timer type provided.');
+  }
+
+  if (type == TimerType.complete) {
+    return interaction.reply('You cannot create a timer of type "complete".');
+  }
+
   if (!(checkUserRole(interaction, Roles.GM) && interaction.user.id !== discordId)) {
     // If the user is not a GM, they can only set timers for themselves
     if (discordId !== interaction.user.id) {
@@ -56,9 +74,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
   }
 
+  // Handle character limits
+  if (name.length > NAME_MAX_LENGTH) {
+    return interaction.reply(`Timer name must be ${NAME_MAX_LENGTH} characters or less.`);
+  }
+  if (char.length > CHAR_MAX_LENGTH) {
+    return interaction.reply(`Character name must be ${CHAR_MAX_LENGTH} characters or less.`);
+  }
+
   await Timer.create({
     name: name,
-    type: type,
+    type: type as TimerType,
     weeks_remaining: weeks,
     user: discordId,
     character: char,

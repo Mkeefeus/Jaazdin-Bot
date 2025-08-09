@@ -61,11 +61,11 @@ Create Table `fertilizer_types`
 ## Boats
 
 `/updateboat`
+
 - change if running
 - set different weeks away amount
 
-
-`/buyItem` [boat] [item] 
+`/buyItem` [boat] [item]
 
 boat:
 dropdown with current boats in town

@@ -46,6 +46,64 @@ Boat.init(
   }
 );
 
+export class Shipment extends Model {
+  declare id: number;
+  declare boatName: string;
+  declare itemName: string;
+  declare price: number;
+  declare quantity: number;
+}
+
+Shipment.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    boatName: {
+      type: DataTypes.STRING(40),
+      allowNull: false,
+      references: {
+        model: 'boats',
+        key: 'boatName',
+      },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    itemName: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize: db,
+    modelName: 'Shipment',
+    tableName: 'shipments',
+    timestamps: false,
+  }
+);
+
+Boat.hasMany(Shipment, {
+  foreignKey: 'boatName',
+  sourceKey: 'boatName',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
+
+Shipment.belongsTo(Boat, {
+  foreignKey: 'boatName',
+  targetKey: 'boatName',
+});
+
 async function seed() {
   // Use await import for portability
   const boatsData = (await import('~/../boats.json')).default || (await import('~/../boats.json'));

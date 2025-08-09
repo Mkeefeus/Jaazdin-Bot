@@ -1,11 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Pet } from '../../db/models/Pet';
 import { Op } from 'sequelize';
-import { 
-  createItemEmbed, 
-  genericTypeAutocomplete,
-  calculateSimpleItemPrice
-} from '~/functions/boatHelpers';
+import { createItemEmbed, genericTypeAutocomplete, calculateSimpleItemPrice } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -30,13 +28,13 @@ export const data = new SlashCommandBuilder()
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
-  
+
   if (focusedOption.name === 'rarity') {
     // Static rarity list based on CR boundaries
     const focused = focusedOption.value.toLowerCase();
-    const filtered = RARITY_BOUNDS
-      .map((r) => ({ name: r.name, value: r.name }))
-      .filter((r) => r.name.toLowerCase().startsWith(focused));
+    const filtered = RARITY_BOUNDS.map((r) => ({ name: r.name, value: r.name })).filter((r) =>
+      r.name.toLowerCase().startsWith(focused)
+    );
     await interaction.respond(filtered);
   } else if (focusedOption.name === 'creaturetype') {
     await genericTypeAutocomplete(interaction, '~/db/models/Pet');
@@ -44,6 +42,14 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.DM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const rarity = interaction.options.getString('rarity', true);
   const creatureType = interaction.options.getString('creaturetype', true);
 
@@ -64,7 +70,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     [
       { name: 'CR', value: pet.cr.toString() },
       { name: 'Creature Type', value: pet.type },
-      { name: 'Price', value: `${price} gp` }
+      { name: 'Price', value: `${price} gp` },
     ],
     0x3498db
   );

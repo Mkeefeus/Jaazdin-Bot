@@ -1,5 +1,11 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { findReligionByName, findDomainByName, parseFollowerCountChange, checkReligionExists, religionCommandAutocomplete } from '~/functions/religionHelpers';
+import {
+  findReligionByName,
+  findDomainByName,
+  parseFollowerCountChange,
+  checkReligionExists,
+  religionCommandAutocomplete,
+} from '~/functions/religionHelpers';
 import { replyWithUserMention } from '~/functions/helpers';
 import showReligion from './showReligion';
 
@@ -15,11 +21,13 @@ export const data = new SlashCommandBuilder()
   .addStringOption((option) =>
     option.setName('domain').setDescription('The domain of the religion').setAutocomplete(true)
   )
-  .addStringOption((option) => option.setName('followercount').setDescription('The follower count (+x to add, -x to subtract, =x to set exactly)'));
+  .addStringOption((option) =>
+    option.setName('followercount').setDescription('The follower count (+x to add, -x to subtract, =x to set exactly)')
+  );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
-  
+
   // Use helper to find religion with error handling
   const selectedReligion = await findReligionByName(interaction, name);
   if (!selectedReligion) {

@@ -7,13 +7,19 @@ export const data = new SlashCommandBuilder()
   .setName('gmupdatetimer')
   .setDescription('Updates the remaining weeks on a timer')
   .addUserOption((option) =>
-    option.setName('player').setDescription('The discord user who owns the timer, leave blank if yourself').setRequired(true)
+    option
+      .setName('player')
+      .setDescription('The discord user who owns the timer, leave blank if yourself')
+      .setRequired(true)
   )
   .addStringOption((option) =>
     option.setName('timer').setDescription('The name of the timer to update.').setRequired(true).setAutocomplete(true)
   )
   .addStringOption((option) =>
-    option.setName('change').setDescription('Number of weeks to add, subtract, or set equal to (+x, -x, =x)').setRequired(true)
+    option
+      .setName('change')
+      .setDescription('Number of weeks to add, subtract, or set equal to (+x, -x, =x)')
+      .setRequired(true)
   );
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
@@ -50,7 +56,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   // Only GMs can update timers for others
-  if (!(checkUserRole(interaction, Roles.GM))) {
+  if (!checkUserRole(interaction, Roles.GM)) {
     if (discordId !== interaction.user.id) {
       return interaction.reply('This is a GM command. Use /updatetimer to update your own timers.');
     }
@@ -95,7 +101,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           { name: 'Name', value: formatNames(timer.name), inline: true },
           { name: 'Character', value: formatNames(timer.character), inline: true },
           { name: 'Player', value: `<@${discordId}>`, inline: true },
-          { name: 'Weeks Remaining', value: `$🕒 ${timer.weeks_remaining} week(s)`, inline: true },
+          { name: 'Weeks Remaining', value: `🕒 ${timer.weeks_remaining} week(s)`, inline: true },
         ],
         timestamp: new Date().toISOString(),
         footer: { text: 'Timer successfully updated!' },

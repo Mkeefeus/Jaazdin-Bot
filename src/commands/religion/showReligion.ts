@@ -20,7 +20,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
-  
+
   // Use helper to find religion with error handling
   const selectedReligion = await findReligionByName(interaction, name);
   if (!selectedReligion) {

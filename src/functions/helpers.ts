@@ -1,14 +1,15 @@
-import { 
-  ChatInputCommandInteraction, 
-  GuildMemberRoleManager, 
-  AutocompleteInteraction, 
-  EmbedBuilder, 
+import {
+  ChatInputCommandInteraction,
+  GuildMemberRoleManager,
+  AutocompleteInteraction,
+  EmbedBuilder,
   userMention,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
-  Colors
+  APIEmbed,
+  JSONEncodable,
 } from 'discord.js';
 import { Roles } from '~/types/roles';
 
@@ -77,7 +78,7 @@ export async function jobNameAutocomplete(interaction: AutocompleteInteraction):
   const focusedValue = interaction.options.getFocused().toLowerCase();
   const jobs = await Job.findAll();
 
-  const filtered = jobs.filter((job) => 
+  const filtered = jobs.filter((job) =>
     (job as { dataValues: { name: string } }).dataValues.name.toLowerCase().startsWith(focusedValue)
   );
 
@@ -110,15 +111,8 @@ export async function handleError(
 /**
  * Create a standard embed with consistent styling
  */
-export function createStandardEmbed(
-  title: string,
-  description: string,
-  color: number = 0x2e86c1
-): EmbedBuilder {
-  return new EmbedBuilder()
-    .setTitle(title)
-    .setDescription(description)
-    .setColor(color);
+export function createStandardEmbed(title: string, description: string, color: number = 0x2e86c1): EmbedBuilder {
+  return new EmbedBuilder().setTitle(title).setDescription(description).setColor(color);
 }
 
 /**
@@ -160,144 +154,112 @@ export async function sendEmbedChunks(
   }
 
   const chunks = chunkEmbeds(embeds);
-  
+
   // Send first chunk as reply
-  await interaction.reply({ 
-    embeds: chunks[0], 
-    ephemeral: ephemeral 
+  await interaction.reply({
+    embeds: chunks[0],
+    ephemeral: ephemeral,
   });
-  
+
   // Send remaining chunks as follow-ups
   for (let i = 1; i < chunks.length; i++) {
-    await interaction.followUp({ 
-      embeds: chunks[i], 
-      ephemeral: ephemeral 
+    await interaction.followUp({
+      embeds: chunks[i],
+      ephemeral: ephemeral,
     });
   }
 }
 
-/**
- * Create confirmation buttons for destructive actions
- */
-export function createConfirmationButtons(): ActionRowBuilder<ButtonBuilder> {
+type ConfirmActionOptions = {
+  interaction: ChatInputCommandInteraction;
+  title: string;
+  description: string;
+  fields: { name: string; value: string; inline?: boolean }[];
+  confirmButtonText?: string;
+  cancelButtonText?: string;
+  timeoutMs?: number;
+  confirmEmbed?: (APIEmbed | JSONEncodable<APIEmbed>)[] | undefined;
+  cancelEmbed?: (APIEmbed | JSONEncodable<APIEmbed>)[] | undefined;
+};
+
+export async function confirmAction(options: ConfirmActionOptions): Promise<boolean> {
+  // Create confirmation buttons
   const confirmButton = new ButtonBuilder()
-    .setCustomId('confirm_destroy')
-    .setLabel('Yes, Destroy')
+    .setCustomId('confirm_action')
+    .setLabel(options.confirmButtonText || 'Confirm')
     .setStyle(ButtonStyle.Danger);
 
   const cancelButton = new ButtonBuilder()
-    .setCustomId('cancel_destroy')
-    .setLabel('Cancel')
+    .setCustomId('cancel_action')
+    .setLabel(options.cancelButtonText || 'Cancel')
     .setStyle(ButtonStyle.Secondary);
 
-  return new ActionRowBuilder<ButtonBuilder>()
-    .addComponents(confirmButton, cancelButton);
-}
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(confirmButton, cancelButton);
 
-/**
- * Create a confirmation embed for destructive actions
- */
-export function createConfirmationEmbed(
-  title: string,
-  itemName: string,
-  details: string,
-  additionalWarning?: string
-): EmbedBuilder {
-  let description = `Are you sure you want to permanently destroy **${formatNames(itemName)}**?\n\n`;
-  description += details;
-  description += '\n\nThis action cannot be undone';
-  if (additionalWarning) {
-    description += ` and will also ${additionalWarning}`;
-  }
-  description += '.';
-
-  return new EmbedBuilder()
-    .setTitle(`⚠️ ${title}`)
-    .setDescription(description)
-    .setColor(Colors.Orange);
-}
-
-/**
- * Handle confirmation workflow for destructive actions
- */
-export async function handleConfirmationWorkflow(
-  interaction: ChatInputCommandInteraction,
-  confirmEmbed: EmbedBuilder,
-  row: ActionRowBuilder<ButtonBuilder>,
-  onConfirm: () => Promise<{ title: string; description: string }>,
-  cancelMessage: string = 'Action cancelled.'
-): Promise<void> {
-  await interaction.reply({
-    embeds: [confirmEmbed],
+  // Send confirmation message
+  const confirmationMessage = await options.interaction.reply({
+    embeds: [
+      {
+        title: `⚠️ ${options.title}`,
+        description: options.description,
+        color: 0xffa500, // Orange for warning
+        fields: options.fields,
+        timestamp: new Date().toISOString(),
+      },
+    ],
     components: [row],
     ephemeral: true,
   });
 
   try {
-    const confirmation = await interaction.followUp({
-      content: 'Waiting for confirmation...',
-      ephemeral: true,
-      fetchReply: true,
-    });
-
-    const collector = confirmation.createMessageComponentCollector({
+    // Wait for user interaction
+    const confirmation = await confirmationMessage.awaitMessageComponent({
       componentType: ComponentType.Button,
-      time: 30_000, // 30 seconds
+      time: options.timeoutMs,
     });
 
-    collector.on('collect', async (buttonInteraction) => {
-      if (buttonInteraction.user.id !== interaction.user.id) {
-        await buttonInteraction.reply({
-          content: 'Only the person who ran this command can confirm.',
-          ephemeral: true,
-        });
-        return;
-      }
-
-      if (buttonInteraction.customId === 'confirm_destroy') {
-        try {
-          const result = await onConfirm();
-          
-          const successEmbed = new EmbedBuilder()
-            .setTitle(result.title)
-            .setDescription(result.description)
-            .setColor(Colors.Green);
-
-          await buttonInteraction.update({
-            content: userMention(interaction.user.id),
-            embeds: [successEmbed],
-            components: [],
-          });
-        } catch (error) {
-          await buttonInteraction.update({
-            content: `An error occurred: ${error}`,
-            embeds: [],
-            components: [],
-          });
-        }
-      } else {
-        await buttonInteraction.update({
-          content: cancelMessage,
-          embeds: [],
-          components: [],
-        });
-      }
+    if (confirmation.customId === 'confirm_action') {
+      // User confirmed
+      await confirmation.update({
+        embeds: options.confirmEmbed || [
+          {
+            title: '✅ Action Confirmed',
+            description: 'Processing your request...',
+            color: 0x4caf50, // Green
+            timestamp: new Date().toISOString(),
+          },
+        ],
+        components: [], // Remove buttons
+      });
+      return true;
+    } else {
+      // User cancelled
+      await confirmation.update({
+        embeds: options.cancelEmbed || [
+          {
+            title: '❌ Action Cancelled',
+            description: 'The action was cancelled.',
+            color: 0x9e9e9e, // Gray
+            timestamp: new Date().toISOString(),
+          },
+        ],
+        components: [], // Remove buttons
+      });
+      return false;
+    }
+  } catch (_error) {
+    // Timeout occurred
+    await options.interaction.editReply({
+      embeds: [
+        {
+          title: '⏱️ Confirmation Timeout',
+          description: 'The action was cancelled due to timeout.',
+          color: 0x9e9e9e, // Gray
+          timestamp: new Date().toISOString(),
+        },
+      ],
+      components: [], // Remove buttons
     });
-
-    collector.on('end', async (collected) => {
-      if (collected.size === 0) {
-        await interaction.editReply({
-          content: 'Confirmation timed out. Action cancelled.',
-          embeds: [],
-          components: [],
-        });
-      }
-    });
-  } catch (error) {
-    await interaction.editReply({
-      content: `An error occurred: ${error}`,
-      embeds: [],
-      components: [],
-    });
+    return false;
   }
 }

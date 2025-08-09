@@ -1,12 +1,14 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Metal } from '../../db/models/Metal';
 import { Op } from 'sequelize';
-import { 
-  getRandomItemByRarity, 
-  createItemEmbed, 
+import {
+  getRandomItemByRarity,
+  createItemEmbed,
   genericRarityAutocomplete,
-  calculateMetalPrice
+  calculateMetalPrice,
 } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -22,6 +24,14 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.DM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const rarity = interaction.options.getString('rarity', true);
 
   const metal = await getRandomItemByRarity<Metal>('~/db/models/Metal', rarity);
@@ -38,9 +48,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const embed = createItemEmbed(
     `Random Metal (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,
     metal.name,
-    [
-      { name: 'Price', value: `${price} gp` }
-    ],
+    [{ name: 'Price', value: `${price} gp` }],
     0xb2bec3
   );
 

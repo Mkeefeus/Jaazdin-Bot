@@ -1,17 +1,21 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
-import { confirmAction, formatNames } from '~/functions/helpers';
+import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
-  .setName('removetimer')
+  .setName('gmremovetimer')
   .setDescription('Removes an existing timer')
+  .addUserOption((option) =>
+    option.setName('player').setDescription('The discord id of the player, leave blank if yourself').setRequired(true)
+  )
   .addStringOption((option) =>
     option.setName('timer').setDescription('The name of the timer to remove.').setRequired(true).setAutocomplete(true)
   );
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
-  const player = interaction.user.id;
+  const player = (interaction.options.get('player')?.value as string) || interaction.user.id;
   console.log(player);
 
   if (focusedOption.name === 'timer') {
@@ -39,6 +43,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (!timerId) {
     return interaction.reply('Please provide both the timer name and player.');
+  }
+
+  // Only GMs can remove timers for others
+  if (!(checkUserRole(interaction, Roles.GM) && interaction.user.id !== discordId)) {
+    if (discordId !== interaction.user.id) {
+      return interaction.reply('You can only remove your own timers unless you are a GM.');
+    }
   }
 
   const timer = await Timer.findOne({

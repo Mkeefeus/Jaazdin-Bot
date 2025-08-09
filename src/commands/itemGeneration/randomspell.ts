@@ -12,46 +12,39 @@ const SPELL_SCHOOLS = [
   'Evocation',
   'Illusion',
   'Necromancy',
-  'Transmutation'
+  'Transmutation',
 ];
 
 const SCHOOL_LETTER_MAP: { [key: string]: string } = {
-  'A': 'Abjuration',
-  'C': 'Conjuration',
-  'D': 'Divination',
-  'E': 'Enchantment',
-  'V': 'Evocation',
-  'I': 'Illusion',
-  'N': 'Necromancy',
-  'T': 'Transmutation'
+  A: 'Abjuration',
+  C: 'Conjuration',
+  D: 'Divination',
+  E: 'Enchantment',
+  V: 'Evocation',
+  I: 'Illusion',
+  N: 'Necromancy',
+  T: 'Transmutation',
 };
 
 const SCHOOL_NAME_TO_LETTER: { [key: string]: string } = {
-  'Abjuration': 'A',
-  'Conjuration': 'C',
-  'Divination': 'D',
-  'Enchantment': 'E',
-  'Evocation': 'V',
-  'Illusion': 'I',
-  'Necromancy': 'N',
-  'Transmutation': 'T'
+  Abjuration: 'A',
+  Conjuration: 'C',
+  Divination: 'D',
+  Enchantment: 'E',
+  Evocation: 'V',
+  Illusion: 'I',
+  Necromancy: 'N',
+  Transmutation: 'T',
 };
 
 export const data = new SlashCommandBuilder()
   .setName('randomspell')
   .setDescription('Generate a random spell by level and optionally by school')
-  .addIntegerOption(opt =>
-    opt.setName('level')
-      .setDescription('Spell level (0-9)')
-      .setRequired(true)
-      .setMinValue(0)
-      .setMaxValue(9)
+  .addIntegerOption((opt) =>
+    opt.setName('level').setDescription('Spell level (0-9)').setRequired(true).setMinValue(0).setMaxValue(9)
   )
-  .addStringOption(opt =>
-    opt.setName('school')
-      .setDescription('Spell school (optional)')
-      .setRequired(false)
-      .setAutocomplete(true)
+  .addStringOption((opt) =>
+    opt.setName('school').setDescription('Spell school (optional)').setRequired(false).setAutocomplete(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -79,7 +72,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
 
     const randomSpell = spells[Math.floor(Math.random() * spells.length)];
-    
+
     // Convert school letter back to full name for display
     const schoolName = SCHOOL_LETTER_MAP[randomSpell.school] || randomSpell.school;
 
@@ -88,7 +81,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       randomSpell.name,
       [
         { name: 'Level', value: randomSpell.level.toString() },
-        { name: 'School', value: schoolName }
+        { name: 'School', value: schoolName },
       ],
       0x9b59b6
     );
@@ -105,9 +98,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 // Autocomplete for spell schools
 export async function autocomplete(interaction: AutocompleteInteraction) {
   const focused = interaction.options.getFocused().toLowerCase();
-  const filtered = SPELL_SCHOOLS
-    .filter(school => school.toLowerCase().startsWith(focused))
+  const filtered = SPELL_SCHOOLS.filter((school) => school.toLowerCase().startsWith(focused))
     .slice(0, 25)
-    .map(school => ({ name: school, value: school }));
+    .map((school) => ({ name: school, value: school }));
   await interaction.respond(filtered);
 }

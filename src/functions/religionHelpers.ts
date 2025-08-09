@@ -10,7 +10,7 @@ export async function findReligionByName(
   name: string
 ): Promise<Religion | null> {
   const religion = await Religion.findOne({ where: { name: name.toLowerCase() } });
-  
+
   if (!religion) {
     await interaction.reply({
       content: `Religion "${formatNames(name)}" not found.`,
@@ -18,19 +18,16 @@ export async function findReligionByName(
     });
     return null;
   }
-  
+
   return religion;
 }
 
 /**
  * Check if a religion name already exists
  */
-export async function checkReligionExists(
-  interaction: ChatInputCommandInteraction,
-  name: string
-): Promise<boolean> {
+export async function checkReligionExists(interaction: ChatInputCommandInteraction, name: string): Promise<boolean> {
   const existingReligion = await Religion.findOne({ where: { name: name.toLowerCase() } });
-  
+
   if (existingReligion) {
     await interaction.reply({
       content: `A religion with the name "${formatNames(name)}" already exists.`,
@@ -38,7 +35,7 @@ export async function checkReligionExists(
     });
     return true;
   }
-  
+
   return false;
 }
 
@@ -52,27 +49,24 @@ export async function findDomainByName(name: string): Promise<Domain | null> {
 /**
  * Parse follower count change (+x, -x, =x format)
  */
-export function parseFollowerCountChange(
-  changeRaw: string,
-  currentCount: number
-): { value: number; error?: string } {
+export function parseFollowerCountChange(changeRaw: string, currentCount: number): { value: number; error?: string } {
   const changeRegex = /^([+-=])(\d+)$/;
-  
+
   if (!changeRegex.test(changeRaw)) {
     return {
       value: 0,
-      error: 'Invalid follower count format. Please use +x to add, -x to subtract, or =x to set exactly.'
+      error: 'Invalid follower count format. Please use +x to add, -x to subtract, or =x to set exactly.',
     };
   }
-  
+
   const match = changeRegex.exec(changeRaw);
   if (!match) {
     return { value: 0, error: 'Failed to parse follower count change.' };
   }
-  
+
   const operator = match[1];
   const value = parseInt(match[2], 10);
-  
+
   switch (operator) {
     case '+':
       return { value: currentCount + value };
@@ -92,9 +86,7 @@ export async function religionAutocomplete(interaction: AutocompleteInteraction)
   const focusedValue = interaction.options.getFocused().toLowerCase();
   const religions = await Religion.findAll();
 
-  const filtered = religions.filter((religion) => 
-    religion.dataValues.name.toLowerCase().startsWith(focusedValue)
-  );
+  const filtered = religions.filter((religion) => religion.dataValues.name.toLowerCase().startsWith(focusedValue));
 
   await interaction.respond(
     filtered
@@ -114,9 +106,7 @@ export async function domainAutocomplete(interaction: AutocompleteInteraction): 
   const focusedValue = interaction.options.getFocused().toLowerCase();
   const domains = await Domain.findAll();
 
-  const filtered = domains.filter((domain) => 
-    domain.dataValues.name.toLowerCase().startsWith(focusedValue)
-  );
+  const filtered = domains.filter((domain) => domain.dataValues.name.toLowerCase().startsWith(focusedValue));
 
   await interaction.respond(
     filtered
@@ -134,7 +124,7 @@ export async function domainAutocomplete(interaction: AutocompleteInteraction): 
  */
 export async function religionCommandAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
   const focusedOption = interaction.options.getFocused(true).name;
-  
+
   switch (focusedOption) {
     case 'name':
     case 'oldname':

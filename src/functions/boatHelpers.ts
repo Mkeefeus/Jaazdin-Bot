@@ -1,6 +1,5 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction } from 'discord.js';
-import { Boat } from '~/db/models/Boat';
-import { Shipment } from '~/db/models/Shipment';
+import { Boat, Shipment } from '~/db/models/Boat';
 import { formatNames } from './helpers';
 import fs from 'fs';
 import path from 'path';
@@ -10,12 +9,9 @@ const D100TABLES_PATH = path.join(__dirname, '../../d100tables');
 /**
  * Find a boat by name, with error handling
  */
-export async function findBoatByName(
-  interaction: ChatInputCommandInteraction,
-  name: string
-): Promise<Boat | null> {
+export async function findBoatByName(interaction: ChatInputCommandInteraction, name: string): Promise<Boat | null> {
   const boat = await Boat.findOne({ where: { boatName: name } });
-  
+
   if (!boat) {
     await interaction.reply({
       content: `⚠️ **Boat Not Found**\n\nNo boat named "${formatNames(name)}" exists in the system.`,
@@ -23,7 +19,7 @@ export async function findBoatByName(
     });
     return null;
   }
-  
+
   return boat;
 }
 
@@ -36,7 +32,7 @@ export async function findShipmentByBoatAndItem(
   itemName: string
 ): Promise<Shipment | null> {
   const shipment = await Shipment.findOne({ where: { boatName, itemName } });
-  
+
   if (!shipment) {
     await interaction.reply({
       content: `⚠️ **Shipment Not Found**\n\nNo shipment found for boat **${formatNames(boatName)}** with item **${formatNames(itemName)}**.`,
@@ -44,22 +40,20 @@ export async function findShipmentByBoatAndItem(
     });
     return null;
   }
-  
+
   return shipment;
 }
 
 /**
  * Parse job names from comma-separated or JSON string format
  */
-export function parseJobsFromString(
-  jobsRaw: string | null
-): { jobs: string[]; error?: string } {
+export function parseJobsFromString(jobsRaw: string | null): { jobs: string[]; error?: string } {
   if (!jobsRaw) {
     return { jobs: [] };
   }
-  
+
   const trimmed = jobsRaw.trim();
-  
+
   // If it looks like JSON (starts with [), try JSON parsing first
   if (trimmed.startsWith('[')) {
     try {
@@ -67,45 +61,41 @@ export function parseJobsFromString(
       if (!Array.isArray(parsed) || !parsed.every((j) => typeof j === 'string')) {
         return {
           jobs: [],
-          error: 'Please enter job names as comma-separated (Smith, Cook) or JSON array ["Smith","Cook"]'
+          error: 'Please enter job names as comma-separated (Smith, Cook) or JSON array ["Smith","Cook"]',
         };
       }
       // Normalize job names (trim and filter empty)
-      const normalizedJobs = parsed
-        .map(job => job.trim())
-        .filter(job => job.length > 0);
+      const normalizedJobs = parsed.map((job) => job.trim()).filter((job) => job.length > 0);
       return { jobs: normalizedJobs };
     } catch {
       return {
         jobs: [],
-        error: 'Invalid JSON format. Please use comma-separated (Smith, Cook) or valid JSON ["Smith","Cook"]'
+        error: 'Invalid JSON format. Please use comma-separated (Smith, Cook) or valid JSON ["Smith","Cook"]',
       };
     }
   }
-  
+
   // Otherwise, treat as comma-separated
   const jobs = trimmed
     .split(',')
-    .map(job => job.trim())
-    .filter(job => job.length > 0);
-    
+    .map((job) => job.trim())
+    .filter((job) => job.length > 0);
+
   // Validate that all jobs are non-empty strings
-  if (jobs.some(job => typeof job !== 'string' || job.length === 0)) {
+  if (jobs.some((job) => typeof job !== 'string' || job.length === 0)) {
     return {
       jobs: [],
-      error: 'All job names must be non-empty strings'
+      error: 'All job names must be non-empty strings',
     };
   }
-    
+
   return { jobs };
 }
 
 /**
  * Parse job names from JSON string format (legacy - kept for compatibility)
  */
-export function parseJobsFromJSON(
-  jobsRaw: string | null
-): { jobs: string[]; error?: string } {
+export function parseJobsFromJSON(jobsRaw: string | null): { jobs: string[]; error?: string } {
   return parseJobsFromString(jobsRaw);
 }
 
@@ -129,7 +119,7 @@ export function getAvailableJobNames(): string[] {
 export function getAvailableTableNames(): string[] {
   return [
     'metals',
-    'weaponry', 
+    'weaponry',
     'pets',
     'meals',
     'poisonsPotions',
@@ -137,7 +127,7 @@ export function getAvailableTableNames(): string[] {
     'plants',
     'reagents',
     'otherworld',
-    'smuggle'
+    'smuggle',
   ];
 }
 
@@ -150,9 +140,9 @@ export async function boatNameAutocomplete(
 ): Promise<void> {
   const focusedValue = interaction.options.getFocused().toLowerCase();
   const whereClause = runningOnly ? { isRunning: true } : {};
-  const boats = await Boat.findAll({ 
+  const boats = await Boat.findAll({
     attributes: ['boatName'],
-    where: whereClause
+    where: whereClause,
   });
 
   const filtered = boats
@@ -174,24 +164,24 @@ export async function boatNameAutocomplete(
 export async function jobNamesAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
   const focusedValue = interaction.options.getFocused();
   const jobNames = getAvailableJobNames();
-  
+
   // Handle comma-separated input - get the last job being typed
   let currentInput = focusedValue;
   let prefix = '';
-  
+
   if (focusedValue.includes(',')) {
     const parts = focusedValue.split(',');
     currentInput = parts[parts.length - 1].trim();
     prefix = parts.slice(0, -1).join(', ');
     if (prefix) prefix += ', ';
   }
-  
+
   // Remove any JSON formatting characters from the current input
   const input = currentInput
     .replace(/[[\]"]/g, '')
     .trim()
     .toLowerCase();
-  
+
   const filtered = jobNames
     .filter((name) => name.toLowerCase().startsWith(input))
     .slice(0, 25)
@@ -214,10 +204,12 @@ export async function jobNamesAutocomplete(interaction: AutocompleteInteraction)
     const potentialMatches = jobNames.filter((name) => name.toLowerCase().startsWith(input));
     if (potentialMatches.length > 0) {
       // There are matches but they exceed the character limit
-      await interaction.respond([{
-        name: "⚠️ Character limit reached - please submit current jobs and add more separately",
-        value: focusedValue.substring(0, 100)
-      }]);
+      await interaction.respond([
+        {
+          name: '⚠️ Character limit reached - please submit current jobs and add more separately',
+          value: focusedValue.substring(0, 100),
+        },
+      ]);
       return;
     }
   }
@@ -231,28 +223,25 @@ export async function jobNamesAutocomplete(interaction: AutocompleteInteraction)
 export async function tableNamesAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
   const focusedValue = interaction.options.getFocused();
   const tableNames = getAvailableTableNames();
-  
+
   const input = focusedValue.trim().toLowerCase();
-  
+
   // Create user-friendly display names
   const tableDisplayNames: { [key: string]: string } = {
-    'metals': 'Metal Trading',
-    'weaponry': 'Weapons & Armor',
-    'pets': 'Exotic Creatures',
-    'meals': 'Fine Cuisine',
-    'poisonsPotions': 'Potions & Poisons',
-    'magicItems': 'Magic Items',
-    'plants': 'Seeds & Plants',
-    'reagents': 'Magical Reagents',
-    'otherworld': 'Otherworldly Materials',
-    'smuggle': 'Contraband Goods'
+    metals: 'Metal Trading',
+    weaponry: 'Weapons & Armor',
+    pets: 'Exotic Creatures',
+    meals: 'Fine Cuisine',
+    poisonsPotions: 'Potions & Poisons',
+    magicItems: 'Magic Items',
+    plants: 'Seeds & Plants',
+    reagents: 'Magical Reagents',
+    otherworld: 'Otherworldly Materials',
+    smuggle: 'Contraband Goods',
   };
-  
+
   const filtered = tableNames
-    .filter((name) => 
-      name.toLowerCase().includes(input) || 
-      tableDisplayNames[name]?.toLowerCase().includes(input)
-    )
+    .filter((name) => name.toLowerCase().includes(input) || tableDisplayNames[name]?.toLowerCase().includes(input))
     .slice(0, 25)
     .map((name) => ({
       name: tableDisplayNames[name] || formatNames(name),
@@ -266,22 +255,19 @@ export async function tableNamesAutocomplete(interaction: AutocompleteInteractio
 /**
  * Shipment item autocomplete helper (based on boat)
  */
-export async function shipmentItemAutocomplete(
-  interaction: AutocompleteInteraction,
-  boatName?: string
-): Promise<void> {
+export async function shipmentItemAutocomplete(interaction: AutocompleteInteraction, boatName?: string): Promise<void> {
   const focusedValue = interaction.options.getFocused().toLowerCase();
-  
+
   if (!boatName) {
     await interaction.respond([]);
     return;
   }
-  
+
   const shipments = await Shipment.findAll({
     where: { boatName },
     attributes: ['itemName'],
   });
-  
+
   const filtered = shipments
     .map((shipment) => shipment.itemName)
     .filter((name) => name.toLowerCase().startsWith(focusedValue))
@@ -300,7 +286,7 @@ export async function shipmentItemAutocomplete(
  */
 export async function boatCommandAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
   const focusedOption = interaction.options.getFocused(true).name;
-  
+
   switch (focusedOption) {
     case 'name':
     case 'boat':
@@ -332,7 +318,7 @@ export async function handleShipmentPurchase(
   itemName: string
 ): Promise<void> {
   const price = shipment.price;
-  
+
   if (shipment.quantity <= 1) {
     await shipment.destroy();
     await interaction.reply({
@@ -359,30 +345,30 @@ export function buildBoatUpdatesFromOptions(
   existingBoat?: Boat
 ): { updates: Record<string, unknown>; error?: string } {
   const updates: Record<string, unknown> = {};
-  
+
   // Helper function to add non-null values to updates
   const addIfNotNull = (key: string, value: unknown) => {
     if (value !== null) updates[key] = value;
   };
-  
+
   // String fields
   addIfNotNull('city', interaction.options.getString('city'));
   addIfNotNull('country', interaction.options.getString('country'));
   addIfNotNull('tier2Ability', interaction.options.getString('tier2ability'));
   addIfNotNull('tableToGenerate', interaction.options.getString('table'));
-  
+
   // Integer fields
   addIfNotNull('waitTime', interaction.options.getInteger('waittime'));
   addIfNotNull('timeInTown', interaction.options.getInteger('timeintown'));
   addIfNotNull('weeksLeft', interaction.options.getInteger('weeksleft'));
-  
+
   // Boolean fields
   addIfNotNull('isTier2', interaction.options.getBoolean('istier2'));
   addIfNotNull('isRunning', interaction.options.getBoolean('isrunning'));
   addIfNotNull('isInTown', interaction.options.getBoolean('isintown'));
-  
+
   // Jobs are managed separately with /boat-add-job, /boat-remove-job commands
-  
+
   // Auto-calculate weeksLeft if not explicitly set
   if (!updates.weeksLeft) {
     // Calculate weeksLeft based on boat state and timing values
@@ -390,9 +376,9 @@ export function buildBoatUpdatesFromOptions(
     const timeInTown = interaction.options.getInteger('timeintown') ?? existingBoat?.timeInTown;
     const isTier2 = interaction.options.getBoolean('istier2') ?? existingBoat?.isTier2 ?? false;
     const isInTown = interaction.options.getBoolean('isintown') ?? existingBoat?.isInTown ?? true;
-    
+
     const timeToUse = isInTown ? timeInTown : waitTime;
-    
+
     if (timeToUse !== null && timeToUse !== undefined) {
       if (isInTown) {
         // Boat in town: use timeInTown (+ 1 for tier 2)
@@ -403,7 +389,7 @@ export function buildBoatUpdatesFromOptions(
       }
     }
   }
-  
+
   return { updates };
 }
 
@@ -451,7 +437,7 @@ export function createItemEmbed(
   color: number = 0x2e86c1
 ) {
   let description = `**Item:** ${itemName}`;
-  
+
   for (const field of additionalFields) {
     description += `\n**${field.name}:** ${field.value}`;
   }
@@ -543,22 +529,22 @@ export async function executeItemGeneration(
 ): Promise<void> {
   try {
     const item = await generatorFunction();
-    
+
     if (!item) {
-      await interaction.reply({ 
-        content: noItemMessage, 
-        ephemeral: true 
+      await interaction.reply({
+        content: noItemMessage,
+        ephemeral: true,
       });
       return;
     }
 
     await interaction.reply({
-      embeds: [embedCreator(item)]
+      embeds: [embedCreator(item)],
     });
   } catch (error) {
     await interaction.reply({
       content: `Failed to generate item: ${error}`,
-      ephemeral: true
+      ephemeral: true,
     });
   }
 }
@@ -577,11 +563,9 @@ export async function generateItemWithValidMetal<T extends { invalidMetals?: str
   // Import the item model and get all items
   const { default: ItemModel } = await import(itemModelPath);
   const allItems = await ItemModel.findAll();
-  
+
   // Filter items that are compatible with this metal
-  const validItems = allItems.filter(
-    (item: T) => !item.invalidMetals || !item.invalidMetals.includes(metal.name)
-  );
+  const validItems = allItems.filter((item: T) => !item.invalidMetals || !item.invalidMetals.includes(metal.name));
   if (validItems.length === 0) return null;
 
   // Return random valid item with the metal
@@ -863,7 +847,20 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
     }
     case 'reagents': {
       const result: ShipmentItem[] = [];
-      const types = ['Aberration', 'Fiend', 'Celestial', 'Giant', 'Construct', 'Monstrosity', 'Dragon', 'Ooze', 'Elemental', 'Plant', 'Fey', 'Undead'];
+      const types = [
+        'Aberration',
+        'Fiend',
+        'Celestial',
+        'Giant',
+        'Construct',
+        'Monstrosity',
+        'Dragon',
+        'Ooze',
+        'Elemental',
+        'Plant',
+        'Fey',
+        'Undead',
+      ];
       const rarityOrder = [
         { min: 1, max: 3, rarity: 'Common' },
         { min: 4, max: 12, rarity: 'Uncommon' },
@@ -933,7 +930,9 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           const combo = await generateRandomWeaponWithMetal(rarity);
           if (combo) {
             const { weapon, metal } = combo;
-            const price = Math.round((randomInt(metal.price_min, metal.price_max) * weapon.plates + weapon.price) * 1.33);
+            const price = Math.round(
+              (randomInt(metal.price_min, metal.price_max) * weapon.plates + weapon.price) * 1.33
+            );
             const itemName = `${metal.name} ${weapon.name}`;
             const existing = result.find((item) => item.itemName === itemName);
             if (existing) {
@@ -1025,21 +1024,21 @@ export async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): 
   // If tableToGenerate was changed in the updates, use the new value
   const newTableToGenerate = updates.tableToGenerate !== undefined ? updates.tableToGenerate : boat.tableToGenerate;
   const newIsInTown = updates.isInTown !== undefined ? updates.isInTown : boat.isInTown;
-  
+
   const shouldHaveShipmentAfterUpdate = newIsInTown && newTableToGenerate && newTableToGenerate !== 'NA';
-  
+
   if (shouldHaveShipmentAfterUpdate) {
     // Remove old shipments for this boat
     await Shipment.destroy({ where: { boatName: boat.boatName } });
-    
+
     // Generate new shipment if the boat should have one
-    const goods = await generateShipmentItems({ 
-      ...boat.dataValues, 
+    const goods = await generateShipmentItems({
+      ...boat.dataValues,
       ...updates,
       tableToGenerate: newTableToGenerate,
-      isInTown: newIsInTown
+      isInTown: newIsInTown,
     } as Boat);
-    
+
     // Insert new shipment items
     for (const item of goods) {
       await Shipment.create({
@@ -1059,17 +1058,17 @@ export async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): 
  * Create informative response message for boat updates with shipment status
  */
 export async function createBoatUpdateMessage(
-  boatName: string, 
-  updates: Partial<Boat>, 
+  boatName: string,
+  updates: Partial<Boat>,
   originalBoat: Boat
 ): Promise<string> {
   const updatedBoat = { ...originalBoat.dataValues, ...updates } as Boat;
-  
+
   let responseMessage = `✅ **Boat "${formatNames(boatName)}" updated successfully!**\n\n`;
-  
+
   // Add comprehensive boat information
   responseMessage += await createBoatStatusDescription(updatedBoat);
-  
+
   return responseMessage;
 }
 
@@ -1125,13 +1124,13 @@ export async function handleBoatArrivingInTown(boat: Boat): Promise<void> {
 export async function destroyBoatWithCascade(boatName: string): Promise<{ shipmentCount: number }> {
   // First count the shipments that will be deleted
   const shipmentCount = await Shipment.count({ where: { boatName } });
-  
+
   // Delete all shipments first
   await Shipment.destroy({ where: { boatName } });
-  
+
   // Then delete the boat
   await Boat.destroy({ where: { boatName } });
-  
+
   return { shipmentCount };
 }
 
@@ -1165,27 +1164,27 @@ export function calculateMetalPrice(metal: { price_min: number; price_max: numbe
  */
 export function formatBoatInfo(boat: Boat): string {
   let info = `**${formatNames(boat.boatName)}**\n`;
-  
+
   // Basic status
   info += `**Status:** ${boat.isRunning ? 'Running' : 'Stopped'}\n`;
   info += `**Location:** ${boat.isInTown ? 'In Town' : 'At Sea'}\n`;
   info += `**Weeks Left:** ${boat.weeksLeft}\n`;
-  
+
   // Destination info
   if (boat.city && boat.country) {
     info += `**Destination:** ${formatNames(boat.city)}, ${formatNames(boat.country)}\n`;
   }
-  
+
   // Timing info
   info += `**Travel Time:** ${boat.waitTime} weeks\n`;
   info += `**Time in Town:** ${boat.timeInTown} weeks\n`;
-  
+
   // Job benefits
   if (boat.jobsAffected && Array.isArray(boat.jobsAffected) && boat.jobsAffected.length > 0) {
-    const jobNames = boat.jobsAffected.map(job => formatNames(job)).join(', ');
+    const jobNames = boat.jobsAffected.map((job) => formatNames(job)).join(', ');
     info += `**Job Benefits:** ${jobNames} get +1 gp wage die\n`;
   }
-  
+
   // Tier 2 info
   if (boat.isTier2) {
     info += `**Tier 2 Boat:** Yes\n`;
@@ -1193,7 +1192,7 @@ export function formatBoatInfo(boat: Boat): string {
       info += `**Tier 2 Ability:** ${boat.tier2Ability}\n`;
     }
   }
-  
+
   return info;
 }
 
@@ -1203,11 +1202,11 @@ export function formatBoatInfo(boat: Boat): string {
 export function formatBoatBasicInfo(boat: Boat): string {
   let info = `**${formatNames(boat.boatName)}**\n`;
   info += `${boat.isRunning ? '🚢' : '⚓'} ${boat.isInTown ? 'In Town' : 'At Sea'} • ${boat.weeksLeft} week(s) left`;
-  
+
   if (boat.isTier2) {
     info += ' • Tier 2';
   }
-  
+
   return info;
 }
 
@@ -1216,15 +1215,13 @@ export function formatBoatBasicInfo(boat: Boat): string {
  */
 export async function formatShipmentInfo(boatName: string): Promise<string> {
   const shipments = await Shipment.findAll({ where: { boatName } });
-  
+
   if (shipments.length === 0) {
     return 'No active shipments';
   }
-  
-  const shipmentList = shipments
-    .map(s => `• ${formatNames(s.itemName)} (x${s.quantity}) — ${s.price} gp`)
-    .join('\n');
-    
+
+  const shipmentList = shipments.map((s) => `• ${formatNames(s.itemName)} (x${s.quantity}) — ${s.price} gp`).join('\n');
+
   return `**Active Shipments:**\n${shipmentList}`;
 }
 
@@ -1235,20 +1232,20 @@ export function getTableDescription(tableToGenerate: string | null): string {
   if (!tableToGenerate || tableToGenerate === 'NA') {
     return 'No shipments generated';
   }
-  
+
   const tableDescriptions: { [key: string]: string } = {
-    'metals': 'Metal Trading',
-    'weaponry': 'Weapons & Armor',
-    'pets': 'Exotic Creatures',
-    'meals': 'Fine Cuisine',
-    'poisonsPotions': 'Potions & Poisons',
-    'magicItems': 'Magic Items',
-    'plants': 'Seeds & Plants',
-    'reagents': 'Magical Reagents',
-    'otherworld': 'Otherworldly Materials',
-    'smuggle': 'Contraband Goods'
+    metals: 'Metal Trading',
+    weaponry: 'Weapons & Armor',
+    pets: 'Exotic Creatures',
+    meals: 'Fine Cuisine',
+    poisonsPotions: 'Potions & Poisons',
+    magicItems: 'Magic Items',
+    plants: 'Seeds & Plants',
+    reagents: 'Magical Reagents',
+    otherworld: 'Otherworldly Materials',
+    smuggle: 'Contraband Goods',
   };
-  
+
   return tableDescriptions[tableToGenerate] || formatNames(tableToGenerate);
 }
 
@@ -1257,11 +1254,11 @@ export function getTableDescription(tableToGenerate: string | null): string {
  */
 export async function createBoatStatusDescription(boat: Boat): Promise<string> {
   let description = formatBoatInfo(boat);
-  
+
   // Add shipment type description
   const tableDesc = getTableDescription(boat.tableToGenerate);
   description += `**Shipment Type:** ${tableDesc}\n\n`;
-  
+
   // Add actual shipment info if in town
   if (boat.isInTown && boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
     const shipmentInfo = await formatShipmentInfo(boat.boatName);
@@ -1271,6 +1268,6 @@ export async function createBoatStatusDescription(boat: Boat): Promise<string> {
   } else {
     description += '*No shipments generated*';
   }
-  
+
   return description;
 }

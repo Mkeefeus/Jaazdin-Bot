@@ -1,11 +1,13 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Reagent } from '../../db/models/Reagent';
-import { 
+import {
   genericRarityAutocomplete,
   genericTypeAutocomplete,
   createItemEmbed,
-  calculateSimpleItemPrice
+  calculateSimpleItemPrice,
 } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -33,6 +35,14 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.DM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const rarity = interaction.options.getString('rarity', true);
   const creatureType = interaction.options.getString('creaturetype', true);
 
@@ -50,10 +60,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const embed = createItemEmbed(
     `Random Reagent (${rarity.charAt(0).toUpperCase() + rarity.slice(1)}, ${creatureType.charAt(0).toUpperCase() + creatureType.slice(1)})`,
     reagentChosen.name,
-    [
-
-      { name: 'Price', value: `${price} gp` }
-    ],
+    [{ name: 'Price', value: `${price} gp` }],
     0x16a085
   );
 

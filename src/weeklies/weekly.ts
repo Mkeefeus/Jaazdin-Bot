@@ -1,11 +1,7 @@
 import { readdirSync } from 'fs';
 import path from 'path';
 import { LastWeeklyRunTime } from '~/db/models/LastWeeklyRunTime';
-
-type WeeklyFunctions = {
-  update?: () => void;
-  post?: () => void;
-};
+import { WeeklyFunctions } from '~/types/weeklyfunctions';
 
 async function executeWeeklyTasks() {
   // Perform the weekly task here

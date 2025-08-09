@@ -1,5 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
-import { Shipment } from '~/db/models/Shipment';
+import { Shipment } from '~/db/models/Boat';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 import { Boat } from '~/db/models/Boat';
 
 //TODO gm command only.
@@ -13,6 +15,14 @@ export const data = new SlashCommandBuilder()
   .addIntegerOption((opt) => opt.setName('quantity').setDescription('New quantity').setRequired(false));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const boatName = interaction.options.getString('boat', true);
   const itemName = interaction.options.getString('item', true);
   const price = interaction.options.getInteger('price');

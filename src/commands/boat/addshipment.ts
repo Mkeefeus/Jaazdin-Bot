@@ -1,7 +1,8 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
-import { Shipment } from '~/db/models/Shipment';
+import { Shipment } from '~/db/models/Boat';
 import { boatNameAutocomplete, formatShipmentInfo } from '~/functions/boatHelpers';
-import { formatNames } from '~/functions/helpers';
+import { checkUserRole, formatNames } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -14,6 +15,13 @@ export const data = new SlashCommandBuilder()
   .addIntegerOption((opt) => opt.setName('quantity').setDescription('Quantity').setRequired(true).setMinValue(1));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
   const boatName = interaction.options.getString('boat', true);
   const itemName = interaction.options.getString('item', true);
   const price = interaction.options.getInteger('price', true);
@@ -29,12 +37,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     // Show updated shipment list
     const shipmentInfo = await formatShipmentInfo(boatName);
-    
+
     const embed = new EmbedBuilder()
       .setTitle(`✅ Shipment Added to ${formatNames(boatName)}`)
-      .setDescription(
-        `Added **${formatNames(itemName)}** (x${quantity}, ${price}gp each)\n\n${shipmentInfo}`
-      )
+      .setDescription(`Added **${formatNames(itemName)}** (x${quantity}, ${price}gp each)\n\n${shipmentInfo}`)
       .setColor(0x00ff00);
 
     await interaction.reply({

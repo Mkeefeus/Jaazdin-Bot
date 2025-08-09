@@ -1,11 +1,8 @@
-import {
-  AutocompleteInteraction,
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-} from 'discord.js';
-import { Religion } from '~/db/models/Religion';
-import { formatNames, createConfirmationButtons, createConfirmationEmbed, handleConfirmationWorkflow } from '~/functions/helpers';
+import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { Domain } from '~/db/models/Religion';
+import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -22,35 +19,70 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   // Use helper to find religion with error handling
   const religion = await findReligionByName(interaction, name);
   if (!religion) {
+    await interaction.reply({
+      content: 'Could not find the specified religion.',
+      ephemeral: true,
+    });
     return;
   }
 
-  // Build religion details for confirmation
-  const details = `**Followers:** ${religion.dataValues.follower_count}`;
+  const domain = await Domain.findOne({ where: { id: religion.dataValues.domain_id } });
 
-  // Create confirmation elements
-  const row = createConfirmationButtons();
-  const confirmEmbed = createConfirmationEmbed(
-    'Confirm Religion Destruction',
-    formatNames(religion.dataValues.name),
-    details
-  );
+  if (!domain) {
+    await interaction.reply({
+      content: 'Could not find the domain for this religion.',
+      ephemeral: true,
+    });
+    return;
+  }
 
-  // Handle the confirmation workflow
-  await handleConfirmationWorkflow(
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
+  const confirm = await confirmAction({
     interaction,
-    confirmEmbed,
-    row,
-    async () => {
-      await Religion.destroy({ where: { name } });
+    title: 'Destroy Religion',
+    description: `Are you sure you want to destroy ${formatNames(religion.dataValues.name)}?`,
+    confirmButtonText: 'Destroy',
+    cancelButtonText: 'Cancel',
+    fields: [
+      {
+        name: 'Religion Name',
+        value: formatNames(religion.dataValues.name),
+        inline: true,
+      },
+      {
+        name: 'Domain',
+        value: formatNames(domain.dataValues.name),
+        inline: true,
+      },
+      {
+        name: 'Followers',
+        value: `${religion.dataValues.follower_count}`,
+        inline: true,
+      },
+    ],
+    confirmEmbed: [
+      {
+        title: '✅ Religion Destroyed',
+        description: `The religion ${formatNames(religion.dataValues.name)} has been destroyed.`,
+        color: 0x4caf50, // Green
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  });
 
-      return {
-        title: 'Religion Destroyed',
-        description: `${formatNames(name)} was successfully removed from the religion list!`
-      };
-    },
-    'Religion destruction cancelled.'
-  );
+  if (!confirm) {
+    return;
+  }
+
+  // Proceed with destruction
+  religion.destroy();
 }
 
 export async function autocomplete(interaction: AutocompleteInteraction) {

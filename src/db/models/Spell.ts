@@ -29,20 +29,20 @@ Spell.init(
 );
 
 async function seed() {
-    const spellData = (await import('~/../spells.json')).default;
+  const spellData = (await import('~/../spells.json')).default;
 
-    console.log(spellData);
-    try {
-        for (const spell of spellData) {
-            await Spell.create({
-                name: spell.name,
-                level: spell.level,
-                school: spell.school,
-            });
-        }
-    } catch (error) {
-        console.error('Error seeding spell data:', error);
+  console.log(spellData);
+  try {
+    for (const spell of spellData) {
+      await Spell.create({
+        name: spell.name,
+        level: spell.level,
+        school: spell.school,
+      });
     }
+  } catch (error) {
+    console.error('Error seeding spell data:', error);
+  }
 }
 
 export { seed };

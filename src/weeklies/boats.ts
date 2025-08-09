@@ -3,7 +3,13 @@ import { Boat } from '../db/models/Boat';
 import { EmbedBuilder, TextChannel } from 'discord.js';
 import { client } from '~/index';
 // Import helper functions from boatHelpers
-import { handleBoatLeavingTown, handleBoatArrivingInTown, formatBoatInfo, formatShipmentInfo, getTableDescription } from '../functions/boatHelpers';
+import {
+  handleBoatLeavingTown,
+  handleBoatArrivingInTown,
+  formatBoatInfo,
+  formatShipmentInfo,
+  getTableDescription,
+} from '../functions/boatHelpers';
 
 async function update() {
   // 1. Advance all running boats by 1 week
@@ -50,7 +56,12 @@ async function post() {
   });
 
   const embeds: EmbedBuilder[] = [];
-  const CHANNEL_ID = '1309206984196755506';
+  const CHANNEL_ID = process.env.BOT_CHANNEL_ID;
+
+  if (!CHANNEL_ID) {
+    console.error('BOT_CHANNEL_ID is not defined');
+    return;
+  }
 
   // Embed for boats not in town
   if (boatsNotInTown.length > 0) {
@@ -64,7 +75,7 @@ async function post() {
     const boatInfo = formatBoatInfo(boat);
     const shipmentInfo = await formatShipmentInfo(boat.boatName);
     const tableDescription = getTableDescription(boat.tableToGenerate);
-    
+
     let desc = boatInfo;
     if (tableDescription) {
       desc += `\n**Table:** ${tableDescription}`;

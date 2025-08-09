@@ -1,5 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 import { Op } from 'sequelize';
 
 //TODO gm command only.
@@ -16,9 +18,17 @@ export const data = new SlashCommandBuilder()
       .setDescription('Comma-separated boat names to leave unchanged (optional)')
       .setRequired(false)
   );
-  //TODO: for boats names use autocomplete to suggest existing boat names
+//TODO: for boats names use autocomplete to suggest existing boat names
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const running = interaction.options.getBoolean('running', true);
   const exceptionsRaw = interaction.options.getString('exceptions');
   let exceptions: string[] = [];
@@ -33,9 +43,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const [affected] = await Boat.update(
     { isRunning: running },
     {
-      where: exceptions.length > 0
-        ? { boatName: { [Op.notIn]: exceptions } }
-        : {}
+      where: exceptions.length > 0 ? { boatName: { [Op.notIn]: exceptions } } : {},
     }
   );
 

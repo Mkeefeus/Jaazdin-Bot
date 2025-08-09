@@ -1,12 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 import { db } from '../db';
+import { TimerType } from '~/types/timertype';
 
 interface TimerAttributes {
   id?: number;
   name: string;
   weeks_remaining: number;
-  type: string;
+  type: TimerType;
   user: string; // Discord ID of the user
   character: string; // Character associated with the timer
   createdAt?: Date;
@@ -19,7 +20,7 @@ export class Timer extends Model<TimerAttributes, TimerCreationAttributes> imple
   declare id?: number;
   declare name: string;
   declare weeks_remaining: number;
-  declare type: string;
+  declare type: TimerType;
   declare user: string;
   declare character: string;
   @CreatedAt declare createdAt?: Date;

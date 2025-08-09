@@ -1,11 +1,13 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Weapon } from '../../db/models/Weapon';
-import { 
+import {
   generateItemWithValidMetal,
   genericRarityAutocomplete,
   createItemEmbed,
-  calculateMetalItemPrice
+  calculateMetalItemPrice,
 } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -21,6 +23,14 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.DM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const rarity = interaction.options.getString('rarity', true);
 
   const result = await generateRandomWeaponWithMetal(rarity);
@@ -40,7 +50,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     `${metal.name} ${weapon.name}`,
     [
       { name: 'Metal', value: metal.name },
-      { name: 'Price', value: `${price} gp` }
+      { name: 'Price', value: `${price} gp` },
     ],
     0xaaaaaa
   );
@@ -52,6 +62,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export async function generateRandomWeaponWithMetal(rarity: string) {
   const result = await generateItemWithValidMetal<Weapon>('~/db/models/Weapon', rarity);
   if (!result) return null;
-  
+
   return { weapon: result.item, metal: result.metal };
 }

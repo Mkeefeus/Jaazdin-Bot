@@ -1,11 +1,13 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { MagicItem } from '../../db/models/MagicItem';
-import { 
-  getRandomItemByTable, 
-  createItemEmbed, 
+import {
+  getRandomItemByTable,
+  createItemEmbed,
   genericTableAutocomplete,
-  calculateSimpleItemPrice
+  calculateSimpleItemPrice,
 } from '~/functions/boatHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 //TODO gm command only.
 
@@ -18,7 +20,7 @@ export const data = new SlashCommandBuilder()
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
   await genericTableAutocomplete(
-    interaction, 
+    interaction,
     '~/db/models/MagicItem',
     'table',
     (table) => `Table ${table.toUpperCase()}`
@@ -26,6 +28,14 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+  if (!checkUserRole(interaction, Roles.DM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      ephemeral: true,
+    });
+    return;
+  }
+
   const table = interaction.options.getString('table', true);
 
   const item = await getRandomItemByTable<MagicItem>('~/db/models/MagicItem', table);
