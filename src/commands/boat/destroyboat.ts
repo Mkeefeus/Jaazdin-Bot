@@ -72,6 +72,13 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await boatNameAutocomplete(interaction);
 }
 
+export const help = {
+  name: 'destroyboat',
+  description: 'Remove a boat from the database',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};
+
 export default {
   data,
   execute,

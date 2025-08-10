@@ -28,3 +28,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await interaction.editReply('An error occurred while fetching the kitchen');
   }
 }
+
+export const help = {
+  name: 'exportkitchen',
+  description: 'Save the kitchen to a JSON file',
+  requiredRole: null,
+  category: 'fun',
+};

@@ -118,3 +118,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     });
   }
 }
+
+export const help = {
+  name: 'boat-clear-jobs',
+  description: 'Clear all jobs from a boat',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

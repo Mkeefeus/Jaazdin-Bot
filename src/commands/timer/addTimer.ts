@@ -109,6 +109,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
+export const help = {
+  name: 'addtimer',
+  description: 'Add a new timer for yourself or another user',
+  requiredRole: null,
+  category: 'timers',
+};
+
 export default {
   data,
   execute,

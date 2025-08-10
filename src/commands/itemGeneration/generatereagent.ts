@@ -80,3 +80,10 @@ export async function getRandomReagentByRarity(rarity: string) {
   if (validReagents.length === 0) return null;
   return validReagents[Math.floor(Math.random() * validReagents.length)];
 }
+
+export const help = {
+  name: 'generatereagent',
+  description: 'Generate a random reagent by rarity and creature type',
+  requiredRole: Roles.DM,
+  category: 'items',
+};

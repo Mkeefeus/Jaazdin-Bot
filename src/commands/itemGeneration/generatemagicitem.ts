@@ -58,3 +58,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   await interaction.reply({ embeds: [embed] });
 }
+
+export const help = {
+  name: 'generatemagicitem',
+  description: 'Generate a random magic item by table type',
+  requiredRole: Roles.DM,
+  category: 'items',
+};

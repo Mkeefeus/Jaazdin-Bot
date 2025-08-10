@@ -84,6 +84,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await timer.destroy();
 }
 
+export const help = {
+  name: 'removetimer',
+  description: 'Remove one of your timers',
+  requiredRole: null,
+  category: 'timers',
+};
+
 export default {
   data,
   execute,

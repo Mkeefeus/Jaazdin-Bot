@@ -55,3 +55,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
   await interaction.editReply('DB Reset Complete');
 }
+
+export const help = {
+  name: 'resetdb',
+  description: 'Reset and reseed the database (Bot Dev only)',
+  requiredRole: Roles.BOT_DEV,
+  category: 'utility',
+};

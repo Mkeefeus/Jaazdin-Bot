@@ -103,3 +103,10 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
     .map((school) => ({ name: school, value: school }));
   await interaction.respond(filtered);
 }
+
+export const help = {
+  name: 'randomspell',
+  description: 'Generate a random spell by level and optionally by school',
+  requiredRole: null,
+  category: 'items',
+};

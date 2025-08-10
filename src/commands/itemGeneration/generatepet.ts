@@ -93,3 +93,10 @@ export async function getRandomPetByRarityAndType(rarity: string, creatureType: 
   if (validPets.length === 0) return null;
   return validPets[Math.floor(Math.random() * validPets.length)];
 }
+
+export const help = {
+  name: 'generatepet',
+  description: 'Generate a random pet by rarity and creature type',
+  requiredRole: Roles.DM,
+  category: 'items',
+};

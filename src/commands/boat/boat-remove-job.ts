@@ -100,3 +100,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   await interaction.reply({ embeds: [embed] });
 }
+
+export const help = {
+  name: 'boat-remove-job',
+  description: 'Remove a job from a boat',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

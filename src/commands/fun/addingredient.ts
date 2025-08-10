@@ -83,6 +83,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
+export const help = {
+  name: 'addingredient',
+  description: "Adds an ingredient to Kreider's kitchen",
+  requiredRole: null,
+  category: 'fun',
+};
+
 export default {
   data,
   execute,

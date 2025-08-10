@@ -30,6 +30,13 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
   return allMessages;
 }
 
+export const help = {
+  name: 'showallreligions',
+  description: 'Display all religions and their information',
+  requiredRole: null,
+  category: 'religion',
+};
+
 export default {
   data,
   execute,

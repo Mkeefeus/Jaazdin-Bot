@@ -110,6 +110,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
+export const help = {
+  name: 'gmupdatetimer',
+  description: 'GM command to update any user\'s timer duration using +x, -x, or =x format',
+  requiredRole: Roles.GM,
+  category: 'timers',
+};
+
 export default {
   data,
   execute,

@@ -90,3 +90,10 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
     await tableNamesAutocomplete(interaction);
   }
 }
+
+export const help = {
+  name: 'updateboat',
+  description: 'Update boat properties such as status, location, and settings',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

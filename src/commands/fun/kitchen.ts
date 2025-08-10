@@ -142,6 +142,13 @@ function getCategoryEmoji(category: IngredientCategory): string {
   return emojiMap[category];
 }
 
+export const help = {
+  name: 'kitchen',
+  description: "Display all ingredients in Kreider's kitchen organized by category",
+  requiredRole: null,
+  category: 'fun',
+};
+
 export default {
   data,
   execute,

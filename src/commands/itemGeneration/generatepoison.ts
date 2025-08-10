@@ -53,3 +53,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   await interaction.reply({ embeds: [embed] });
 }
+
+export const help = {
+  name: 'generatepoison',
+  description: 'Generate a random poison by rarity',
+  requiredRole: Roles.DM,
+  category: 'items',
+};

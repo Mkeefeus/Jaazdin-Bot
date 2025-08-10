@@ -52,6 +52,13 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
+export const help = {
+  name: 'showreligion',
+  description: 'Display detailed information about a specific religion',
+  requiredRole: null,
+  category: 'religion',
+};
+
 export default {
   data,
   execute,

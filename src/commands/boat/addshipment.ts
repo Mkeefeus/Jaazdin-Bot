@@ -59,3 +59,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export async function autocomplete(interaction: AutocompleteInteraction) {
   await boatNameAutocomplete(interaction, true); // Only running boats
 }
+
+export const help = {
+  name: 'addshipment',
+  description: 'Add a new shipment item to a boat',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

@@ -38,3 +38,10 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   // This command only needs boat name autocomplete
   await boatNameAutocomplete(interaction);
 }
+
+export const help = {
+  name: 'purchaseshipment',
+  description: 'Purchase a shipment item from a boat (subtracts 1 from quantity, deletes if zero)',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

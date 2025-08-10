@@ -53,3 +53,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   await interaction.reply({ embeds: [embed] });
 }
+
+export const help = {
+  name: 'generateseeds',
+  description: 'Generate a random seed by rarity',
+  requiredRole: Roles.DM,
+  category: 'items',
+};

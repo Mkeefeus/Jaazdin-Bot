@@ -74,3 +74,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await interaction.reply({ embeds: embeds.slice(i, i + 10), ephemeral: false });
   }
 }
+
+export const help = {
+  name: 'showboats',
+  description: 'Display all boats and their current status',
+  requiredRole: null,
+  category: 'boats',
+};

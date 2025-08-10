@@ -65,3 +65,10 @@ export async function generateRandomWeaponWithMetal(rarity: string) {
 
   return { weapon: result.item, metal: result.metal };
 }
+
+export const help = {
+  name: 'generateweapon',
+  description: 'Generate a random weapon with a random valid metal by rarity',
+  requiredRole: Roles.DM,
+  category: 'items',
+};

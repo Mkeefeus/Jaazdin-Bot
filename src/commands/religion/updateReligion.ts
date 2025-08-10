@@ -93,6 +93,13 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
+export const help = {
+  name: 'updatereligion',
+  description: 'Update religion properties such as name, domain, or follower count',
+  requiredRole: null,
+  category: 'religion',
+};
+
 export default {
   data,
   execute,

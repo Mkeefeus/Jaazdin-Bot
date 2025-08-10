@@ -13,6 +13,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply('Pong!');
 }
 
+export const help = {
+  name: 'ping',
+  description: 'Test bot responsiveness and database connection',
+  requiredRole: null,
+  category: 'utility',
+};
+
 export default {
   data,
   execute,

@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { readdirSync } from 'fs';
 import path from 'path';
 import { WeeklyFunctions } from '~/types/weeklyfunctions';
+import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder().setName('triggerweeklies').setDescription('Triggers the weekly tasks');
 
@@ -24,3 +25,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     interaction.reply(`Weekly tasks for ${file} have been triggered.`);
   }
 }
+
+export const help = {
+  name: 'triggerweekly',
+  description: 'Manually trigger weekly tasks (GM only)',
+  requiredRole: Roles.GM,
+  category: 'utility',
+};

@@ -103,6 +103,13 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await jobNameAutocomplete(interaction);
 }
 
+export const help = {
+  name: 'jobreward',
+  description: 'Calculate and display job reward based on boats and tier',
+  requiredRole: null,
+  category: 'jobs',
+};
+
 export default {
   data,
   execute,

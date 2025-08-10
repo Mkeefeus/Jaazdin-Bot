@@ -125,6 +125,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
+export const help = {
+  name: 'makesandwich',
+  description: 'Generate a random sandwich using ingredients from the kitchen',
+  requiredRole: null,
+  category: 'fun',
+};
+
 export default {
   data,
   execute,

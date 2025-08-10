@@ -52,3 +52,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     ephemeral: true,
   });
 }
+
+export const help = {
+  name: 'setboatsrunning',
+  description: 'Set all boats to running or not running status',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

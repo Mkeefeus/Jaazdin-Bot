@@ -75,3 +75,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   await interaction.reply({ embeds: [embed] });
 }
+
+export const help = {
+  name: 'boat-add-job',
+  description: 'Add a job to a boat',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

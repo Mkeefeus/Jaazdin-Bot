@@ -28,6 +28,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
+export const help = {
+  name: 'executesql',
+  description: 'Execute raw SQL queries on the database (Bot Dev only)',
+  requiredRole: Roles.BOT_DEV,
+  category: 'utility',
+};
+
 export default {
   data,
   execute,

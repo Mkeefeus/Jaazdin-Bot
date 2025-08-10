@@ -89,6 +89,13 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
+export const help = {
+  name: 'destroyreligion',
+  description: 'Remove a religion from the database',
+  requiredRole: Roles.GM,
+  category: 'religion',
+};
+
 export default {
   data,
   execute,

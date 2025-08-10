@@ -109,3 +109,10 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
     await interaction.respond(filtered);
   }
 }
+
+export const help = {
+  name: 'updateshipment',
+  description: 'Update the price or quantity of a shipment item',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

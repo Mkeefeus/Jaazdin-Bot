@@ -55,6 +55,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
+export const help = {
+  name: 'generatemetal',
+  description: 'Generate a random metal by rarity',
+  requiredRole: Roles.DM,
+  category: 'items',
+};
+
 // Utility function: get a random metal by rarity, excluding certain planes
 export async function getRandomMetalByRarityExcludingPlanes(rarity: string, excludedPlane: string) {
   // Assumes Metal model has a 'plane' property

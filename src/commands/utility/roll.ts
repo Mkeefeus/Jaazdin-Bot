@@ -427,3 +427,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   await interaction.editReply({ content: userMention(interaction.user.id), embeds: [embed] });
 }
+
+export const help = {
+  name: 'roll',
+  description: 'Roll dice with advanced modifiers and options',
+  requiredRole: null,
+  category: 'utility',
+};
