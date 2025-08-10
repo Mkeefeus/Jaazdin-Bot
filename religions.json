@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Underflame Smithy (Surtur)",
+    "domain": "forge",
+    "follower_count": 467
+  },
+  {
+    "name": "Helm's Pier (Helm)",
+    "domain": "light",
+    "follower_count": 341
+  },
+  {
+    "name": "Hall of Divine Justice (Tyr)",
+    "domain": "order",
+    "follower_count": 135
+  },
+  {
+    "name": "Hall of the Enduring (Ilmater)",
+    "domain": "life",
+    "follower_count": 54
+  },
+  {
+    "name": "Hall of Duty (Torm)",
+    "domain": "war",
+    "follower_count": 31
+  },
+  {
+    "name": "Glittergold’s Knowledge Nook (Garl Glittergold)",
+    "domain": "knowledge",
+    "follower_count": 122
+  },
+  {
+    "name": "Church of All",
+    "domain": "order",
+    "follower_count": 443
+  }
+]

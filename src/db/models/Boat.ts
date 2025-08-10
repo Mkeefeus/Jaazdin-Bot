@@ -70,6 +70,7 @@ Shipment.init(
     boatName: {
       type: DataTypes.STRING(40),
       allowNull: false,
+      field: 'boat_name',
       references: {
         model: 'boats',
         key: 'boatName',
@@ -99,20 +100,21 @@ Shipment.init(
 );
 
 Boat.hasMany(Shipment, {
-  foreignKey: 'boatName',
+  foreignKey: 'boat_name', // <-- use the DB column name
   sourceKey: 'boatName',
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE',
 });
 
 Shipment.belongsTo(Boat, {
-  foreignKey: 'boatName',
+  foreignKey: 'boat_name',
   targetKey: 'boatName',
 });
 
 async function seed() {
   // Use await import for portability
   const boatsData = (await import('~/../boats.json')).default || (await import('~/../boats.json'));
+  const shipmentsData = (await import('~/../shipments.json')).default || (await import('~/../shipments.json'));
   try {
     for (const boat of boatsData) {
       await Boat.create({
@@ -131,8 +133,18 @@ async function seed() {
       });
     }
     console.log('Boats seeded!');
+
+    for (const shipment of shipmentsData) {
+      await Shipment.create({
+        boatName: shipment.boatName,
+        itemName: shipment.itemName,
+        price: shipment.price,
+        quantity: shipment.quantity,
+      });
+    }
+    console.log('Shipments seeded!');
   } catch (error) {
-    console.error('Could not seed boats:', error);
+    console.error('Could not seed boats or shipments:', error);
   }
 }
 

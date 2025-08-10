@@ -75,15 +75,34 @@ Domain.hasMany(Religion, {
 async function seed() {
   // parse through the religionInformation.json create each domain.
   const domainData = (await import('~/../religionInformation.json')).default;
+  const religionsData = (await import('~/../religions.json')).default;
   try {
+    // Seed domains
     for (const domain of domainData) {
       await Domain.create({
         name: domain.domain,
         dominant_effect: domain.dominant_effect,
       });
     }
+    console.log('Domains seeded!');
+
+    // Seed religions
+    for (const religion of religionsData) {
+      // Find the domain by name
+      const domain = await Domain.findOne({ where: { name: religion.domain } });
+      if (!domain) {
+        console.warn(`Domain not found for religion: ${religion.name} (domain: ${religion.domain})`);
+        continue;
+      }
+      await Religion.create({
+        name: religion.name,
+        follower_count: religion.follower_count,
+        domain_id: domain.id,
+      });
+    }
+    console.log('Religions seeded!');
   } catch (error) {
-    console.log('could not parse religions domains.', error);
+    console.log('Could not parse religions domains or religions.', error);
   }
 }
 
