@@ -102,3 +102,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export async function autocomplete(interaction: AutocompleteInteraction) {
   await tableNamesAutocomplete(interaction);
 }
+
+export const help = {
+  name: 'addboat',
+  description: 'Add a new boat to the database',
+  requiredRole: Roles.GM,
+  category: 'boats',
+};

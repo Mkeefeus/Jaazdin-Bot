@@ -1,117 +1,15 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, Colors } from 'discord.js';
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import fs from 'fs';
+import path from 'path';
 import { checkUserRole } from '~/functions/helpers';
+import { Command, HelpData } from '~/types/command';
 import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
   .setName('help')
   .setDescription('Show all available commands based on your permissions');
 
-interface Command {
-  name: string;
-  description: string;
-  requiredRole: Roles | null; // null means available to everyone
-  category: string;
-}
-
-const commands: Command[] = [
-  // Boat Commands
-  {
-    name: 'showboats',
-    description: 'View all boats and their current status',
-    requiredRole: Roles.PLAYER,
-    category: 'boats',
-  },
-  { name: 'addboat', description: 'Create a new boat', requiredRole: Roles.GM, category: 'boats' },
-  { name: 'updateboat', description: 'Update boat properties', requiredRole: Roles.GM, category: 'boats' },
-  { name: 'destroyboat', description: 'Remove a boat from the system', requiredRole: Roles.GM, category: 'boats' },
-  { name: 'boat-add-job', description: 'Add a job to a boat', requiredRole: Roles.GM, category: 'boats' },
-  { name: 'boat-remove-job', description: 'Remove a job from a boat', requiredRole: Roles.GM, category: 'boats' },
-  { name: 'boat-clear-jobs', description: 'Remove all jobs from a boat', requiredRole: Roles.GM, category: 'boats' },
-  {
-    name: 'setboatsrunning',
-    description: 'Set multiple boats running status',
-    requiredRole: Roles.GM,
-    category: 'boats',
-  },
-  { name: 'addshipment', description: 'Add shipment items to a boat', requiredRole: Roles.GM, category: 'boats' },
-  { name: 'updateshipment', description: 'Update shipment item quantities', requiredRole: Roles.GM, category: 'boats' },
-  {
-    name: 'purchaseshipment',
-    description: 'Purchase items from boat shipments',
-    requiredRole: Roles.GM,
-    category: 'boats',
-  },
-
-  // Item Generation Commands
-  { name: 'generatearmor', description: 'Generate random armor', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generateweapon', description: 'Generate random weapon', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generatemagicitem', description: 'Generate random magic item', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generatemeal', description: 'Generate random meal', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generatemetal', description: 'Generate random metal', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generatepet', description: 'Generate random pet', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generatepoison', description: 'Generate random poison', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generatepotion', description: 'Generate random potion', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generatereagent', description: 'Generate random reagent', requiredRole: Roles.GM, category: 'items' },
-  { name: 'generateseeds', description: 'Generate random seeds', requiredRole: Roles.GM, category: 'items' },
-  { name: 'randomspell', description: 'Generate random spell', requiredRole: Roles.PLAYER, category: 'items' },
-
-  // Religion Commands
-  { name: 'addreligion', description: 'Add a new religion', requiredRole: Roles.PLAYER, category: 'religion' },
-  {
-    name: 'showreligion',
-    description: 'Show details of a specific religion',
-    requiredRole: Roles.PLAYER,
-    category: 'religion',
-  },
-  { name: 'showallreligions', description: 'Show all religions', requiredRole: Roles.PLAYER, category: 'religion' },
-  {
-    name: 'updatereligion',
-    description: 'Update religion information',
-    requiredRole: Roles.PLAYER,
-    category: 'religion',
-  },
-  { name: 'destroyreligion', description: 'Remove a religion', requiredRole: Roles.GM, category: 'religion' },
-
-  // Farming Commands
-  { name: 'addplant', description: 'Add a new plant to track', requiredRole: Roles.PLAYER, category: 'farming' },
-  { name: 'showplants', description: 'View all tracked plants', requiredRole: Roles.PLAYER, category: 'farming' },
-  { name: 'updateplant', description: 'Update plant information', requiredRole: Roles.PLAYER, category: 'farming' },
-  { name: 'plantdebug', description: 'Debug plant information', requiredRole: Roles.GM, category: 'farming' },
-
-  // Fun Commands
-  { name: 'kitchen', description: 'Use the kitchen system', requiredRole: null, category: 'fun' },
-  { name: 'makesandwich', description: 'Make a sandwich', requiredRole: null, category: 'fun' },
-  { name: 'addingredient', description: 'Add ingredient to the kitchen', requiredRole: null, category: 'fun' },
-  { name: 'exportkitchen', description: 'Export kitchen data', requiredRole: null, category: 'fun' },
-
-  // Job Commands
-  {
-    name: 'jobreward',
-    description: 'Calculate job rewards based on boat effects',
-    requiredRole: Roles.PLAYER,
-    category: 'jobs',
-  },
-
-  // Timer Commands
-  { name: 'addtimer', description: 'Add a new timer', requiredRole: Roles.PLAYER, category: 'timers' },
-  { name: 'updatetimer', description: 'Update your timer', requiredRole: Roles.PLAYER, category: 'timers' },
-  { name: 'removetimer', description: 'Remove your timer', requiredRole: Roles.PLAYER, category: 'timers' },
-  { name: 'gmupdatetimer', description: 'GM update any timer', requiredRole: Roles.GM, category: 'timers' },
-
-  // Utility Commands
-  { name: 'ping', description: 'Check bot responsiveness', requiredRole: null, category: 'utility' },
-  { name: 'roll', description: 'Roll dice', requiredRole: null, category: 'utility' },
-  { name: 'addchar', description: 'Add character to database', requiredRole: Roles.PLAYER, category: 'utility' },
-  {
-    name: 'deletechar',
-    description: 'Delete character from database',
-    requiredRole: Roles.PLAYER,
-    category: 'utility',
-  },
-  { name: 'listusers', description: 'List all users in database', requiredRole: Roles.GM, category: 'utility' },
-  { name: 'sql', description: 'Execute SQL commands', requiredRole: Roles.BOT_DEV, category: 'utility' },
-  { name: 'resetdb', description: 'Reset database', requiredRole: Roles.BOT_DEV, category: 'utility' },
-];
+const commands: HelpData[] = [];
 
 const categoryEmojis: { [key: string]: string } = {
   boats: '🚢',
@@ -136,7 +34,7 @@ function getUserRoles(interaction: ChatInputCommandInteraction): Roles[] {
   return userRoles;
 }
 
-function canUseCommand(command: Command, userRoles: Roles[]): boolean {
+function canUseCommand(command: HelpData, userRoles: Roles[]): boolean {
   // Commands with no role requirement are available to everyone
   if (command.requiredRole === null) return true;
 
@@ -149,13 +47,41 @@ function canUseCommand(command: Command, userRoles: Roles[]): boolean {
   return false;
 }
 
-export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
-  const userRoles = getUserRoles(interaction);
+async function loadCommands() {
+  const foldersPath = path.join(__dirname, '../');
 
-  // Filter commands based on user permissions
-  const availableCommands = commands.filter((cmd) => canUseCommand(cmd, userRoles));
+  const commandFolders = fs.readdirSync(foldersPath);
 
-  if (availableCommands.length === 0) {
+  for (const folder of commandFolders) {
+    const commandsPath = path.join(foldersPath, folder);
+    const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
+
+    for (const file of commandFiles) {
+      const filePath = path.join(commandsPath, file);
+      const fileUrl = new URL(`file://${filePath}`).href;
+
+      try {
+        const command = (await import(fileUrl)) as Command;
+
+        if ('help' in command) {
+          commands.push(command.help);
+          console.log(`Loaded help data for command: ${command.help.name}`);
+        } else {
+          console.log(`[WARNING] The command at ${filePath} is missing a required "help" property.`);
+        }
+      } catch (error) {
+        console.error(`Error loading help data for command from ${filePath}:`, error);
+      }
+    }
+  }
+}
+
+export async function execute(interaction: ChatInputCommandInteraction) {
+  if (commands.length == 0) {
+    await loadCommands();
+  }
+  const userCommands = commands.filter((cmd) => canUseCommand(cmd, getUserRoles(interaction)));
+  if (userCommands.length === 0) {
     await interaction.reply({
       content: '❌ No commands are available for your current role.',
       ephemeral: true,
@@ -164,8 +90,8 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   }
 
   // Group commands by category
-  const commandsByCategory: { [key: string]: Command[] } = {};
-  availableCommands.forEach((cmd) => {
+  const commandsByCategory: { [key: string]: HelpData[] } = {};
+  userCommands.forEach((cmd) => {
     if (!commandsByCategory[cmd.category]) {
       commandsByCategory[cmd.category] = [];
     }
@@ -189,11 +115,16 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const embed = new EmbedBuilder()
     .setTitle('🤖 Jaazdin Bot Commands')
     .setColor(Colors.Gold)
-    .setDescription(`Here are all **${availableCommands.length}** commands you can use:`)
+    .setDescription(`Here are all **${userCommands.length}** commands you can use:`)
     .addFields(fields)
     .setFooter({
-      text: `Your roles: ${userRoles.join(', ') || 'None'} • Total commands available: ${availableCommands.length}`,
+      text: `Total commands available: ${userCommands.length}`,
     });
 
   await interaction.reply({ embeds: [embed], ephemeral: true });
 }
+
+export default {
+  data,
+  execute,
+};
