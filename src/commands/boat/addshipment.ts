@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
-import { boatNameAutocomplete, formatShipmentInfo } from '~/functions/boatHelpers';
+import { boatNameAutocomplete, formatShipmentInfo, updateBoatEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
@@ -34,6 +34,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       price,
       quantity,
     });
+
+    // Update the boat's Discord embed if it exists
+    await updateBoatEmbed(boatName);
 
     // Show updated shipment list
     const shipmentInfo = await formatShipmentInfo(boatName);

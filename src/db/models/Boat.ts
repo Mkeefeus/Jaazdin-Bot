@@ -14,6 +14,7 @@ export class Boat extends Model {
   declare isTier2: boolean;
   declare weeksLeft: number;
   declare isInTown: boolean;
+  declare messageId: string | null; // Store Discord message ID for the boat's embed
 }
 
 Boat.init(
@@ -37,6 +38,11 @@ Boat.init(
     isTier2: DataTypes.BOOLEAN,
     weeksLeft: DataTypes.INTEGER,
     isInTown: DataTypes.BOOLEAN,
+    messageId: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      defaultValue: null,
+    },
   },
   {
     sequelize: db,

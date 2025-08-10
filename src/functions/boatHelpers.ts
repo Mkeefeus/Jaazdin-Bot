@@ -321,6 +321,10 @@ export async function handleShipmentPurchase(
 
   if (shipment.quantity <= 1) {
     await shipment.destroy();
+    
+    // Update the boat's Discord embed if it exists
+    await updateBoatEmbed(boatName);
+    
     await interaction.reply({
       content: `💰 **Purchase Complete!**\n\nYou purchased the last **${formatNames(itemName)}** from **${formatNames(boatName)}** for **${price} gp**.\n\n⚠️ This item is now sold out!`,
       ephemeral: false,
@@ -330,6 +334,9 @@ export async function handleShipmentPurchase(
 
   shipment.quantity -= 1;
   await shipment.save();
+  
+  // Update the boat's Discord embed if it exists
+  await updateBoatEmbed(boatName);
 
   await interaction.reply({
     content: `💰 **Purchase Complete!**\n\nYou purchased **${formatNames(itemName)}** from **${formatNames(boatName)}** for **${price} gp**.\n\n📦 Remaining quantity: **${shipment.quantity}**`,
@@ -1270,4 +1277,78 @@ export async function createBoatStatusDescription(boat: Boat): Promise<string> {
   }
 
   return description;
+}
+
+/**
+ * Update a boat's Discord embed with current information
+ */
+export async function updateBoatEmbed(boatName: string): Promise<boolean> {
+  const { client } = await import('~/index');
+  
+  if (!client.isReady()) {
+    console.warn('Discord client not ready for embed update');
+    return false;
+  }
+
+  const boat = await Boat.findOne({ where: { boatName } });
+  if (!boat || !boat.messageId) {
+    return false;
+  }
+
+  const CHANNEL_ID = process.env.BOT_CHANNEL_ID;
+  if (!CHANNEL_ID) {
+    console.error('BOT_CHANNEL_ID is not defined');
+    return false;
+  }
+
+  try {
+    const channel = await client.channels.fetch(CHANNEL_ID);
+    if (!channel || !channel.isTextBased()) {
+      console.warn('Target channel is not a text channel');
+      return false;
+    }
+
+    // Fetch the message
+    const message = await channel.messages.fetch(boat.messageId);
+    if (!message) {
+      console.warn(`Message ${boat.messageId} not found for boat ${boatName}`);
+      // Clear the messageId since the message no longer exists
+      boat.messageId = null;
+      await boat.save();
+      return false;
+    }
+
+    // Create updated embed
+    const { EmbedBuilder } = await import('discord.js');
+    const boatInfo = formatBoatInfo(boat);
+    const shipmentInfo = await formatShipmentInfo(boat.boatName);
+    const tableDescription = getTableDescription(boat.tableToGenerate);
+
+    let desc = boatInfo;
+    if (tableDescription) {
+      desc += `\n**Table:** ${tableDescription}`;
+    }
+    if (shipmentInfo) {
+      desc += `\n\n${shipmentInfo}`;
+    }
+
+    const updatedEmbed = new EmbedBuilder()
+      .setTitle(boat.boatName)
+      .setDescription(desc)
+      .setColor(0x2e86c1);
+
+    // Update the message
+    await message.edit({ embeds: [updatedEmbed] });
+    console.log(`Updated embed for boat: ${boatName}`);
+    return true;
+
+  } catch (error) {
+    console.error(`Failed to update boat embed for ${boatName}:`, error);
+    // If the message is not found or can't be edited, clear the messageId
+    if (error instanceof Error && error.message.includes('Unknown Message')) {
+      boat.messageId = null;
+      await boat.save();
+    }
+    return false;
+  }
 }

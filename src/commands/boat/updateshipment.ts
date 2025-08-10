@@ -3,6 +3,7 @@ import { Shipment } from '~/db/models/Boat';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { Boat } from '~/db/models/Boat';
+import { updateBoatEmbed } from '~/functions/boatHelpers';
 
 //TODO gm command only.
 
@@ -41,6 +42,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   // If quantity is zero or less, delete the shipment
   if (quantity !== null && quantity <= 0) {
     await shipment.destroy();
+    
+    // Update the boat's Discord embed if it exists
+    await updateBoatEmbed(boatName);
+    
     await interaction.reply({
       content: `Shipment for **${itemName}** on boat **${boatName}** has been deleted (quantity set to ${quantity}).`,
       ephemeral: true,
@@ -61,6 +66,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   try {
     await shipment.save();
+    
+    // Update the boat's Discord embed if it exists
+    await updateBoatEmbed(boatName);
+    
     await interaction.reply({
       content: `Shipment for **${itemName}** on boat **${boatName}** updated successfully.`,
       ephemeral: true,

@@ -95,8 +95,20 @@ async function post() {
   try {
     const channel = await client.channels.fetch(CHANNEL_ID);
     if (channel instanceof TextChannel) {
+      // Clear old message IDs since we're posting new messages
+      await Boat.update({ messageId: null }, { where: { isRunning: true, isInTown: true } });
+
+      // Send embeds in batches of 10 and store message IDs
       for (let i = 0; i < embeds.length; i += 10) {
-        await channel.send({ embeds: embeds.slice(i, i + 10) });
+        const embedBatch = embeds.slice(i, i + 10);
+        const message = await channel.send({ embeds: embedBatch });
+        
+        // Store message ID for each boat in this batch
+        for (let j = 0; j < embedBatch.length && i + j < boatsInTownRaw.length; j++) {
+          const boat = boatsInTownRaw[i + j];
+          boat.messageId = message.id;
+          await boat.save();
+        }
       }
       console.log('Boat update sent to Discord.');
     } else {
