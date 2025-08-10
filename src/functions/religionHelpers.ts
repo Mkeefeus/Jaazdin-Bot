@@ -40,46 +40,6 @@ export async function checkReligionExists(interaction: ChatInputCommandInteracti
 }
 
 /**
- * Find domain by name
- */
-export async function findDomainByName(name: string): Promise<Domain | null> {
-  return await Domain.findOne({ where: { name: name.toLowerCase() } });
-}
-
-/**
- * Parse follower count change (+x, -x, =x format)
- */
-export function parseFollowerCountChange(changeRaw: string, currentCount: number): { value: number; error?: string } {
-  const changeRegex = /^([+-=])(\d+)$/;
-
-  if (!changeRegex.test(changeRaw)) {
-    return {
-      value: 0,
-      error: 'Invalid follower count format. Please use +x to add, -x to subtract, or =x to set exactly.',
-    };
-  }
-
-  const match = changeRegex.exec(changeRaw);
-  if (!match) {
-    return { value: 0, error: 'Failed to parse follower count change.' };
-  }
-
-  const operator = match[1];
-  const value = parseInt(match[2], 10);
-
-  switch (operator) {
-    case '+':
-      return { value: currentCount + value };
-    case '-':
-      return { value: Math.max(0, currentCount - value) }; // Prevent negative followers
-    case '=':
-      return { value };
-    default:
-      return { value: 0, error: 'Unknown operator.' };
-  }
-}
-
-/**
  * Religion autocomplete helper
  */
 export async function religionAutocomplete(interaction: AutocompleteInteraction): Promise<void> {

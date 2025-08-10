@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
-import { checkUserRole, formatNames } from '~/functions/helpers';
+import { checkUserRole, formatNames, parseChangeString } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
@@ -73,23 +73,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return interaction.reply(`Failed to find timer.`);
   }
 
-  const changeRegex = /^([+-=])(\d+)$/;
-  const match = changeRegex.exec(change.toString());
-
-  if (!match) {
-    return interaction.reply('Invalid format for change. Use +x, -x, or =x.');
-  }
-
-  const operator = match[1];
-  const value = parseInt(match[2], 10);
-
-  if (operator === '+') {
-    timer.weeks_remaining += value;
-  } else if (operator === '-') {
-    timer.weeks_remaining -= value;
-  } else if (operator === '=') {
-    timer.weeks_remaining = value;
-  }
+  const newWeeks = await parseChangeString(change, timer.weeks_remaining, "change", interaction);
+  if (newWeeks === null) return;
+  timer.weeks_remaining = newWeeks;
   await timer.save();
 
   await interaction.reply({

@@ -1,15 +1,12 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import {
   findReligionByName,
-  findDomainByName,
-  parseFollowerCountChange,
   checkReligionExists,
   religionCommandAutocomplete,
 } from '~/functions/religionHelpers';
-import { replyWithUserMention } from '~/functions/helpers';
+import { replyWithUserMention, parseChangeString } from '~/functions/helpers';
 import showReligion from './showReligion';
-
-//TODO player command only.
+import { Domain } from '~/db/models/Religion';
 
 export const data = new SlashCommandBuilder()
   .setName('updatereligion')
@@ -38,14 +35,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const domainName = interaction.options.getString('domain')?.toLowerCase() as string;
   const follower_count = interaction.options.getString('followercount');
   let domain = 0;
-  let newFollowerCount = 0;
 
   if (new_name == null) new_name = name;
 
   if (domainName == null) {
     domain = selectedReligion.dataValues.domain_id;
   } else {
-    const domainData = await findDomainByName(domainName);
+    const domainData = await Domain.findOne({ where: { name: domainName } });
     if (!domainData) {
       await interaction.reply({
         content: `Domain "${domainName}" not found.`,
@@ -56,20 +52,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     domain = domainData.dataValues.id;
   }
 
-  if (follower_count == null) {
-    newFollowerCount = selectedReligion.dataValues.follower_count;
-  } else {
-    // Use helper to parse follower count change
-    const result = parseFollowerCountChange(follower_count, selectedReligion.dataValues.follower_count);
-    if (result.error) {
-      await interaction.reply({
-        content: result.error,
-        ephemeral: true,
-      });
-      return;
-    }
-    newFollowerCount = result.value;
-  }
+  const newFollowerCount = await parseChangeString(
+    follower_count,
+    selectedReligion.dataValues.follower_count,
+    'follower count',
+    interaction
+  );
+  if (newFollowerCount === null) return;
 
   // Check to see if the new name to update doesn't already exist
   if (new_name !== name) {

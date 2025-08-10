@@ -7,7 +7,7 @@ import {
   boatAtSeaEmbedBuilder,
   tableToGenerateChoices,
 } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, parseChangeString } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
@@ -30,7 +30,7 @@ export const data = new SlashCommandBuilder()
   )
   .addBooleanOption((opt) => opt.setName('istier2').setDescription('Is this a tier 2 boat?').setRequired(false))
   .addBooleanOption((opt) => opt.setName('isrunning').setDescription('Is this boat running?').setRequired(false))
-  .addIntegerOption((opt) => opt.setName('weeksleft').setDescription('Weeks left (optional)').setRequired(false))
+  .addStringOption((opt) => opt.setName('weeksleft').setDescription('Weeks left (use +x, -x, =x)').setRequired(false))
   .addBooleanOption((opt) => opt.setName('isintown').setDescription('Is the boat in town?').setRequired(false));
 
 function buildBoatUpdatesFromOptions(
@@ -53,22 +53,38 @@ function buildBoatUpdatesFromOptions(
   // Integer fields
   addIfNotNull('waitTime', interaction.options.getInteger('waittime'));
   addIfNotNull('timeInTown', interaction.options.getInteger('timeintown'));
-  addIfNotNull('weeksLeft', interaction.options.getInteger('weeksleft'));
+  // Handle weeksLeft as a string change system
+  const weeksLeftRaw = interaction.options.getString('weeksleft');
+  if (weeksLeftRaw !== null && existingBoat) {
+    // Use parseChangeString to compute new weeksLeft
+    // This is synchronous in buildBoatUpdatesFromOptions, so we use a sync fallback
+    // (parseChangeString is async, but we can't await here; handle in execute if needed)
+    updates.weeksLeft = undefined; // Mark for later update in execute
+  } else {
+    addIfNotNull('weeksLeft', interaction.options.getInteger('weeksleft'));
+  }
 
   // Boolean fields
   addIfNotNull('isTier2', interaction.options.getBoolean('istier2'));
   addIfNotNull('isRunning', interaction.options.getBoolean('isrunning'));
   addIfNotNull('isInTown', interaction.options.getBoolean('isintown'));
 
-  // Jobs are managed separately with /boat-add-job, /boat-remove-job commands
-
-  // Auto-calculate weeksLeft if not explicitly set
-  if (!updates.weeksLeft) {
+  // Auto-calculate weeksLeft if not explicitly set,
+  // and only if relevant fields that affect weeksLeft were changed
+  if (
+    updates.weeksLeft === undefined &&
+    (
+      updates.waitTime !== undefined ||
+      updates.timeInTown !== undefined ||
+      updates.isTier2 !== undefined ||
+      updates.isInTown !== undefined
+    )
+  ) {
     // Calculate weeksLeft based on boat state and timing values
     const waitTime = interaction.options.getInteger('waittime') ?? existingBoat?.waitTime;
     const timeInTown = interaction.options.getInteger('timeintown') ?? existingBoat?.timeInTown;
     const isTier2 = interaction.options.getBoolean('istier2') ?? existingBoat?.isTier2 ?? false;
-    const isInTown = interaction.options.getBoolean('isintown') ?? existingBoat?.isInTown ?? true;
+    const isInTown = interaction.options.getBoolean('isintown') ?? existingBoat?.isInTown ?? false;
 
     const timeToUse = isInTown ? timeInTown : waitTime;
 
@@ -145,6 +161,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       ephemeral: true,
     });
     return;
+  }
+
+  // If weeksLeft is to be updated using the string system, do it here
+  const weeksLeftRaw = interaction.options.getString('weeksleft');
+  if (weeksLeftRaw !== null) {
+    const newWeeksLeft = await parseChangeString(weeksLeftRaw, boat.weeksLeft, 'weeks left', interaction);
+    if (newWeeksLeft === null) return;
+    updates.weeksLeft = newWeeksLeft;
   }
 
   try {

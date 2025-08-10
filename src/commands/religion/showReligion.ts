@@ -41,7 +41,7 @@ async function showReligion(religion: Religion | null): Promise<EmbedBuilder> {
 
   // 📖 for religion name, ✨ for domain, 🌟 for dominant effect, 👥 for followers
   const title = `📖 ${formatNames(religion?.dataValues.name || '')}`;
-  const message = `**✨ Domain:** ${domainData?.dataValues.name}
+  const message = `**✨ Domain:** ${formatNames(domainData?.dataValues.name)}
 **🌟 Dominant Effect:** ${domainData?.dataValues.dominant_effect || 'None'}
 **👥 Follower Count:** ${religion?.dataValues.follower_count}`;
 

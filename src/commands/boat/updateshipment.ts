@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
 import { checkUserRole } from '~/functions/helpers';
+import { parseChangeString } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { Boat } from '~/db/models/Boat';
 import { updateBoatEmbed } from '~/functions/boatHelpers';
@@ -11,7 +12,7 @@ export const data = new SlashCommandBuilder()
   .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
   .addStringOption((opt) => opt.setName('item').setDescription('Item name').setRequired(true).setAutocomplete(true))
   .addIntegerOption((opt) => opt.setName('price').setDescription('New item price (gp)').setRequired(false))
-  .addIntegerOption((opt) => opt.setName('quantity').setDescription('New quantity').setRequired(false));
+  .addStringOption((opt) => opt.setName('quantity').setDescription('New quantity (+x, -x, =x').setRequired(false));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
@@ -25,10 +26,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const boatName = interaction.options.getString('boat', true);
   const itemName = interaction.options.getString('item', true);
   const price = interaction.options.getInteger('price');
-  const quantity = interaction.options.getInteger('quantity');
+  const quantityRaw = interaction.options.getString('quantity');
 
   const shipment = await Shipment.findOne({ where: { boatName, itemName } });
-
   if (!shipment) {
     await interaction.reply({
       content: `No shipment found for boat **${boatName}** with item **${itemName}**.`,
@@ -36,6 +36,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     });
     return;
   }
+
+  const quantity = await parseChangeString(quantityRaw, shipment.quantity, 'quantity', interaction);
+  if (quantity === null) return;
 
   // If quantity is zero or less, delete the shipment
   if (quantity !== null && quantity <= 0) {

@@ -66,6 +66,33 @@ export function formatNames(name: string): string {
     .join(' ');
 }
 
+// Helper to parse +x, -x, =x for numeric changes and reply if invalid
+export async function parseChangeString(
+  change: string | null | undefined,
+  current: number,
+  variableName: string,
+  interaction?: ChatInputCommandInteraction
+): Promise<number | null> {
+  if (change == null) return current;
+  const changeRegex = /^([+-=])(\d+)$/;
+  const match = changeRegex.exec(change.trim());
+
+  const errorMsg = `Invalid format for ${variableName}. Use +x, -x, or =x.`;
+
+  if (!match) {
+    if (interaction) {
+      await interaction.reply({ content: errorMsg, ephemeral: true });
+    }
+    return null;
+  }
+  const operator = match[1];
+  const value = parseInt(match[2], 10);
+  if (operator === '+') return current + value;
+  if (operator === '-') return current - value;
+  if (operator === '=') return value;
+  return null;
+}
+
 /**
  * Reply with user mention and embeds - Generic version for all commands
  */

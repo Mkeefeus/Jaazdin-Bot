@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
-import { Boat } from '~/db/models/Boat';
-import { createBoatStatusDescription, tableToGenerateChoices } from '~/functions/boatHelpers';
+import { Boat, Shipment } from '~/db/models/Boat';
+import { createBoatStatusDescription, tableToGenerateChoices, generateShipmentItems } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
@@ -20,10 +20,10 @@ export const data = new SlashCommandBuilder()
       .setRequired(false)
       .setChoices(tableToGenerateChoices)
   )
-  .addBooleanOption((opt) => opt.setName('istier2').setDescription('Is this a tier 2 boat?').setRequired(false))
-  .addBooleanOption((opt) => opt.setName('isrunning').setDescription('Is this boat running?').setRequired(false))
-  .addIntegerOption((opt) => opt.setName('weeksleft').setDescription('Weeks left (optional)').setRequired(false))
-  .addBooleanOption((opt) => opt.setName('isintown').setDescription('Is the boat in town?').setRequired(false));
+  .addBooleanOption((opt) => opt.setName('istier2').setDescription('Is this a tier 2 boat? (default false)').setRequired(false))
+  .addBooleanOption((opt) => opt.setName('isrunning').setDescription('Is this boat running? (default true)').setRequired(false))
+  .addIntegerOption((opt) => opt.setName('weeksleft').setDescription('Weeks left (default furthest from town or in town for longest time)').setRequired(false))
+  .addBooleanOption((opt) => opt.setName('isintown').setDescription('Is the boat in town? (default false)').setRequired(false));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
@@ -47,7 +47,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const isTier2 = interaction.options.getBoolean('istier2') ?? false;
   const isRunning = interaction.options.getBoolean('isrunning') ?? true;
   const isInTown = interaction.options.getBoolean('isintown') ?? false;
-  const weeksLeft = interaction.options.getInteger('weeksleft') ?? waitTime; //TODO if isTier2 then wait time is -1 & if it's in town then use weeks in town.
+  let weeksLeft = interaction.options.getInteger('weeksleft');
+  if (weeksLeft === null) {
+    if (isInTown) {
+      weeksLeft = isTier2 ? timeInTown + 1 : timeInTown;
+    } else {
+      weeksLeft = isTier2 ? waitTime - 1 : waitTime;
+    }
+  }
 
   try {
     const [boat, created] = await Boat.findOrCreate({
@@ -72,7 +79,20 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return;
     }
 
-    console.log(boat);
+    // If the boat is in town and has a table to generate, create a shipment
+    if (boat.isInTown && boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
+      // Remove any existing shipments for this boat (shouldn't be any, but for safety)
+      await Shipment.destroy({ where: { boatName: boat.boatName } });
+      const goods = await generateShipmentItems(boat);
+      for (const item of goods) {
+        await Shipment.create({
+          boatName: boat.boatName,
+          itemName: item.itemName,
+          price: item.price,
+          quantity: item.quantity,
+        });
+      }
+    }
 
     // Create detailed response with boat information
     const description = await createBoatStatusDescription(boat);
