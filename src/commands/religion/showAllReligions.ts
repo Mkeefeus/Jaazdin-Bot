@@ -1,9 +1,7 @@
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { Religion } from '~/db/models/Religion';
 import { replyWithUserMention } from '~/functions/helpers';
 import showReligion from './showReligion';
-
-//TODO player command only.
 
 export const data = new SlashCommandBuilder().setName('showallreligions').setDescription('Shows all active religions');
 
@@ -14,21 +12,40 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 async function showAllReligions(): Promise<EmbedBuilder[]> {
   const religions = await Religion.findAll({ order: [['follower_count', 'DESC']] });
+  const embeds: EmbedBuilder[] = [];
+  if (religions.length === 0) {
+    // 🪦 Tombstone emoji for no religions
+    embeds.push(new EmbedBuilder().setTitle('🪦 Gods are Dead').setDescription('No religions found.').setColor('#3428dbff'));
+  } else {
+    // 👑 Crown emoji for dominant religion
+    const dominantReligion = religions[0];
+    const dominantEmbed = await showReligion.showReligion(dominantReligion);
+    dominantEmbed.setTitle(`👑 ${dominantEmbed.data.title || ''}`);
+    embeds.push(dominantEmbed);
 
-  const allMessages = [];
-  for (let i = 0; i < religions.length; i++) {
-    allMessages.push(await showReligion.showReligion(religions[i]));
+    // Other religions as fields, handling Discord's 25-field limit per embed
+    if (religions.length > 1) {
+      const otherReligions = religions.slice(1);
+      const fields = otherReligions.map((religion) => ({
+        name: `${religion.dataValues.name}`,
+        value: `${religion.dataValues.follower_count} followers`,
+        inline: false,
+      }));
+
+      // Discord allows max 25 fields per embed
+      for (let i = 0; i < fields.length; i += 25) {
+        const listEmbed = new EmbedBuilder()
+          .setTitle(i === 0 ? '🙏 Other Religions' : `🙏 Other Religions (cont. ${i + 1}-${Math.min(i + 25, fields.length)})`)
+          .setColor('#00BFFF')
+          .addFields(fields.slice(i, i + 25));
+        embeds.push(listEmbed);
+      }
+    }
   }
-
-  if (allMessages.length == 0) {
-    const title = `Error`;
-    const message = `There is no god. No religions exist.`;
-
-    allMessages.push(new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.DarkRed));
-  }
-
-  return allMessages;
+  return embeds;
 }
+
+export { showAllReligions };
 
 export const help = {
   name: 'showallreligions',
@@ -37,8 +54,5 @@ export const help = {
   category: 'religion',
 };
 
-export default {
-  data,
-  execute,
-  showAllReligions,
-};
+
+

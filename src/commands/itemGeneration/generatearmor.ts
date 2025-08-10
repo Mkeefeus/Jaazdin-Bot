@@ -12,11 +12,7 @@ export const data = new SlashCommandBuilder()
   .setName('generatearmor')
   .setDescription('Generate a random armor with a random valid metal by rarity')
   .addStringOption((option) =>
-    option
-      .setName('rarity')
-      .setDescription('Rarity of the metal')
-      .setRequired(true)
-      .setChoices(rarityChoices)
+    option.setName('rarity').setDescription('Rarity of the metal').setRequired(true).setChoices(rarityChoices)
   );
 
 // Utility function for use in other scripts

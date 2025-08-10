@@ -9,7 +9,6 @@ import { Domain, Religion } from '~/db/models/Religion';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { replyWithUserMention, formatNames } from '~/functions/helpers';
 
-//TODO player command only.
 
 export const data = new SlashCommandBuilder()
   .setName('showreligion')
@@ -40,10 +39,11 @@ async function showReligion(religion: Religion | null): Promise<EmbedBuilder> {
     },
   });
 
-  const title = formatNames(religion?.dataValues.name || '');
-  const message = `Domain: ${domainData?.dataValues.name}
-    Follower Count: ${religion?.dataValues.follower_count}
-    `;
+  // 📖 for religion name, ✨ for domain, 🌟 for dominant effect, 👥 for followers
+  const title = `📖 ${formatNames(religion?.dataValues.name || '')}`;
+  const message = `**✨ Domain:** ${domainData?.dataValues.name}
+**🌟 Dominant Effect:** ${domainData?.dataValues.dominant_effect || 'None'}
+**👥 Follower Count:** ${religion?.dataValues.follower_count}`;
 
   return new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Yellow);
 }

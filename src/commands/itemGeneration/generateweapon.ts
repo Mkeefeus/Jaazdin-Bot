@@ -12,11 +12,7 @@ export const data = new SlashCommandBuilder()
   .setName('generateweapon')
   .setDescription('Generate a random weapon with a random valid metal by rarity')
   .addStringOption((option) =>
-    option
-      .setName('rarity')
-      .setDescription('Rarity of the metal')
-      .setRequired(true)
-      .setChoices(rarityChoices)
+    option.setName('rarity').setDescription('Rarity of the metal').setRequired(true).setChoices(rarityChoices)
   );
 
 export async function generateRandomWeaponWithMetalByRarity(rarity: string) {

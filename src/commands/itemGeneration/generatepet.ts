@@ -21,11 +21,7 @@ export const data = new SlashCommandBuilder()
   .setName('generatepet')
   .setDescription('Generate a random pet by rarity and creature type')
   .addStringOption((option) =>
-    option
-      .setName('rarity')
-      .setDescription('Rarity of the pet')
-      .setRequired(true)
-      .setChoices(rarityChoices)
+    option.setName('rarity').setDescription('Rarity of the pet').setRequired(true).setChoices(rarityChoices)
   )
   .addStringOption((option) =>
     option

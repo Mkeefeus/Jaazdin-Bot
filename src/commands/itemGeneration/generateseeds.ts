@@ -8,11 +8,7 @@ export const data = new SlashCommandBuilder()
   .setName('generateseeds')
   .setDescription('Generate a random seed by rarity')
   .addStringOption((option) =>
-    option
-      .setName('rarity')
-      .setDescription('Rarity of the seed')
-      .setRequired(true)
-      .setChoices(rarityChoices)
+    option.setName('rarity').setDescription('Rarity of the seed').setRequired(true).setChoices(rarityChoices)
   );
 
 export async function getRandomSeedByRarity(rarity: string): Promise<Seed | null> {

@@ -9,11 +9,7 @@ export const data = new SlashCommandBuilder()
   .setName('generatemeal')
   .setDescription('Generate a random meal by rarity')
   .addStringOption((option) =>
-    option
-      .setName('rarity')
-      .setDescription('Rarity of the meal')
-      .setRequired(true)
-      .setChoices(rarityChoices)
+    option.setName('rarity').setDescription('Rarity of the meal').setRequired(true).setChoices(rarityChoices)
   );
 
 export async function getRandomMealByRarity(rarity: string): Promise<Meal | null> {
