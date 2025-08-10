@@ -30,8 +30,6 @@ Spell.init(
 
 async function seed() {
   const spellData = (await import('~/../spells.json')).default;
-
-  console.log(spellData);
   try {
     for (const spell of spellData) {
       await Spell.create({

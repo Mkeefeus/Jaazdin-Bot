@@ -15,7 +15,7 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
   const embeds: EmbedBuilder[] = [];
   if (religions.length === 0) {
     // 🪦 Tombstone emoji for no religions
-    embeds.push(new EmbedBuilder().setTitle('🪦 Gods are Dead').setDescription('No religions found.').setColor('#3428dbff'));
+    embeds.push(new EmbedBuilder().setTitle('🪦 Gods are Dead').setDescription('No religions found.').setColor('#000000'));
   } else {
     // 👑 Crown emoji for dominant religion
     const dominantReligion = religions[0];
