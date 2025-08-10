@@ -1,10 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
-import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
-import { singleJobNameAutocomplete } from '~/functions/jobHelpers';
+import { Boat } from '~/db/models/Boat';
+import { Job } from '~/db/models/Job';
+import { findBoatByName, createBoatStatusDescription } from '~/functions/boatHelpers';
+import { checkUserRole, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('boat-add-job')
@@ -18,9 +17,21 @@ export async function autocomplete(interaction: AutocompleteInteraction): Promis
   const focusedOption = interaction.options.getFocused(true);
 
   if (focusedOption.name === 'boat') {
-    await boatNameAutocomplete(interaction);
+    const boats = await Boat.findAll();
+    await interaction.respond(
+      boats.map((boat) => ({
+        name: formatNames(boat.dataValues.boatName),
+        value: boat.dataValues.boatName,
+      }))
+    );
   } else if (focusedOption.name === 'job') {
-    await singleJobNameAutocomplete(interaction);
+    const jobs = await Job.findAll();
+    await interaction.respond(
+      jobs.map((job) => ({
+        name: formatNames(job.dataValues.name),
+        value: job.dataValues.name,
+      }))
+    );
   }
 }
 

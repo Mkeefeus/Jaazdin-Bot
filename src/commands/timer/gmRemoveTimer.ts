@@ -97,7 +97,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 export const help = {
   name: 'gmremovetimer',
-  description: 'GM command to remove any user\'s timer',
+  description: "GM command to remove any user's timer",
   requiredRole: Roles.GM,
   category: 'timers',
 };

@@ -10,10 +10,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const weeklyDir = path.join(__dirname, '../../weeklies');
   const weeklyFiles = readdirSync(weeklyDir).filter((file) => file.endsWith('.ts') && file !== 'weekly.ts');
   for (const file of weeklyFiles) {
-    //just debuging timers rn
-    if (file !== 'timers.ts') {
-      continue;
-    }
     const { update, post } = (await import(path.join(weeklyDir, file))) as WeeklyFunctions;
     if (!update || !post) {
       //Some sort of warning
@@ -22,8 +18,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
     await update();
     await post();
-    interaction.reply(`Weekly tasks for ${file} have been triggered.`);
   }
+  await interaction.reply({
+    content: `Weekly tasks have been triggered.`,
+    ephemeral: true,
+  });
 }
 
 export const help = {

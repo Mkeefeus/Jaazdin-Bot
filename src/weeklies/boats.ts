@@ -1,15 +1,10 @@
 import { Op } from 'sequelize';
-import { Boat } from '../db/models/Boat';
+import { Boat, Shipment } from '../db/models/Boat';
 import { EmbedBuilder, TextChannel } from 'discord.js';
 import { client } from '~/index';
 // Import helper functions from boatHelpers
-import {
-  handleBoatLeavingTown,
-  handleBoatArrivingInTown,
-  formatBoatInfo,
-  formatShipmentInfo,
-  getTableDescription,
-} from '../functions/boatHelpers';
+import { generateShipmentItems } from '../functions/boatHelpers';
+import { createBoatEmbed } from '~/commands/boat/showboats';
 
 async function update() {
   // 1. Advance all running boats by 1 week
@@ -29,66 +24,64 @@ async function update() {
   for (const boat of boatsToUpdate) {
     if (boat.isInTown) {
       // Boat is leaving town
-      await handleBoatLeavingTown(boat);
+      if (boat.isTier2) {
+        boat.weeksLeft = boat.waitTime - 1;
+      } else {
+        boat.weeksLeft = boat.waitTime;
+      }
+      boat.isInTown = false;
+      await boat.save();
+
+      // Remove all shipments for this boat
+      await Shipment.destroy({ where: { boatName: boat.boatName } });
     } else {
       // Boat is arriving in town
-      await handleBoatArrivingInTown(boat);
+      if (boat.isTier2) {
+        boat.weeksLeft = boat.timeInTown + 1;
+      } else {
+        boat.weeksLeft = boat.timeInTown;
+      }
+      boat.isInTown = true;
+      await boat.save();
+
+      // Generate shipment if needed
+      if (boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
+        // Remove any old shipments for this boat (just in case)
+        await Shipment.destroy({ where: { boatName: boat.boatName } });
+
+        const goods = await generateShipmentItems(boat);
+        // Insert each item as a row in the Shipment table
+        for (const item of goods) {
+          await Shipment.create({
+            boatName: boat.boatName,
+            itemName: item.itemName,
+            price: item.price,
+            quantity: item.quantity,
+          });
+        }
+      }
     }
   }
 }
 
 async function post() {
-  // Boats not in town
-  const boatsNotInTownRaw = await Boat.findAll({
-    where: { isRunning: true, isInTown: false },
-    order: [['weeksLeft', 'ASC']],
-    attributes: ['boatName', 'weeksLeft'],
-  });
-  const boatsNotInTown = boatsNotInTownRaw.map((b) => ({
-    boatName: b.boatName,
-    weeksLeft: b.weeksLeft,
-  }));
-
-  // Boats in town
-  const boatsInTownRaw = await Boat.findAll({
-    where: { isRunning: true, isInTown: true },
-    order: [['weeksLeft', 'ASC']],
-  });
-
-  const embeds: EmbedBuilder[] = [];
   const CHANNEL_ID = process.env.BOT_CHANNEL_ID;
-
   if (!CHANNEL_ID) {
     console.error('BOT_CHANNEL_ID is not defined');
     return;
   }
-
-  // Embed for boats not in town
-  if (boatsNotInTown.length > 0) {
-    const notInTownDesc = boatsNotInTown.map((b) => `• **${b.boatName}** — ${b.weeksLeft} week(s) left`).join('\n');
-    embeds.push(new EmbedBuilder().setTitle('Boats Not In Town').setDescription(notInTownDesc).setColor(0x888888));
-  }
-
-  // Embeds for boats in town
-  for (const boat of boatsInTownRaw) {
-    // Use the standardized boat info formatting
-    const boatInfo = formatBoatInfo(boat);
-    const shipmentInfo = await formatShipmentInfo(boat.boatName);
-    const tableDescription = getTableDescription(boat.tableToGenerate);
-
-    let desc = boatInfo;
-    if (tableDescription) {
-      desc += `\n**Table:** ${tableDescription}`;
-    }
-    if (shipmentInfo) {
-      desc += `\n\n${shipmentInfo}`;
-    }
-
-    embeds.push(new EmbedBuilder().setTitle(boat.boatName).setDescription(desc).setColor(0x2e86c1));
-  }
-
   if (!client.isReady()) {
     console.warn('Discord client not ready.');
+    return;
+  }
+
+  const runningBoats = await Boat.findAll({
+    where: { isRunning: true },
+    order: [['weeksLeft', 'ASC']],
+  });
+
+  const embeds: EmbedBuilder[] = await createBoatEmbed(runningBoats);
+  if (embeds.length === 0) {
     return;
   }
 
@@ -101,14 +94,15 @@ async function post() {
       // Send embeds in batches of 10 and store message IDs
       for (let i = 0; i < embeds.length; i += 10) {
         const embedBatch = embeds.slice(i, i + 10);
-        const message = await channel.send({ embeds: embedBatch });
-        
+        await channel.send({ embeds: embedBatch });
+        // const message = await channel.send({ embeds: embedBatch });
+
         // Store message ID for each boat in this batch
-        for (let j = 0; j < embedBatch.length && i + j < boatsInTownRaw.length; j++) {
-          const boat = boatsInTownRaw[i + j];
-          boat.messageId = message.id;
-          await boat.save();
-        }
+        // for (let j = 0; j < embedBatch.length && i + j < boatsInTownRaw.length; j++) {
+        //   const boat = boatsInTownRaw[i + j];
+        //   boat.messageId = message.id;
+        //   await boat.save();
+        // }
       }
       console.log('Boat update sent to Discord.');
     } else {

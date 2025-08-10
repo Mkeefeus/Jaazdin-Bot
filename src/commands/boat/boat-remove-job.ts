@@ -4,8 +4,6 @@ import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { Boat } from '~/db/models/Boat';
 
-//TODO gm command only.
-
 export const data = new SlashCommandBuilder()
   .setName('boat-remove-job')
   .setDescription('Remove a single job from a boat')

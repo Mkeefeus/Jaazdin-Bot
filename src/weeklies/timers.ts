@@ -3,8 +3,6 @@ import { TimerType } from '~/types/timertype';
 import { client } from '..';
 import { TextChannel, MessageCreateOptions } from 'discord.js';
 import { formatNames } from '~/functions/helpers';
-// import dotenv from 'dotenv';
-// dotenv.config();
 
 type TimerUserMap = {
   [userId: string]: Timer['dataValues'][];
@@ -27,17 +25,16 @@ async function update() {
   currTimers.plant = {};
   currTimers.item = {};
   currTimers.other = {};
-  //   await Timer.destroy({
-  //     where: {
-  //       weeks_remaining: 0,
-  //     },
-  //   });
+  await Timer.destroy({
+    where: {
+      weeks_remaining: 0,
+    },
+  });
   const timers: Timer[] = await Timer.findAll({
     order: ['user', 'character', 'weeks_remaining'],
   });
-  console.log('Timers found:', timers.length);
   for (const timer of timers) {
-    // timer.weeks_remaining -= 1;
+    timer.weeks_remaining -= 1;
     if (timer.weeks_remaining <= 0) {
       currTimers.complete[timer.user] = currTimers.complete[timer.user] || [];
       currTimers.complete[timer.user].push(timer.dataValues);
@@ -95,8 +92,6 @@ async function post() {
 
   // Handle completed timers
   if (currTimers.complete && Object.keys(currTimers.complete).length > 0) {
-    console.log('complete', currTimers.complete);
-
     // Add users with completed timers to the set
     for (const userId of Object.keys(currTimers.complete)) {
       usersWithCompletedTimers.add(userId);
@@ -204,8 +199,6 @@ async function post() {
     // Send just the ping message if there are no embeds
     await channel.send({ content: messageContent });
   }
-
-  // Clear the current timers after posting
 }
 
 export { update, post };

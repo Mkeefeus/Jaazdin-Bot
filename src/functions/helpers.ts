@@ -263,3 +263,7 @@ export async function confirmAction(options: ConfirmActionOptions): Promise<bool
     return false;
   }
 }
+
+export function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

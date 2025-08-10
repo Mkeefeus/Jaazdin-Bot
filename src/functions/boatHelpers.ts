@@ -1,7 +1,6 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
-import { formatNames } from './helpers';
-import fs from 'fs';
+import { formatNames, randomInt } from './helpers';
 import path from 'path';
 
 const D100TABLES_PATH = path.join(__dirname, '../../d100tables');
@@ -24,122 +23,17 @@ export async function findBoatByName(interaction: ChatInputCommandInteraction, n
 }
 
 /**
- * Find a shipment by boat and item name, with error handling
- */
-export async function findShipmentByBoatAndItem(
-  interaction: ChatInputCommandInteraction,
-  boatName: string,
-  itemName: string
-): Promise<Shipment | null> {
-  const shipment = await Shipment.findOne({ where: { boatName, itemName } });
-
-  if (!shipment) {
-    await interaction.reply({
-      content: `⚠️ **Shipment Not Found**\n\nNo shipment found for boat **${formatNames(boatName)}** with item **${formatNames(itemName)}**.`,
-      ephemeral: true,
-    });
-    return null;
-  }
-
-  return shipment;
-}
-
-/**
- * Parse job names from comma-separated or JSON string format
- */
-export function parseJobsFromString(jobsRaw: string | null): { jobs: string[]; error?: string } {
-  if (!jobsRaw) {
-    return { jobs: [] };
-  }
-
-  const trimmed = jobsRaw.trim();
-
-  // If it looks like JSON (starts with [), try JSON parsing first
-  if (trimmed.startsWith('[')) {
-    try {
-      const parsed = JSON.parse(trimmed);
-      if (!Array.isArray(parsed) || !parsed.every((j) => typeof j === 'string')) {
-        return {
-          jobs: [],
-          error: 'Please enter job names as comma-separated (Smith, Cook) or JSON array ["Smith","Cook"]',
-        };
-      }
-      // Normalize job names (trim and filter empty)
-      const normalizedJobs = parsed.map((job) => job.trim()).filter((job) => job.length > 0);
-      return { jobs: normalizedJobs };
-    } catch {
-      return {
-        jobs: [],
-        error: 'Invalid JSON format. Please use comma-separated (Smith, Cook) or valid JSON ["Smith","Cook"]',
-      };
-    }
-  }
-
-  // Otherwise, treat as comma-separated
-  const jobs = trimmed
-    .split(',')
-    .map((job) => job.trim())
-    .filter((job) => job.length > 0);
-
-  // Validate that all jobs are non-empty strings
-  if (jobs.some((job) => typeof job !== 'string' || job.length === 0)) {
-    return {
-      jobs: [],
-      error: 'All job names must be non-empty strings',
-    };
-  }
-
-  return { jobs };
-}
-
-/**
- * Parse job names from JSON string format (legacy - kept for compatibility)
- */
-export function parseJobsFromJSON(jobsRaw: string | null): { jobs: string[]; error?: string } {
-  return parseJobsFromString(jobsRaw);
-}
-
-/**
- * Get available job names from d100 tables
- */
-export function getAvailableJobNames(): string[] {
-  try {
-    return fs
-      .readdirSync(D100TABLES_PATH)
-      .filter((file) => file.endsWith('.json'))
-      .map((file) => file.replace('.json', ''));
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Get available table names for shipment generation
- */
-export function getAvailableTableNames(): string[] {
-  return [
-    'metals',
-    'weaponry',
-    'pets',
-    'meals',
-    'poisonsPotions',
-    'magicItems',
-    'plants',
-    'reagents',
-    'otherworld',
-    'smuggle',
-  ];
-}
-
-/**
  * Boat name autocomplete helper
  */
 export async function boatNameAutocomplete(
   interaction: AutocompleteInteraction,
-  runningOnly: boolean = false
+  options: { runningOnly?: boolean; inTown?: boolean } = {}
 ): Promise<void> {
   const focusedValue = interaction.options.getFocused().toLowerCase();
-  const whereClause = runningOnly ? { isRunning: true } : {};
+  const whereClause = {
+    ...(options.runningOnly && { isRunning: true }),
+    ...(options.inTown && { isInTown: true }),
+  };
   const boats = await Boat.findAll({
     attributes: ['boatName'],
     where: whereClause,
@@ -156,282 +50,6 @@ export async function boatNameAutocomplete(
     .sort((a, b) => a.name.localeCompare(b.name));
 
   await interaction.respond(filtered);
-}
-
-/**
- * Job names autocomplete helper (supports comma-separated input)
- */
-export async function jobNamesAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
-  const focusedValue = interaction.options.getFocused();
-  const jobNames = getAvailableJobNames();
-
-  // Handle comma-separated input - get the last job being typed
-  let currentInput = focusedValue;
-  let prefix = '';
-
-  if (focusedValue.includes(',')) {
-    const parts = focusedValue.split(',');
-    currentInput = parts[parts.length - 1].trim();
-    prefix = parts.slice(0, -1).join(', ');
-    if (prefix) prefix += ', ';
-  }
-
-  // Remove any JSON formatting characters from the current input
-  const input = currentInput
-    .replace(/[[\]"]/g, '')
-    .trim()
-    .toLowerCase();
-
-  const filtered = jobNames
-    .filter((name) => name.toLowerCase().startsWith(input))
-    .slice(0, 25)
-    .map((name) => {
-      const fullValue = prefix + name;
-      return {
-        name: formatNames(name),
-        value: fullValue,
-      };
-    })
-    .filter((choice) => {
-      // Discord autocomplete choice values are limited to 100 characters
-      // Only show choices that won't exceed the limit
-      return choice.value.length <= 100;
-    })
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  // If no choices are available due to character limit, provide a helpful message
-  if (filtered.length === 0 && input.length > 0) {
-    const potentialMatches = jobNames.filter((name) => name.toLowerCase().startsWith(input));
-    if (potentialMatches.length > 0) {
-      // There are matches but they exceed the character limit
-      await interaction.respond([
-        {
-          name: '⚠️ Character limit reached - please submit current jobs and add more separately',
-          value: focusedValue.substring(0, 100),
-        },
-      ]);
-      return;
-    }
-  }
-
-  await interaction.respond(filtered);
-}
-
-/**
- * Table names autocomplete helper (from d100 tables for shipment generation)
- */
-export async function tableNamesAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
-  const focusedValue = interaction.options.getFocused();
-  const tableNames = getAvailableTableNames();
-
-  const input = focusedValue.trim().toLowerCase();
-
-  // Create user-friendly display names
-  const tableDisplayNames: { [key: string]: string } = {
-    metals: 'Metal Trading',
-    weaponry: 'Weapons & Armor',
-    pets: 'Exotic Creatures',
-    meals: 'Fine Cuisine',
-    poisonsPotions: 'Potions & Poisons',
-    magicItems: 'Magic Items',
-    plants: 'Seeds & Plants',
-    reagents: 'Magical Reagents',
-    otherworld: 'Otherworldly Materials',
-    smuggle: 'Contraband Goods',
-  };
-
-  const filtered = tableNames
-    .filter((name) => name.toLowerCase().includes(input) || tableDisplayNames[name]?.toLowerCase().includes(input))
-    .slice(0, 25)
-    .map((name) => ({
-      name: tableDisplayNames[name] || formatNames(name),
-      value: name,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  await interaction.respond(filtered);
-}
-
-/**
- * Shipment item autocomplete helper (based on boat)
- */
-export async function shipmentItemAutocomplete(interaction: AutocompleteInteraction, boatName?: string): Promise<void> {
-  const focusedValue = interaction.options.getFocused().toLowerCase();
-
-  if (!boatName) {
-    await interaction.respond([]);
-    return;
-  }
-
-  const shipments = await Shipment.findAll({
-    where: { boatName },
-    attributes: ['itemName'],
-  });
-
-  const filtered = shipments
-    .map((shipment) => shipment.itemName)
-    .filter((name) => name.toLowerCase().startsWith(focusedValue))
-    .slice(0, 25)
-    .map((name) => ({
-      name: formatNames(name),
-      value: name,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  await interaction.respond(filtered);
-}
-
-/**
- * Combined autocomplete for boat commands
- */
-export async function boatCommandAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
-  const focusedOption = interaction.options.getFocused(true).name;
-
-  switch (focusedOption) {
-    case 'name':
-    case 'boat':
-      await boatNameAutocomplete(interaction, focusedOption === 'boat');
-      break;
-    case 'jobs':
-      await jobNamesAutocomplete(interaction);
-      break;
-    case 'item': {
-      const boatName = interaction.options.getString('boat');
-      await shipmentItemAutocomplete(interaction, boatName || undefined);
-      break;
-    }
-    case 'table':
-      await tableNamesAutocomplete(interaction);
-      break;
-    default:
-      await interaction.respond([]);
-  }
-}
-
-/**
- * Handle boat purchase logic (decrease quantity or remove if zero)
- */
-export async function handleShipmentPurchase(
-  interaction: ChatInputCommandInteraction,
-  shipment: Shipment,
-  boatName: string,
-  itemName: string
-): Promise<void> {
-  const price = shipment.price;
-
-  if (shipment.quantity <= 1) {
-    await shipment.destroy();
-    
-    // Update the boat's Discord embed if it exists
-    await updateBoatEmbed(boatName);
-    
-    await interaction.reply({
-      content: `💰 **Purchase Complete!**\n\nYou purchased the last **${formatNames(itemName)}** from **${formatNames(boatName)}** for **${price} gp**.\n\n⚠️ This item is now sold out!`,
-      ephemeral: false,
-    });
-    return;
-  }
-
-  shipment.quantity -= 1;
-  await shipment.save();
-  
-  // Update the boat's Discord embed if it exists
-  await updateBoatEmbed(boatName);
-
-  await interaction.reply({
-    content: `💰 **Purchase Complete!**\n\nYou purchased **${formatNames(itemName)}** from **${formatNames(boatName)}** for **${price} gp**.\n\n📦 Remaining quantity: **${shipment.quantity}**`,
-    ephemeral: false,
-  });
-}
-
-/**
- * Build update object from interaction options for boat updates
- */
-export function buildBoatUpdatesFromOptions(
-  interaction: ChatInputCommandInteraction,
-  existingBoat?: Boat
-): { updates: Record<string, unknown>; error?: string } {
-  const updates: Record<string, unknown> = {};
-
-  // Helper function to add non-null values to updates
-  const addIfNotNull = (key: string, value: unknown) => {
-    if (value !== null) updates[key] = value;
-  };
-
-  // String fields
-  addIfNotNull('city', interaction.options.getString('city'));
-  addIfNotNull('country', interaction.options.getString('country'));
-  addIfNotNull('tier2Ability', interaction.options.getString('tier2ability'));
-  addIfNotNull('tableToGenerate', interaction.options.getString('table'));
-
-  // Integer fields
-  addIfNotNull('waitTime', interaction.options.getInteger('waittime'));
-  addIfNotNull('timeInTown', interaction.options.getInteger('timeintown'));
-  addIfNotNull('weeksLeft', interaction.options.getInteger('weeksleft'));
-
-  // Boolean fields
-  addIfNotNull('isTier2', interaction.options.getBoolean('istier2'));
-  addIfNotNull('isRunning', interaction.options.getBoolean('isrunning'));
-  addIfNotNull('isInTown', interaction.options.getBoolean('isintown'));
-
-  // Jobs are managed separately with /boat-add-job, /boat-remove-job commands
-
-  // Auto-calculate weeksLeft if not explicitly set
-  if (!updates.weeksLeft) {
-    // Calculate weeksLeft based on boat state and timing values
-    const waitTime = interaction.options.getInteger('waittime') ?? existingBoat?.waitTime;
-    const timeInTown = interaction.options.getInteger('timeintown') ?? existingBoat?.timeInTown;
-    const isTier2 = interaction.options.getBoolean('istier2') ?? existingBoat?.isTier2 ?? false;
-    const isInTown = interaction.options.getBoolean('isintown') ?? existingBoat?.isInTown ?? true;
-
-    const timeToUse = isInTown ? timeInTown : waitTime;
-
-    if (timeToUse !== null && timeToUse !== undefined) {
-      if (isInTown) {
-        // Boat in town: use timeInTown (+ 1 for tier 2)
-        updates.weeksLeft = isTier2 ? timeToUse + 1 : timeToUse;
-      } else {
-        // Boat at sea: use waitTime (- 1 for tier 2)
-        updates.weeksLeft = isTier2 ? timeToUse - 1 : timeToUse;
-      }
-    }
-  }
-
-  return { updates };
-}
-
-// ====================
-// ITEM GENERATION HELPERS
-// ====================
-
-/**
- * Generic function to generate random item by rarity
- */
-export async function getRandomItemByRarity<T>(
-  modelImportPath: string,
-  rarity: string,
-  whereClause?: Record<string, unknown>
-): Promise<T | null> {
-  const { default: Model } = await import(modelImportPath);
-  const whereCondition = { rarity, ...whereClause };
-  const items = await Model.findAll({ where: whereCondition });
-  if (items.length === 0) return null;
-  return items[Math.floor(Math.random() * items.length)];
-}
-
-/**
- * Generic function to generate random item by table/category
- */
-export async function getRandomItemByTable<T>(
-  modelImportPath: string,
-  table: string,
-  tableField: string = 'table'
-): Promise<T | null> {
-  const { default: Model } = await import(modelImportPath);
-  const whereCondition = { [tableField]: table };
-  const items = await Model.findAll({ where: whereCondition });
-  if (items.length === 0) return null;
-  return items[Math.floor(Math.random() * items.length)];
 }
 
 /**
@@ -456,151 +74,21 @@ export function createItemEmbed(
   };
 }
 
-/**
- * Generic autocomplete for rarity fields from any model
- */
-export async function genericRarityAutocomplete(
-  interaction: AutocompleteInteraction,
-  modelImportPath: string
-): Promise<void> {
-  const { default: Model } = await import(modelImportPath);
-  const items = await Model.findAll({ attributes: ['rarity'] });
-  const uniqueRarities = Array.from(new Set(items.map((item: { rarity: string }) => item.rarity)));
-  const focused = interaction.options.getFocused().toLowerCase();
-
-  const filtered = uniqueRarities
-    .filter((r): r is string => typeof r === 'string' && r.toLowerCase().startsWith(focused))
-    .map((r) => ({
-      name: r.charAt(0).toUpperCase() + r.slice(1),
-      value: r,
-    }));
-
-  await interaction.respond(filtered);
-}
-
-/**
- * Generic autocomplete for table fields from any model
- */
-export async function genericTableAutocomplete(
-  interaction: AutocompleteInteraction,
-  modelImportPath: string,
-  tableField: string = 'table',
-  displayFormat?: (value: string) => string
-): Promise<void> {
-  const { default: Model } = await import(modelImportPath);
-  const items = await Model.findAll({ attributes: [tableField] });
-  const uniqueTables = Array.from(new Set(items.map((item: Record<string, string>) => item[tableField])));
-  const focused = interaction.options.getFocused().toLowerCase();
-
-  const filtered = uniqueTables
-    .filter((t): t is string => typeof t === 'string' && t.toLowerCase().startsWith(focused))
-    .map((t) => ({
-      name: displayFormat ? displayFormat(t) : t.charAt(0).toUpperCase() + t.slice(1),
-      value: t,
-    }));
-
-  await interaction.respond(filtered);
-}
-
-/**
- * Generic autocomplete for type fields from any model
- */
-export async function genericTypeAutocomplete(
-  interaction: AutocompleteInteraction,
-  modelImportPath: string,
-  typeField: string = 'type'
-): Promise<void> {
-  const { default: Model } = await import(modelImportPath);
-  const items = await Model.findAll({ attributes: [typeField] });
-  const uniqueTypes = Array.from(new Set(items.map((item: Record<string, string>) => item[typeField])));
-  const focused = interaction.options.getFocused().toLowerCase();
-
-  const filtered = uniqueTypes
-    .filter((t): t is string => typeof t === 'string' && t.toLowerCase().startsWith(focused))
-    .map((t) => ({
-      name: t.charAt(0).toUpperCase() + t.slice(1),
-      value: t,
-    }));
-
-  await interaction.respond(filtered);
-}
-
-/**
- * Standardized item generation command execute function
- */
-export async function executeItemGeneration(
-  interaction: ChatInputCommandInteraction,
-  generatorFunction: () => Promise<unknown>,
-  noItemMessage: string,
-  embedCreator: (item: unknown) => Record<string, unknown>
-): Promise<void> {
-  try {
-    const item = await generatorFunction();
-
-    if (!item) {
-      await interaction.reply({
-        content: noItemMessage,
-        ephemeral: true,
-      });
-      return;
-    }
-
-    await interaction.reply({
-      embeds: [embedCreator(item)],
-    });
-  } catch (error) {
-    await interaction.reply({
-      content: `Failed to generate item: ${error}`,
-      ephemeral: true,
-    });
-  }
-}
-
-/**
- * Generic function to generate an item (weapon/armor) with a valid metal by rarity
- */
-export async function generateItemWithValidMetal<T extends { invalidMetals?: string[] }>(
-  itemModelPath: string,
-  rarity: string
-): Promise<{ item: T; metal: Metal } | null> {
-  // Get random metal by rarity
-  const metal = await getRandomItemByRarity<Metal>('~/db/models/Metal', rarity);
-  if (!metal) return null;
-
-  // Import the item model and get all items
-  const { default: ItemModel } = await import(itemModelPath);
-  const allItems = await ItemModel.findAll();
-
-  // Filter items that are compatible with this metal
-  const validItems = allItems.filter((item: T) => !item.invalidMetals || !item.invalidMetals.includes(metal.name));
-  if (validItems.length === 0) return null;
-
-  // Return random valid item with the metal
-  const item = validItems[Math.floor(Math.random() * validItems.length)];
-  return { item, metal };
-}
-
 // Import additional models for shipment generation
-import { Metal } from '~/db/models/Metal';
-import { Meal } from '~/db/models/Meal';
-import { Potion } from '~/db/models/Potion';
-import { Poison } from '~/db/models/Poison';
-import { Seed } from '~/db/models/Seed';
-import { Reagent } from '~/db/models/Reagent';
-import { MagicItem } from '~/db/models/MagicItem';
-import { generateRandomWeaponWithMetal } from '~/commands/itemGeneration/generateweapon';
-import { generateRandomArmorWithMetal } from '~/commands/itemGeneration/generatearmor';
+import { generateRandomWeaponWithMetalByRarity } from '~/commands/itemGeneration/generateweapon';
+import { generateRandomArmorWithMetalByRarity } from '~/commands/itemGeneration/generatearmor';
 import { getRandomPetByRarityAndType } from '~/commands/itemGeneration/generatepet';
-import { getRandomReagentByRarityAndType } from '~/commands/itemGeneration/generatereagent';
-import { getRandomMetalByRarityExcludingPlanes } from '~/commands/itemGeneration/generatemetal';
+import { getRandomReagentByRarity, getRandomReagentByRarityAndType } from '~/commands/itemGeneration/generatereagent';
+import { getRandomMetalByRarity, getRandomMetalByRarityExcludingPlanes } from '~/commands/itemGeneration/generatemetal';
+import { getRandomMealByRarity } from '~/commands/itemGeneration/generatemeal';
+import { getRandomPotionByRarity } from '~/commands/itemGeneration/generatepotion';
+import { getRandomPoisonByRarity } from '~/commands/itemGeneration/generatepoison';
+import { getRandomSeedByRarity } from '~/commands/itemGeneration/generateseeds';
+import { getRandomMagicItemByTable } from '~/commands/itemGeneration/generatemagicitem';
 
 // Type definitions for shipment generation
 export type ShipmentItem = { itemName: string; price: number; quantity: number };
 type MetalPriceCache = { [metalName: string]: number };
-
-function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 /**
  * Generate shipment items based on boat's table configuration
@@ -625,7 +113,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
         rarities.push(rarity);
       }
       for (const rarity of rarities) {
-        const metal = await getRandomItemByRarity<Metal>('~/db/models/Metal', rarity);
+        const metal = await getRandomMetalByRarity(rarity);
         if (metal) {
           const existing = result.find((item) => item.itemName === metal.name);
           if (existing) {
@@ -652,7 +140,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       for (let i = 0; i < 4; i++) {
         const rarity = rarities[i];
         if (i < 2) {
-          const combo = await generateRandomWeaponWithMetal(rarity);
+          const combo = await generateRandomWeaponWithMetalByRarity(rarity);
           if (!combo) continue;
           const { weapon, metal } = combo;
           if (!metalsInUse[metal.name]) {
@@ -667,7 +155,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             result.push({ itemName, price, quantity: 1 });
           }
         } else {
-          const combo = await generateRandomArmorWithMetal(rarity);
+          const combo = await generateRandomArmorWithMetalByRarity(rarity);
           if (!combo) continue;
           const { armor, metal } = combo;
           if (!metalsInUse[metal.name]) {
@@ -738,7 +226,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       }
       for (const { rarity, count } of rarities) {
         for (let i = 0; i < count; i++) {
-          const meal = await getRandomItemByRarity<Meal>('~/db/models/Meal', rarity);
+          const meal = await getRandomMealByRarity(rarity);
           if (meal) {
             const existing = result.find((item) => item.itemName === meal.name);
             if (existing) {
@@ -766,7 +254,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             rarity = rarityOrder[idx + 1];
           }
         }
-        const potion = await getRandomItemByRarity<Potion>('~/db/models/Potion', rarity);
+        const potion = await getRandomPotionByRarity(rarity);
         if (potion) {
           const existing = result.find((item) => item.itemName === potion.name);
           if (existing) {
@@ -788,7 +276,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             rarity = rarityOrder[idx + 1];
           }
         }
-        const poison = await getRandomItemByRarity<Poison>('~/db/models/Poison', rarity);
+        const poison = await getRandomPoisonByRarity(rarity);
         if (poison) {
           const existing = result.find((item) => item.itemName === poison.name);
           if (existing) {
@@ -813,7 +301,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           if (tableIdx > tableOrder.length - 1) tableIdx = tableOrder.length - 1;
         }
         const table = tableOrder[tableIdx];
-        const item = await getRandomItemByTable<MagicItem>('~/db/models/MagicItem', table);
+        const item = await getRandomMagicItemByTable(table);
         if (item) {
           const existing = result.find((shipmentItem) => shipmentItem.itemName === item.name);
           if (existing) {
@@ -840,7 +328,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           if (idx > rarityOrder.length - 1) idx = rarityOrder.length - 1;
         }
         rarity = rarityOrder[idx];
-        const seed = await getRandomItemByRarity<Seed>('~/db/models/Seed', rarity);
+        const seed = await getRandomSeedByRarity(rarity);
         if (seed) {
           const existing = result.find((item) => item.itemName === seed.name);
           if (existing) {
@@ -924,7 +412,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
         else if (rarityRoll === 6) rarity = 'Very Rare';
 
         if (typeRoll === 1) {
-          const metal = await getRandomItemByRarity<Metal>('~/db/models/Metal', rarity);
+          const metal = await getRandomMetalByRarity(rarity);
           if (metal) {
             const existing = result.find((item) => item.itemName === metal.name);
             if (existing) {
@@ -934,7 +422,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             }
           }
         } else if (typeRoll === 2) {
-          const combo = await generateRandomWeaponWithMetal(rarity);
+          const combo = await generateRandomWeaponWithMetalByRarity(rarity);
           if (combo) {
             const { weapon, metal } = combo;
             const price = Math.round(
@@ -949,7 +437,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             }
           }
         } else if (typeRoll === 3) {
-          const meal = await getRandomItemByRarity<Meal>('~/db/models/Meal', rarity);
+          const meal = await getRandomMealByRarity(rarity);
           if (meal) {
             const existing = result.find((item) => item.itemName === meal.name);
             if (existing) {
@@ -959,7 +447,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             }
           }
         } else if (typeRoll === 4) {
-          const potion = await getRandomItemByRarity<Potion>('~/db/models/Potion', rarity);
+          const potion = await getRandomPotionByRarity(rarity);
           if (potion) {
             const existing = result.find((item) => item.itemName === potion.name);
             if (existing) {
@@ -969,7 +457,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             }
           }
         } else if (typeRoll === 5) {
-          const poison = await getRandomItemByRarity<Poison>('~/db/models/Poison', rarity);
+          const poison = await getRandomPoisonByRarity(rarity);
           if (poison) {
             const existing = result.find((item) => item.itemName === poison.name);
             if (existing) {
@@ -979,7 +467,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             }
           }
         } else if (typeRoll === 6) {
-          const reagent = await getRandomItemByRarity<Reagent>('~/db/models/Reagent', rarity);
+          const reagent = await getRandomReagentByRarity(rarity);
           if (reagent) {
             const existing = result.find((item) => item.itemName === reagent.name);
             if (existing) {
@@ -993,7 +481,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             }
           }
         } else if (typeRoll === 7) {
-          const seed = await getRandomItemByRarity<Seed>('~/db/models/Seed', rarity);
+          const seed = await getRandomSeedByRarity(rarity);
           if (seed) {
             const existing = result.find((item) => item.itemName === seed.name);
             if (existing) {
@@ -1006,7 +494,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           let table = 'A';
           if (rarityRoll === 5) table = 'B';
           else if (rarityRoll === 6) table = 'C';
-          const item = await getRandomItemByTable<MagicItem>('~/db/models/MagicItem', table);
+          const item = await getRandomMagicItemByTable(table);
           if (item) {
             const existing = result.find((shipmentItem) => shipmentItem.itemName === item.name);
             if (existing) {
@@ -1024,128 +512,106 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
   }
 }
 
-/**
- * Handle shipment management when boat properties are updated
- */
-export async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): Promise<void> {
-  // If tableToGenerate was changed in the updates, use the new value
-  const newTableToGenerate = updates.tableToGenerate !== undefined ? updates.tableToGenerate : boat.tableToGenerate;
-  const newIsInTown = updates.isInTown !== undefined ? updates.isInTown : boat.isInTown;
+export async function boatInTownEmbedBuilder(boat: Boat) {
+  let desc = `⏰ **Weeks Left:** ${boat.weeksLeft}\n\n`;
 
-  const shouldHaveShipmentAfterUpdate = newIsInTown && newTableToGenerate && newTableToGenerate !== 'NA';
-
-  if (shouldHaveShipmentAfterUpdate) {
-    // Remove old shipments for this boat
-    await Shipment.destroy({ where: { boatName: boat.boatName } });
-
-    // Generate new shipment if the boat should have one
-    const goods = await generateShipmentItems({
-      ...boat.dataValues,
-      ...updates,
-      tableToGenerate: newTableToGenerate,
-      isInTown: newIsInTown,
-    } as Boat);
-
-    // Insert new shipment items
-    for (const item of goods) {
-      await Shipment.create({
-        boatName: boat.boatName,
-        itemName: item.itemName,
-        price: item.price,
-        quantity: item.quantity,
-      });
-    }
-  } else {
-    // Remove shipments if boat should not have them
-    await Shipment.destroy({ where: { boatName: boat.boatName } });
+  if (boat.jobsAffected && Array.isArray(boat.jobsAffected) && boat.jobsAffected.length > 0) {
+    desc += `💰 **${boat.jobsAffected.join(', ')}** have their gp wage die amount +1.\n\n`;
   }
-}
+  if (boat.isTier2 && boat.tier2Ability) desc += `⭐ ${boat.tier2Ability}\n`;
 
-/**
- * Create informative response message for boat updates with shipment status
- */
-export async function createBoatUpdateMessage(
-  boatName: string,
-  updates: Partial<Boat>,
-  originalBoat: Boat
-): Promise<string> {
-  const updatedBoat = { ...originalBoat.dataValues, ...updates } as Boat;
-
-  let responseMessage = `✅ **Boat "${formatNames(boatName)}" updated successfully!**\n\n`;
-
-  // Add comprehensive boat information
-  responseMessage += await createBoatStatusDescription(updatedBoat);
-
-  return responseMessage;
-}
-
-/**
- * Handle a boat leaving town - sets up timing and clears shipments
- */
-export async function handleBoatLeavingTown(boat: Boat): Promise<void> {
-  if (boat.isTier2) {
-    boat.weeksLeft = boat.waitTime - 1;
-  } else {
-    boat.weeksLeft = boat.waitTime;
-  }
-  boat.isInTown = false;
-  await boat.save();
-
-  // Remove all shipments for this boat
-  await Shipment.destroy({ where: { boatName: boat.boatName } });
-}
-
-/**
- * Handle a boat arriving in town - sets up timing and generates shipments
- */
-export async function handleBoatArrivingInTown(boat: Boat): Promise<void> {
-  if (boat.isTier2) {
-    boat.weeksLeft = boat.timeInTown + 1;
-  } else {
-    boat.weeksLeft = boat.timeInTown;
-  }
-  boat.isInTown = true;
-  await boat.save();
-
-  // Generate shipment if needed
+  let fields: { name: string; value: string }[] = [];
   if (boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
-    // Remove any old shipments for this boat (just in case)
-    await Shipment.destroy({ where: { boatName: boat.boatName } });
-
-    const goods = await generateShipmentItems(boat);
-    // Insert each item as a row in the Shipment table
-    for (const item of goods) {
-      await Shipment.create({
-        boatName: boat.boatName,
-        itemName: item.itemName,
-        price: item.price,
-        quantity: item.quantity,
-      });
+    desc += `### Goods:\n\n`;
+    const shipments = await Shipment.findAll({ where: { boatName: boat.boatName } });
+    fields = shipments.map((s) => ({
+      name: s.itemName,
+      value: `💵 Price: ${s.price} gp\n📦 Remaining Stock: ${s.quantity}`,
+      inline: true,
+    }));
+    if (fields.length === 0) {
+      fields.push({ name: '❌ Sold Out', value: '🔄 Check back next time.' });
     }
   }
+
+  // If there are more than 25 fields, split them into multiple embeds
+  if (fields.length > 25) {
+    const embeds: EmbedBuilder[] = [];
+    const chunks = [];
+
+    // Split fields into chunks of 25
+    for (let i = 0; i < fields.length; i += 25) {
+      chunks.push(fields.slice(i, i + 25));
+    }
+
+    // Create embeds for each chunk
+    chunks.forEach((chunk, index) => {
+      const embed = new EmbedBuilder().setColor(0x2e86c1).setFields(chunk);
+
+      if (index === 0) {
+        // First embed gets the title and description
+        embed.setTitle(`⛵ ${boat.boatName}`).setDescription(desc);
+      } else {
+        // Subsequent embeds get continuation title
+        embed.setTitle(`⛵ ${boat.boatName} (continued ${index + 1})`);
+      }
+
+      embeds.push(embed);
+    });
+
+    return embeds;
+  }
+
+  // If 25 or fewer fields, return single embed as before
+  return new EmbedBuilder().setTitle(`⛵ ${boat.boatName}`).setDescription(desc).setColor(0x2e86c1).setFields(fields);
+}
+
+export const boatTableDescriptions: { [key: string]: string } = {
+  metals: 'Metal Trading',
+  weaponry: 'Weapons & Armor',
+  pets: 'Exotic Creatures',
+  meals: 'Fine Cuisine',
+  poisonsPotions: 'Potions & Poisons',
+  magicItems: 'Magic Items',
+  plants: 'Seeds & Plants',
+  reagents: 'Magical Reagents',
+  otherworld: 'Otherworldly Materials',
+  smuggle: 'Contraband Goods',
+};
+
+export async function boatAtSeaEmbedBuilder(boat: Boat) {
+  let desc = `**Weeks Left:** ${boat.weeksLeft}\n`;
+
+  if (boat.jobsAffected && Array.isArray(boat.jobsAffected) && boat.jobsAffected.length > 0) {
+    desc += `${boat.jobsAffected.join(', ')} have their gp wage die amount +1.\n\n`;
+  }
+
+  if (boat.isTier2 && boat.tier2Ability) desc += `**Tier 2 Ability:** ${boat.tier2Ability}\n\n`;
+  desc += `*Shipment Type:* ${boat.tableToGenerate ? boatTableDescriptions[boat.tableToGenerate] : 'None'}`;
+  return new EmbedBuilder().setTitle(boat.boatName).setDescription(desc).setColor(0x2e86c1);
 }
 
 /**
- * Safely destroy a boat and all associated shipments with cascade deletion
+ * Create a comprehensive boat status embed description
  */
-export async function destroyBoatWithCascade(boatName: string): Promise<{ shipmentCount: number }> {
-  // First count the shipments that will be deleted
-  const shipmentCount = await Shipment.count({ where: { boatName } });
+export async function createBoatStatusDescription(boat: Boat): Promise<string> {
+  let description = formatBoatInfo(boat);
 
-  // Delete all shipments first
-  await Shipment.destroy({ where: { boatName } });
+  // Add shipment type description
+  const tableDesc = boatTableDescriptions[boat.tableToGenerate] || 'Unknown';
+  description += `**Shipment Type:** ${tableDesc}\n\n`;
 
-  // Then delete the boat
-  await Boat.destroy({ where: { boatName } });
+  // Add actual shipment info if in town
+  if (boat.isInTown && boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
+    const shipmentInfo = await formatShipmentInfo(boat.boatName);
+    description += shipmentInfo;
+  } else if (!boat.isInTown) {
+    description += '*Boat is at sea - no shipments available*';
+  } else {
+    description += '*No shipments generated*';
+  }
 
-  return { shipmentCount };
-}
-
-/**
- * Calculate price for a simple item (potions, pets, meals, etc.)
- */
-export function calculateSimpleItemPrice(item: { price_min: number; price_max: number }): number {
-  return randomInt(item.price_min, item.price_max);
+  return description;
 }
 
 /**
@@ -1157,13 +623,6 @@ export function calculateMetalItemPrice(
 ): number {
   const metalPrice = randomInt(metal.price_min, metal.price_max);
   return Math.round((metalPrice * item.plates + item.price) * 1.33);
-}
-
-/**
- * Calculate price for metal itself
- */
-export function calculateMetalPrice(metal: { price_min: number; price_max: number }): number {
-  return randomInt(metal.price_min, metal.price_max);
 }
 
 /**
@@ -1204,20 +663,6 @@ export function formatBoatInfo(boat: Boat): string {
 }
 
 /**
- * Format boat basic info for listings (shorter version)
- */
-export function formatBoatBasicInfo(boat: Boat): string {
-  let info = `**${formatNames(boat.boatName)}**\n`;
-  info += `${boat.isRunning ? '🚢' : '⚓'} ${boat.isInTown ? 'In Town' : 'At Sea'} • ${boat.weeksLeft} week(s) left`;
-
-  if (boat.isTier2) {
-    info += ' • Tier 2';
-  }
-
-  return info;
-}
-
-/**
  * Format shipment information for display
  */
 export async function formatShipmentInfo(boatName: string): Promise<string> {
@@ -1233,58 +678,11 @@ export async function formatShipmentInfo(boatName: string): Promise<string> {
 }
 
 /**
- * Get user-friendly table description instead of internal table name
- */
-export function getTableDescription(tableToGenerate: string | null): string {
-  if (!tableToGenerate || tableToGenerate === 'NA') {
-    return 'No shipments generated';
-  }
-
-  const tableDescriptions: { [key: string]: string } = {
-    metals: 'Metal Trading',
-    weaponry: 'Weapons & Armor',
-    pets: 'Exotic Creatures',
-    meals: 'Fine Cuisine',
-    poisonsPotions: 'Potions & Poisons',
-    magicItems: 'Magic Items',
-    plants: 'Seeds & Plants',
-    reagents: 'Magical Reagents',
-    otherworld: 'Otherworldly Materials',
-    smuggle: 'Contraband Goods',
-  };
-
-  return tableDescriptions[tableToGenerate] || formatNames(tableToGenerate);
-}
-
-/**
- * Create a comprehensive boat status embed description
- */
-export async function createBoatStatusDescription(boat: Boat): Promise<string> {
-  let description = formatBoatInfo(boat);
-
-  // Add shipment type description
-  const tableDesc = getTableDescription(boat.tableToGenerate);
-  description += `**Shipment Type:** ${tableDesc}\n\n`;
-
-  // Add actual shipment info if in town
-  if (boat.isInTown && boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
-    const shipmentInfo = await formatShipmentInfo(boat.boatName);
-    description += shipmentInfo;
-  } else if (!boat.isInTown) {
-    description += '*Boat is at sea - no shipments available*';
-  } else {
-    description += '*No shipments generated*';
-  }
-
-  return description;
-}
-
-/**
  * Update a boat's Discord embed with current information
  */
 export async function updateBoatEmbed(boatName: string): Promise<boolean> {
   const { client } = await import('~/index');
-  
+
   if (!client.isReady()) {
     console.warn('Discord client not ready for embed update');
     return false;
@@ -1322,7 +720,7 @@ export async function updateBoatEmbed(boatName: string): Promise<boolean> {
     const { EmbedBuilder } = await import('discord.js');
     const boatInfo = formatBoatInfo(boat);
     const shipmentInfo = await formatShipmentInfo(boat.boatName);
-    const tableDescription = getTableDescription(boat.tableToGenerate);
+    const tableDescription = boatTableDescriptions[boat.tableToGenerate] || 'Unknown';
 
     let desc = boatInfo;
     if (tableDescription) {
@@ -1332,16 +730,12 @@ export async function updateBoatEmbed(boatName: string): Promise<boolean> {
       desc += `\n\n${shipmentInfo}`;
     }
 
-    const updatedEmbed = new EmbedBuilder()
-      .setTitle(boat.boatName)
-      .setDescription(desc)
-      .setColor(0x2e86c1);
+    const updatedEmbed = new EmbedBuilder().setTitle(boat.boatName).setDescription(desc).setColor(0x2e86c1);
 
     // Update the message
     await message.edit({ embeds: [updatedEmbed] });
     console.log(`Updated embed for boat: ${boatName}`);
     return true;
-
   } catch (error) {
     console.error(`Failed to update boat embed for ${boatName}:`, error);
     // If the message is not found or can't be edited, clear the messageId

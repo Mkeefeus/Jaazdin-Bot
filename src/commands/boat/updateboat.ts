@@ -1,20 +1,13 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { Boat, Shipment } from '~/db/models/Boat';
 import {
   findBoatByName,
-  buildBoatUpdatesFromOptions,
-  handleShipmentUpdate,
-  createBoatUpdateMessage,
   boatNameAutocomplete,
-  tableNamesAutocomplete,
+  generateShipmentItems,
+  boatAtSeaEmbedBuilder,
 } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-
-//TODO gm command only.
-// This command updates boat properties and automatically manages shipments:
-// - If boat becomes in town with a valid table, generates new shipment
-// - If boat leaves town or table is removed/changed, clears shipments
-// - If table changes while in town, regenerates shipment with new table
 
 export const data = new SlashCommandBuilder()
   .setName('updateboat')
@@ -27,13 +20,115 @@ export const data = new SlashCommandBuilder()
   .addIntegerOption((opt) => opt.setName('waittime').setDescription('Weeks at sea').setRequired(false))
   .addIntegerOption((opt) => opt.setName('timeintown').setDescription('Weeks in town').setRequired(false))
   .addStringOption((opt) => opt.setName('tier2ability').setDescription('Tier 2 ability description').setRequired(false))
-  .addStringOption((opt) =>
-    opt.setName('table').setDescription('Table to generate (optional)').setRequired(false).setAutocomplete(true)
+  .addStringOption((option) =>
+    option
+      .setName('table')
+      .setDescription('What type of loot the boat will generate')
+      .setRequired(false)
+      .setChoices([
+        { name: 'Metal Trading', value: 'metals' },
+        { name: 'Weapons & Armor', value: 'weaponry' },
+        { name: 'Exotic Creatures', value: 'pets' },
+        { name: 'Fine Cuisine', value: 'meals' },
+        { name: 'Potions & Poisons', value: 'poisonsPotions' },
+        { name: 'Magic Items', value: 'magicItems' },
+        { name: 'Seeds & Plants', value: 'plants' },
+        { name: 'Magical Reagents', value: 'reagents' },
+        { name: 'Otherworldly Materials', value: 'otherworld' },
+        { name: 'Contraband Goods', value: 'smuggle' },
+      ])
   )
   .addBooleanOption((opt) => opt.setName('istier2').setDescription('Is this a tier 2 boat?').setRequired(false))
   .addBooleanOption((opt) => opt.setName('isrunning').setDescription('Is this boat running?').setRequired(false))
   .addIntegerOption((opt) => opt.setName('weeksleft').setDescription('Weeks left (optional)').setRequired(false))
   .addBooleanOption((opt) => opt.setName('isintown').setDescription('Is the boat in town?').setRequired(false));
+
+function buildBoatUpdatesFromOptions(
+  interaction: ChatInputCommandInteraction,
+  existingBoat?: Boat
+): { updates: Record<string, unknown>; error?: string } {
+  const updates: Record<string, unknown> = {};
+
+  // Helper function to add non-null values to updates
+  const addIfNotNull = (key: string, value: unknown) => {
+    if (value !== null) updates[key] = value;
+  };
+
+  // String fields
+  addIfNotNull('city', interaction.options.getString('city'));
+  addIfNotNull('country', interaction.options.getString('country'));
+  addIfNotNull('tier2Ability', interaction.options.getString('tier2ability'));
+  addIfNotNull('tableToGenerate', interaction.options.getString('table'));
+
+  // Integer fields
+  addIfNotNull('waitTime', interaction.options.getInteger('waittime'));
+  addIfNotNull('timeInTown', interaction.options.getInteger('timeintown'));
+  addIfNotNull('weeksLeft', interaction.options.getInteger('weeksleft'));
+
+  // Boolean fields
+  addIfNotNull('isTier2', interaction.options.getBoolean('istier2'));
+  addIfNotNull('isRunning', interaction.options.getBoolean('isrunning'));
+  addIfNotNull('isInTown', interaction.options.getBoolean('isintown'));
+
+  // Jobs are managed separately with /boat-add-job, /boat-remove-job commands
+
+  // Auto-calculate weeksLeft if not explicitly set
+  if (!updates.weeksLeft) {
+    // Calculate weeksLeft based on boat state and timing values
+    const waitTime = interaction.options.getInteger('waittime') ?? existingBoat?.waitTime;
+    const timeInTown = interaction.options.getInteger('timeintown') ?? existingBoat?.timeInTown;
+    const isTier2 = interaction.options.getBoolean('istier2') ?? existingBoat?.isTier2 ?? false;
+    const isInTown = interaction.options.getBoolean('isintown') ?? existingBoat?.isInTown ?? true;
+
+    const timeToUse = isInTown ? timeInTown : waitTime;
+
+    if (timeToUse !== null && timeToUse !== undefined) {
+      if (isInTown) {
+        // Boat in town: use timeInTown (+ 1 for tier 2)
+        updates.weeksLeft = isTier2 ? timeToUse + 1 : timeToUse;
+      } else {
+        // Boat at sea: use waitTime (- 1 for tier 2)
+        updates.weeksLeft = isTier2 ? timeToUse - 1 : timeToUse;
+      }
+    }
+  }
+
+  return { updates };
+}
+
+async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): Promise<void> {
+  // If tableToGenerate was changed in the updates, use the new value
+  const newTableToGenerate = updates.tableToGenerate !== undefined ? updates.tableToGenerate : boat.tableToGenerate;
+  const newIsInTown = updates.isInTown !== undefined ? updates.isInTown : boat.isInTown;
+
+  const shouldHaveShipmentAfterUpdate = newIsInTown && newTableToGenerate && newTableToGenerate !== 'NA';
+
+  if (shouldHaveShipmentAfterUpdate) {
+    // Remove old shipments for this boat
+    await Shipment.destroy({ where: { boatName: boat.boatName } });
+
+    // Generate new shipment if the boat should have one
+    const goods = await generateShipmentItems({
+      ...boat.dataValues,
+      ...updates,
+      tableToGenerate: newTableToGenerate,
+      isInTown: newIsInTown,
+    } as Boat);
+
+    // Insert new shipment items
+    for (const item of goods) {
+      await Shipment.create({
+        boatName: boat.boatName,
+        itemName: item.itemName,
+        price: item.price,
+        quantity: item.quantity,
+      });
+    }
+  } else {
+    // Remove shipments if boat should not have them
+    await Shipment.destroy({ where: { boatName: boat.boatName } });
+  }
+}
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
@@ -69,10 +164,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // Handle shipment generation/removal based on the updates
     await handleShipmentUpdate(boat, updates);
 
-    // Create response message using helper
-    const responseMessage = await createBoatUpdateMessage(boatName, updates, boat);
-
-    const embed = new EmbedBuilder().setDescription(responseMessage).setColor(0x2e86c1);
+    const embed = await boatAtSeaEmbedBuilder(boat);
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
   } catch (error) {
@@ -86,8 +178,6 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
   if (focusedOption.name === 'name') {
     await boatNameAutocomplete(interaction);
-  } else if (focusedOption.name === 'table') {
-    await tableNamesAutocomplete(interaction);
   }
 }
 

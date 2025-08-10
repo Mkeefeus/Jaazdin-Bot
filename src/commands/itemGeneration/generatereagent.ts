@@ -1,13 +1,9 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Reagent } from '../../db/models/Reagent';
-import {
-  genericRarityAutocomplete,
-  genericTypeAutocomplete,
-  createItemEmbed,
-  calculateSimpleItemPrice,
-} from '~/functions/boatHelpers';
+import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
+import { randomInt } from 'crypto';
 
 //TODO gm command only.
 
@@ -15,24 +11,40 @@ export const data = new SlashCommandBuilder()
   .setName('generatereagent')
   .setDescription('Generate a random reagent by rarity and creature type')
   .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the reagent').setRequired(true).setAutocomplete(true)
+    option
+      .setName('rarity')
+      .setDescription('Rarity of the metal')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Common', value: 'Common' },
+        { name: 'Uncommon', value: 'Uncommon' },
+        { name: 'Rare', value: 'Rare' },
+        { name: 'Very Rare', value: 'Very Rare' },
+        { name: 'Legendary', value: 'Legendary' }
+      )
   )
   .addStringOption((option) =>
     option
       .setName('creaturetype')
-      .setDescription('Creature type of the reagent')
+      .setDescription('Creature type of the pet')
       .setRequired(true)
-      .setAutocomplete(true)
+      .setChoices([
+        { name: 'Aberration', value: 'Aberration' },
+        { name: 'Beast', value: 'Beast' },
+        { name: 'Celestial', value: 'Celestial' },
+        { name: 'Construct', value: 'Construct' },
+        { name: 'Dragon', value: 'Dragon' },
+        { name: 'Elemental', value: 'Elemental' },
+        { name: 'Fey', value: 'Fey' },
+        { name: 'Fiend', value: 'Fiend' },
+        { name: 'Giant', value: 'Giant' },
+        { name: 'Humanoid', value: 'Humanoid' },
+        { name: 'Monstrosity', value: 'Monstrosity' },
+        { name: 'Ooze', value: 'Ooze' },
+        { name: 'Plant', value: 'Plant' },
+        { name: 'Undead', value: 'Undead' },
+      ])
   );
-
-export async function autocomplete(interaction: AutocompleteInteraction) {
-  const focusedOption = interaction.options.getFocused(true);
-  if (focusedOption.name === 'rarity') {
-    await genericRarityAutocomplete(interaction, '~/db/models/Reagent');
-  } else if (focusedOption.name === 'creaturetype') {
-    await genericTypeAutocomplete(interaction, '~/db/models/Reagent', 'type');
-  }
-}
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.DM)) {
@@ -55,7 +67,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const price = calculateSimpleItemPrice(reagentChosen);
+  const price = randomInt(reagentChosen.price_min, reagentChosen.price_max);
 
   const embed = createItemEmbed(
     `Random Reagent (${rarity.charAt(0).toUpperCase() + rarity.slice(1)}, ${creatureType.charAt(0).toUpperCase() + creatureType.slice(1)})`,

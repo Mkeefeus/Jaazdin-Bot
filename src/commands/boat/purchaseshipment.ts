@@ -1,9 +1,8 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
-import { findShipmentByBoatAndItem, handleShipmentPurchase, boatNameAutocomplete } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { Shipment } from '~/db/models/Boat';
+import { boatNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
+import { checkUserRole, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('purchaseshipment')
@@ -24,13 +23,40 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const itemName = interaction.options.getString('item', true);
 
   // Use helper to find shipment with error handling
-  const shipment = await findShipmentByBoatAndItem(interaction, boatName, itemName);
+  const shipment = await Shipment.findOne({ where: { boatName, itemName } });
+
   if (!shipment) {
+    await interaction.reply({
+      content: `⚠️ **Shipment Not Found**\n\nNo shipment found for boat **${formatNames(boatName)}** with item **${formatNames(itemName)}**.`,
+      ephemeral: true,
+    });
+    return null;
+  }
+  const price = shipment.price;
+
+  if (shipment.quantity <= 1) {
+    await shipment.destroy();
+
+    // Update the boat's Discord embed if it exists
+    await updateBoatEmbed(boatName);
+
+    await interaction.reply({
+      content: `💰 **Purchase Complete!**\n\nYou purchased the last **${formatNames(itemName)}** from **${formatNames(boatName)}** for **${price} gp**.\n\n⚠️ This item is now sold out!`,
+      ephemeral: false,
+    });
     return;
   }
 
-  // Use helper to handle purchase logic
-  await handleShipmentPurchase(interaction, shipment, boatName, itemName);
+  shipment.quantity -= 1;
+  await shipment.save();
+
+  // Update the boat's Discord embed if it exists
+  await updateBoatEmbed(boatName);
+
+  await interaction.reply({
+    content: `💰 **Purchase Complete!**\n\nYou purchased **${formatNames(itemName)}** from **${formatNames(boatName)}** for **${price} gp**.\n\n📦 Remaining quantity: **${shipment.quantity}**`,
+    ephemeral: false,
+  });
 }
 
 // Autocomplete for boat name and item name

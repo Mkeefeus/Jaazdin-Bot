@@ -11,8 +11,6 @@ import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } fro
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
-//TODO gm command only.
-
 export const data = new SlashCommandBuilder()
   .setName('boat-clear-jobs')
   .setDescription('Remove all jobs from a boat')

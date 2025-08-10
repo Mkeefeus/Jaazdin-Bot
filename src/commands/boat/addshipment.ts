@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
-import { boatNameAutocomplete, formatShipmentInfo, updateBoatEmbed } from '~/functions/boatHelpers';
+import { boatNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
@@ -38,12 +38,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // Update the boat's Discord embed if it exists
     await updateBoatEmbed(boatName);
 
-    // Show updated shipment list
-    const shipmentInfo = await formatShipmentInfo(boatName);
-
     const embed = new EmbedBuilder()
       .setTitle(`✅ Shipment Added to ${formatNames(boatName)}`)
-      .setDescription(`Added **${formatNames(itemName)}** (x${quantity}, ${price}gp each)\n\n${shipmentInfo}`)
+      .setDescription(`Added **${formatNames(itemName)}** (x${quantity}, ${price}gp each)`)
       .setColor(0x00ff00);
 
     await interaction.reply({
@@ -60,7 +57,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 // Autocomplete for boat name
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  await boatNameAutocomplete(interaction, true); // Only running boats
+  await boatNameAutocomplete(interaction, { runningOnly: true, inTown: true }); // Only running boats
 }
 
 export const help = {

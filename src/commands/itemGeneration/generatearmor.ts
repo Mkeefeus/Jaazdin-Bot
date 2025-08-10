@@ -1,13 +1,10 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Armor } from '../../db/models/Armor';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-import {
-  generateItemWithValidMetal,
-  genericRarityAutocomplete,
-  createItemEmbed,
-  calculateMetalItemPrice,
-} from '~/functions/boatHelpers';
+import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
+import { getRandomMetalByRarity } from './generatemetal';
+import { Op } from 'sequelize';
 
 //TODO gm command only.
 
@@ -15,11 +12,32 @@ export const data = new SlashCommandBuilder()
   .setName('generatearmor')
   .setDescription('Generate a random armor with a random valid metal by rarity')
   .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the metal').setRequired(true).setAutocomplete(true)
+    option
+      .setName('rarity')
+      .setDescription('Rarity of the metal')
+      .setRequired(true)
+      .setChoices([
+        { name: 'Common', value: 'Common' },
+        { name: 'Uncommon', value: 'Uncommon' },
+        { name: 'Rare', value: 'Rare' },
+        { name: 'Very Rare', value: 'Very Rare' },
+        { name: 'Legendary', value: 'Legendary' },
+      ])
   );
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
-  await genericRarityAutocomplete(interaction, '~/db/models/Metal');
+// Utility function for use in other scripts
+export async function generateRandomArmorWithMetalByRarity(rarity: string) {
+  const metal = await getRandomMetalByRarity(rarity);
+  if (!metal) return null;
+  const validArmors = await Armor.findAll({
+    where: {
+      invalid_metals: {
+        [Op.notLike]: `%${metal.name}%`,
+      },
+    },
+  });
+  const armor = validArmors[Math.floor(Math.random() * validArmors.length)];
+  return { armor, metal };
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -33,7 +51,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const rarity = interaction.options.getString('rarity', true);
 
-  const result = await generateRandomArmorWithMetal(rarity);
+  const result = await generateRandomArmorWithMetalByRarity(rarity);
   if (!result) {
     await interaction.reply({
       content: `No valid armor/metal combination found for rarity: ${rarity}`,
@@ -56,14 +74,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   );
 
   await interaction.reply({ embeds: [embed] });
-}
-
-// Utility function for use in other scripts
-export async function generateRandomArmorWithMetal(rarity: string) {
-  const result = await generateItemWithValidMetal<Armor>('~/db/models/Armor', rarity);
-  if (!result) return null;
-
-  return { armor: result.item, metal: result.metal };
 }
 
 export const help = {

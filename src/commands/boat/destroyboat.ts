@@ -4,8 +4,6 @@ import { findBoatByName, boatNameAutocomplete } from '~/functions/boatHelpers';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
-//TODO gm command only.
-
 export const data = new SlashCommandBuilder()
   .setName('destroyboat')
   .setDescription('Will remove a boat from the active boats')

@@ -4,8 +4,6 @@ import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { Op } from 'sequelize';
 
-//TODO gm command only.
-
 export const data = new SlashCommandBuilder()
   .setName('setboatsrunning')
   .setDescription('Set all boats to running or not, with optional exceptions')

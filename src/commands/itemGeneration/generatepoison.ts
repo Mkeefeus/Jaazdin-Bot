@@ -1,13 +1,9 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Poison } from '../../db/models/Poison';
-import {
-  getRandomItemByRarity,
-  createItemEmbed,
-  genericRarityAutocomplete,
-  calculateSimpleItemPrice,
-} from '~/functions/boatHelpers';
+import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
+import { randomInt } from 'crypto';
 
 //TODO gm command only.
 
@@ -15,11 +11,23 @@ export const data = new SlashCommandBuilder()
   .setName('generatepoison')
   .setDescription('Generate a random poison by rarity')
   .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the poison').setRequired(true).setAutocomplete(true)
+    option
+      .setName('rarity')
+      .setDescription('Rarity of the poison')
+      .setRequired(true)
+      .setChoices([
+        { name: 'Common', value: 'Common' },
+        { name: 'Uncommon', value: 'Uncommon' },
+        { name: 'Rare', value: 'Rare' },
+        { name: 'Very Rare', value: 'Very Rare' },
+        { name: 'Legendary', value: 'Legendary' },
+      ])
   );
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
-  await genericRarityAutocomplete(interaction, '~/db/models/Poison');
+export async function getRandomPoisonByRarity(rarity: string): Promise<Poison | null> {
+  const poisons = await Poison.findAll({ where: { rarity } });
+  if (!poisons || poisons.length === 0) return null;
+  return poisons[Math.floor(Math.random() * poisons.length)];
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -33,7 +41,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const rarity = interaction.options.getString('rarity', true);
 
-  const poison = await getRandomItemByRarity<Poison>('~/db/models/Poison', rarity);
+  // const poison = await getRandomItemByRarity<Poison>('~/db/models/Poison', rarity);
+  const poison = await getRandomPoisonByRarity(rarity);
   if (!poison) {
     await interaction.reply({
       content: `No poisons found for rarity: ${rarity}`,
@@ -42,7 +51,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const price = calculateSimpleItemPrice(poison);
+  const price = randomInt(poison.price_min, poison.price_max);
 
   const embed = createItemEmbed(
     `Random Poison (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,

@@ -1,14 +1,10 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Metal } from '../../db/models/Metal';
 import { Op } from 'sequelize';
-import {
-  getRandomItemByRarity,
-  createItemEmbed,
-  genericRarityAutocomplete,
-  calculateMetalPrice,
-} from '~/functions/boatHelpers';
+import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
+import { randomInt } from 'crypto';
 
 //TODO gm command only.
 
@@ -16,11 +12,23 @@ export const data = new SlashCommandBuilder()
   .setName('generatemetal')
   .setDescription('Generate a random metal by rarity')
   .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the metal').setRequired(true).setAutocomplete(true)
+    option
+      .setName('rarity')
+      .setDescription('Rarity of the metal')
+      .setRequired(true)
+      .addChoices(
+        { name: 'Common', value: 'Common' },
+        { name: 'Uncommon', value: 'Uncommon' },
+        { name: 'Rare', value: 'Rare' },
+        { name: 'Very Rare', value: 'Very Rare' },
+        { name: 'Legendary', value: 'Legendary' }
+      )
   );
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
-  await genericRarityAutocomplete(interaction, '~/db/models/Metal');
+export async function getRandomMetalByRarity(rarity: string): Promise<Metal | null> {
+  const metals = await Metal.findAll({ where: { rarity } });
+  if (!metals || metals.length === 0) return null;
+  return metals[Math.floor(Math.random() * metals.length)];
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -34,7 +42,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const rarity = interaction.options.getString('rarity', true);
 
-  const metal = await getRandomItemByRarity<Metal>('~/db/models/Metal', rarity);
+  const metal = await getRandomMetalByRarity(rarity);
   if (!metal) {
     await interaction.reply({
       content: `No metals found for rarity: ${rarity}`,
@@ -43,7 +51,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const price = calculateMetalPrice(metal);
+  const price = randomInt(metal.price_min, metal.price_max);
 
   const embed = createItemEmbed(
     `Random Metal (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,

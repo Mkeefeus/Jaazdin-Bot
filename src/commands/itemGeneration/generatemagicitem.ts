@@ -1,13 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { MagicItem } from '../../db/models/MagicItem';
-import {
-  getRandomItemByTable,
-  createItemEmbed,
-  genericTableAutocomplete,
-  calculateSimpleItemPrice,
-} from '~/functions/boatHelpers';
+import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
+import { randomInt } from 'crypto';
 
 //TODO gm command only.
 
@@ -19,12 +15,33 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  await genericTableAutocomplete(
-    interaction,
-    '~/db/models/MagicItem',
-    'table',
-    (table) => `Table ${table.toUpperCase()}`
-  );
+  const items = await MagicItem.findAll({
+    group: ['table'],
+  });
+  const tables = items.map((item) => item.table).filter((value, index, self) => self.indexOf(value) === index);
+  const choices = tables.map((table) => ({
+    name: `Table ${table.toUpperCase()}`,
+    value: table,
+  }));
+  await interaction.respond(choices);
+}
+
+export async function getRandomMagicItemByTable(table: string): Promise<MagicItem | null> {
+  const items = await MagicItem.findAll({
+    where: { table },
+  });
+  if (items.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * items.length);
+  return items[randomIndex].dataValues;
+}
+
+export async function getRandomMagicItemByRarity(rarity: string): Promise<MagicItem | null> {
+  const items = await MagicItem.findAll({
+    where: { rarity },
+  });
+  if (items.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * items.length);
+  return items[randomIndex].dataValues;
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -38,7 +55,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const table = interaction.options.getString('table', true);
 
-  const item = await getRandomItemByTable<MagicItem>('~/db/models/MagicItem', table);
+  const item = await getRandomMagicItemByTable(table);
+
   if (!item) {
     await interaction.reply({
       content: `No items found for table ${table}.`,
@@ -47,7 +65,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const price = calculateSimpleItemPrice(item);
+  const price = randomInt(item.price_min, item.price_max);
 
   const embed = createItemEmbed(
     `Random Magic Item (Table ${table.toUpperCase()})`,
@@ -56,7 +74,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     0x8e44ad
   );
 
-  await interaction.reply({ embeds: [embed] });
+  await interaction.reply({ embeds: [embed], ephemeral: true });
 }
 
 export const help = {

@@ -1,13 +1,9 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Meal } from '../../db/models/Meal';
-import {
-  getRandomItemByRarity,
-  createItemEmbed,
-  genericRarityAutocomplete,
-  calculateSimpleItemPrice,
-} from '~/functions/boatHelpers';
+import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
+import { randomInt } from 'crypto';
 
 //TODO gm command only.
 
@@ -15,11 +11,23 @@ export const data = new SlashCommandBuilder()
   .setName('generatemeal')
   .setDescription('Generate a random meal by rarity')
   .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the meal').setRequired(true).setAutocomplete(true)
+    option
+      .setName('rarity')
+      .setDescription('Rarity of the metal')
+      .setRequired(true)
+      .setChoices([
+        { name: 'Common', value: 'Common' },
+        { name: 'Uncommon', value: 'Uncommon' },
+        { name: 'Rare', value: 'Rare' },
+        { name: 'Very Rare', value: 'Very Rare' },
+        { name: 'Legendary', value: 'Legendary' },
+      ])
   );
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
-  await genericRarityAutocomplete(interaction, '~/db/models/Meal');
+export async function getRandomMealByRarity(rarity: string): Promise<Meal | null> {
+  const meals = await Meal.findAll({ where: { rarity } });
+  if (!meals || meals.length === 0) return null;
+  return meals[Math.floor(Math.random() * meals.length)];
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -33,7 +41,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const rarity = interaction.options.getString('rarity', true);
 
-  const meal = await getRandomItemByRarity<Meal>('~/db/models/Meal', rarity);
+  const meal = await getRandomMealByRarity(rarity);
   if (!meal) {
     await interaction.reply({
       content: `No meals found for rarity: ${rarity}`,
@@ -41,8 +49,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     });
     return;
   }
-
-  const price = calculateSimpleItemPrice(meal);
+  const price = randomInt(meal.price_min, meal.price_max);
 
   const embed = createItemEmbed(
     `Random Meal (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,

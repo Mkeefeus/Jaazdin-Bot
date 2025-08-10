@@ -1,9 +1,10 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Pet } from '../../db/models/Pet';
 import { Op } from 'sequelize';
-import { createItemEmbed, genericTypeAutocomplete, calculateSimpleItemPrice } from '~/functions/boatHelpers';
+import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
+import { randomInt } from 'crypto';
 
 //TODO gm command only.
 
@@ -20,26 +21,40 @@ export const data = new SlashCommandBuilder()
   .setName('generatepet')
   .setDescription('Generate a random pet by rarity and creature type')
   .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the pet').setRequired(true).setAutocomplete(true)
+    option
+      .setName('rarity')
+      .setDescription('Rarity of the pet')
+      .setRequired(true)
+      .setChoices([
+        { name: 'Common', value: 'Common' },
+        { name: 'Uncommon', value: 'Uncommon' },
+        { name: 'Rare', value: 'Rare' },
+        { name: 'Very Rare', value: 'Very Rare' },
+        { name: 'Legendary', value: 'Legendary' },
+      ])
   )
   .addStringOption((option) =>
-    option.setName('creaturetype').setDescription('Creature type of the pet').setRequired(true).setAutocomplete(true)
+    option
+      .setName('creaturetype')
+      .setDescription('Creature type of the pet')
+      .setRequired(true)
+      .setChoices([
+        { name: 'Aberration', value: 'Aberration' },
+        { name: 'Beast', value: 'Beast' },
+        { name: 'Celestial', value: 'Celestial' },
+        { name: 'Construct', value: 'Construct' },
+        { name: 'Dragon', value: 'Dragon' },
+        { name: 'Elemental', value: 'Elemental' },
+        { name: 'Fey', value: 'Fey' },
+        { name: 'Fiend', value: 'Fiend' },
+        { name: 'Giant', value: 'Giant' },
+        { name: 'Humanoid', value: 'Humanoid' },
+        { name: 'Monstrosity', value: 'Monstrosity' },
+        { name: 'Ooze', value: 'Ooze' },
+        { name: 'Plant', value: 'Plant' },
+        { name: 'Undead', value: 'Undead' },
+      ])
   );
-
-export async function autocomplete(interaction: AutocompleteInteraction) {
-  const focusedOption = interaction.options.getFocused(true);
-
-  if (focusedOption.name === 'rarity') {
-    // Static rarity list based on CR boundaries
-    const focused = focusedOption.value.toLowerCase();
-    const filtered = RARITY_BOUNDS.map((r) => ({ name: r.name, value: r.name })).filter((r) =>
-      r.name.toLowerCase().startsWith(focused)
-    );
-    await interaction.respond(filtered);
-  } else if (focusedOption.name === 'creaturetype') {
-    await genericTypeAutocomplete(interaction, '~/db/models/Pet');
-  }
-}
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.DM)) {
@@ -62,7 +77,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const price = calculateSimpleItemPrice(pet);
+  const price = randomInt(pet.price_min, pet.price_max);
 
   const embed = createItemEmbed(
     `Random Pet (${rarity}, ${creatureType.charAt(0).toUpperCase() + creatureType.slice(1)})`,
