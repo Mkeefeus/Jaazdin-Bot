@@ -2,8 +2,6 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteracti
 import { Spell } from '~/db/models/Spell';
 import { createItemEmbed } from '~/functions/boatHelpers';
 
-//TODO player command only.
-
 const SPELL_SCHOOLS = [
   'Abjuration',
   'Conjuration',

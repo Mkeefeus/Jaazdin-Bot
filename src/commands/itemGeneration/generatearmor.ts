@@ -1,12 +1,10 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Armor } from '../../db/models/Armor';
-import { checkUserRole, rarityChoices } from '~/functions/helpers';
+import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
 import { getRandomMetalByRarity } from './generatemetal';
 import { Op } from 'sequelize';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatearmor')
@@ -51,7 +49,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   const { armor, metal } = result;
-  const price = calculateMetalItemPrice(armor, metal);
+  const price = calculateMetalItemPrice(armor, randomInt(metal.price_min, metal.price_max));
 
   const embed = createItemEmbed(
     `Random Armor (${rarity.charAt(0).toUpperCase() + rarity.slice(1)})`,

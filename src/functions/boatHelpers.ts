@@ -3,6 +3,18 @@ import { Boat, Shipment } from '~/db/models/Boat';
 import { formatNames, randomInt } from './helpers';
 import path from 'path';
 
+// Import additional models for shipment generation
+import { generateRandomWeaponWithMetalByRarity } from '~/commands/itemGeneration/generateweapon';
+import { generateRandomArmorWithMetalByRarity } from '~/commands/itemGeneration/generatearmor';
+import { getRandomPetByRarityAndType } from '~/commands/itemGeneration/generatepet';
+import { getRandomReagentByRarity, getRandomReagentByRarityAndType } from '~/commands/itemGeneration/generatereagent';
+import { getRandomMetalByRarity, getRandomMetalByRarityExcludingPlanes } from '~/commands/itemGeneration/generatemetal';
+import { getRandomMealByRarity } from '~/commands/itemGeneration/generatemeal';
+import { getRandomPotionByRarity } from '~/commands/itemGeneration/generatepotion';
+import { getRandomPoisonByRarity } from '~/commands/itemGeneration/generatepoison';
+import { getRandomSeedByRarity } from '~/commands/itemGeneration/generateseeds';
+import { getRandomMagicItemByTable } from '~/commands/itemGeneration/generatemagicitem';
+
 const D100TABLES_PATH = path.join(__dirname, '../../d100tables');
 
 /**
@@ -65,6 +77,28 @@ export const tableToGenerateChoices = [
   { name: 'Contraband Goods', value: 'smuggle' },
 ];
 
+// Rarity/type range constants for concise mapping
+const PET_RARITY_RANGES = [
+  { min: 1, max: 5, value: 'Common' },
+  { min: 6, max: 10, value: 'Uncommon' },
+  { min: 11, max: 15, value: 'Rare' },
+  { min: 16, max: 18, value: 'Very Rare' },
+  { min: 19, max: 20, value: 'Legendary' },
+];
+const PET_TYPE_RANGES = [
+  { min: 1, max: 8, value: 'Beast' },
+  { min: 9, max: 13, value: 'Monstrosity' },
+  { min: 14, max: 17, value: 'Aberration' },
+  { min: 18, max: 19, value: 'Ooze' },
+  { min: 20, max: 20, value: 'Dragon' },
+];
+const REAGENT_RARITY_RANGES = [
+  { min: 1, max: 3, value: 'Common' },
+  { min: 4, max: 12, value: 'Uncommon' },
+  { min: 13, max: 15, value: 'Rare' },
+  { min: 16, max: 19, value: 'Very Rare' },
+  { min: 20, max: 20, value: 'Legendary' },
+];
 /**
  * Create a standard item generation embed
  */
@@ -87,21 +121,47 @@ export function createItemEmbed(
   };
 }
 
-// Import additional models for shipment generation
-import { generateRandomWeaponWithMetalByRarity } from '~/commands/itemGeneration/generateweapon';
-import { generateRandomArmorWithMetalByRarity } from '~/commands/itemGeneration/generatearmor';
-import { getRandomPetByRarityAndType } from '~/commands/itemGeneration/generatepet';
-import { getRandomReagentByRarity, getRandomReagentByRarityAndType } from '~/commands/itemGeneration/generatereagent';
-import { getRandomMetalByRarity, getRandomMetalByRarityExcludingPlanes } from '~/commands/itemGeneration/generatemetal';
-import { getRandomMealByRarity } from '~/commands/itemGeneration/generatemeal';
-import { getRandomPotionByRarity } from '~/commands/itemGeneration/generatepotion';
-import { getRandomPoisonByRarity } from '~/commands/itemGeneration/generatepoison';
-import { getRandomSeedByRarity } from '~/commands/itemGeneration/generateseeds';
-import { getRandomMagicItemByTable } from '~/commands/itemGeneration/generatemagicitem';
-
 // Type definitions for shipment generation
 export type ShipmentItem = { itemName: string; price: number; quantity: number };
 type MetalPriceCache = { [metalName: string]: number };
+
+export function getTypeArray(counts: { [rarity: string]: number }): string[] {
+  const result: string[] = [];
+  for (const [rarity, count] of Object.entries(counts)) {
+    for (let i = 0; i < count; i++) {
+      result.push(rarity);
+    }
+  }
+  return result;
+}
+
+export function upgradeByCategoryOrder(
+  base: string,
+  roll: number,
+  stepMap: { [roll: number]: number },
+  order: string[]
+): string {
+  const idx = order.indexOf(base);
+  if (idx === -1) return base;
+  const step = stepMap[roll] || 0;
+  return order[Math.min(idx + step, order.length - 1)];
+}
+
+export function typeFromInclusiveRanges(roll: number, ranges: { min: number; max: number; value: string }[], fallback: string): string {
+  for (const range of ranges) {
+    if (roll >= range.min && roll <= range.max) return range.value;
+  }
+  return fallback;
+}
+
+/**
+ * Add an item to the result array or increment its quantity if it already exists.
+ */
+function addOrIncrementItem(result: ShipmentItem[], itemName: string, price: number) {
+  const existing = result.find((item) => item.itemName === itemName);
+  if (existing) existing.quantity += 1;
+  else result.push({ itemName, price, quantity: 1 });
+}
 
 /**
  * Generate shipment items based on boat's table configuration
@@ -110,45 +170,27 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
   switch (boat.tableToGenerate) {
     case 'metals': {
       const result: ShipmentItem[] = [];
-      const rarities: string[] = [];
-      for (let i = 0; i < 5; i++) {
-        let rarity = 'Uncommon';
+      // Use helper to get base rarities
+      let rarities = getTypeArray({ Uncommon: 5, Rare: 3 });
+      const rarityOrder = ['Uncommon', 'Rare', 'Very Rare', 'Legendary'];
+      rarities = rarities.map((base) => {
         const roll = randomInt(1, 6);
-        if (roll === 5) rarity = 'Rare';
-        else if (roll === 6) rarity = 'Very Rare';
-        rarities.push(rarity);
-      }
-      for (let i = 0; i < 3; i++) {
-        let rarity = 'Rare';
-        const roll = randomInt(1, 6);
-        if (roll === 5) rarity = 'Very Rare';
-        else if (roll === 6) rarity = 'Legendary';
-        rarities.push(rarity);
-      }
+        return upgradeByCategoryOrder(base, roll, { 5: 1, 6: 2 }, rarityOrder);
+      });
       for (const rarity of rarities) {
         const metal = await getRandomMetalByRarity(rarity);
-        if (metal) {
-          const existing = result.find((item) => item.itemName === metal.name);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            const price = randomInt(metal.price_min, metal.price_max);
-            result.push({ itemName: metal.name, price, quantity: 1 });
-          }
-        }
+        if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max));
       }
       return result;
     }
     case 'weaponry': {
       const result: ShipmentItem[] = [];
-      const rarities: string[] = [];
-      for (let i = 0; i < 4; i++) {
-        let rarity = 'Uncommon';
+      let rarities = Array(4).fill('Uncommon');
+      const rarityOrder = ['Uncommon', 'Rare', 'Very Rare'];
+      rarities = rarities.map((base) => {
         const roll = randomInt(1, 4);
-        if (roll === 3) rarity = 'Rare';
-        else if (roll === 4) rarity = 'Very Rare';
-        rarities.push(rarity);
-      }
+        return upgradeByCategoryOrder(base, roll, { 3: 1, 4: 2 }, rarityOrder);
+      });
       const metalsInUse: MetalPriceCache = {};
       for (let i = 0; i < 4; i++) {
         const rarity = rarities[i];
@@ -156,148 +198,73 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           const combo = await generateRandomWeaponWithMetalByRarity(rarity);
           if (!combo) continue;
           const { weapon, metal } = combo;
-          if (!metalsInUse[metal.name]) {
-            metalsInUse[metal.name] = randomInt(metal.price_min, metal.price_max);
-          }
+          if (!(metal.name in metalsInUse)) metalsInUse[metal.name] = randomInt(metal.price_min, metal.price_max);
           const itemName = `${metal.name} ${weapon.name}`;
-          const existing = result.find((item) => item.itemName === itemName);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            const price = Math.round((metalsInUse[metal.name] * weapon.plates + weapon.price) * 1.33);
-            result.push({ itemName, price, quantity: 1 });
-          }
+          const price = calculateMetalItemPrice(weapon, metalsInUse[metal.name]);
+          addOrIncrementItem(result, itemName, price);
         } else {
           const combo = await generateRandomArmorWithMetalByRarity(rarity);
           if (!combo) continue;
           const { armor, metal } = combo;
-          if (!metalsInUse[metal.name]) {
-            metalsInUse[metal.name] = randomInt(metal.price_min, metal.price_max);
-          }
+          if (!(metal.name in metalsInUse)) metalsInUse[metal.name] = randomInt(metal.price_min, metal.price_max);
           const itemName = `${metal.name} ${armor.name}`;
-          const existing = result.find((item) => item.itemName === itemName);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            const price = Math.round((metalsInUse[metal.name] * armor.plates + armor.price) * 1.33);
-            result.push({ itemName, price, quantity: 1 });
-          }
+          const price = calculateMetalItemPrice(armor, metalsInUse[metal.name]);
+          addOrIncrementItem(result, itemName, price);
         }
       }
       return result;
     }
     case 'pets': {
       const result: ShipmentItem[] = [];
-      for (let i = 0; i < 5; i++) {
-        const roll = randomInt(1, 20);
-        let rarity = 'Common';
-        if (roll >= 1 && roll <= 5) rarity = 'Common';
-        else if (roll >= 6 && roll <= 10) rarity = 'Uncommon';
-        else if (roll >= 11 && roll <= 15) rarity = 'Rare';
-        else if (roll >= 16 && roll <= 18) rarity = 'Very Rare';
-        else if (roll >= 19) rarity = 'Legendary';
-        let pet = null;
-        let type: string;
+      // Use helper to get base rarities
+      const rarities = Array(5).fill(0).map(() => typeFromInclusiveRanges(randomInt(1, 20), PET_RARITY_RANGES, 'Common'));
+      for (const rarity of rarities) {
+        let pet = null, type: string;
         do {
-          const typeRoll = randomInt(1, 20);
-          if (typeRoll >= 1 && typeRoll <= 8) type = 'Beast';
-          else if (typeRoll >= 9 && typeRoll <= 13) type = 'Monstrosity';
-          else if (typeRoll >= 14 && typeRoll <= 17) type = 'Aberration';
-          else if (typeRoll >= 18 && typeRoll <= 19) type = 'Ooze';
-          else type = 'Dragon';
+          type = typeFromInclusiveRanges(randomInt(1, 20), PET_TYPE_RANGES, 'Beast');
           pet = await getRandomPetByRarityAndType(rarity, type);
         } while (!pet);
-        const existing = result.find((item) => item.itemName === pet.name);
-        if (existing) {
-          existing.quantity += 1;
-        } else {
-          const price = randomInt(pet.price_min, pet.price_max);
-          result.push({ itemName: pet.name, price, quantity: 1 });
-        }
+        addOrIncrementItem(result, pet.name, randomInt(pet.price_min, pet.price_max));
       }
       return result;
     }
     case 'meals': {
       const result: ShipmentItem[] = [];
-      const baseRarities = ['Common', 'Uncommon', 'Rare'];
-      const rarities: { rarity: string; count: number }[] = [];
+      let rarities = getTypeArray({ Common: 4, Uncommon: 4, Rare: 4 });
       const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Very Rare'];
-      const counts: { [key: string]: number } = {};
-      for (let i = 0; i < 12; i++) {
-        let rarity = baseRarities[Math.floor(i / 4)];
+      // Use unified upgrade helper with stepMap: roll 4 = +1 step
+      rarities = rarities.map((base) => {
         const roll = randomInt(1, 4);
-        if (roll === 4) {
-          const idx = rarityOrder.indexOf(rarity);
-          if (idx < rarityOrder.length - 1) {
-            rarity = rarityOrder[idx + 1];
-          }
-        }
-        counts[rarity] = (counts[rarity] || 0) + 1;
-      }
-      for (const rarity of Object.keys(counts)) {
-        rarities.push({ rarity, count: counts[rarity] });
-      }
-      for (const { rarity, count } of rarities) {
-        for (let i = 0; i < count; i++) {
-          const meal = await getRandomMealByRarity(rarity);
-          if (meal) {
-            const existing = result.find((item) => item.itemName === meal.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName: meal.name, price: randomInt(meal.price_min, meal.price_max), quantity: 1 });
-            }
-          }
-        }
+        return upgradeByCategoryOrder(base, roll, { 4: 1 }, rarityOrder);
+      });
+      for (const rarity of rarities) {
+        const meal = await getRandomMealByRarity(rarity);
+        if (meal) addOrIncrementItem(result, meal.name, randomInt(meal.price_min, meal.price_max));
       }
       return result;
     }
     case 'poisonsPotions': {
       const result: ShipmentItem[] = [];
-      const potionRarities: string[] = [];
-      for (let i = 0; i < 3; i++) potionRarities.push('Uncommon');
-      for (let i = 0; i < 2; i++) potionRarities.push('Rare');
+      // Potions
+      let potionRarities = getTypeArray({ Uncommon: 3, Rare: 2 });
       const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary'];
-      for (let i = 0; i < potionRarities.length; i++) {
-        let rarity = potionRarities[i];
+      potionRarities = potionRarities.map((base) => {
         const roll = randomInt(1, 4);
-        if (roll === 4) {
-          const idx = rarityOrder.indexOf(rarity);
-          if (idx < rarityOrder.length - 1) {
-            rarity = rarityOrder[idx + 1];
-          }
-        }
+        return upgradeByCategoryOrder(base, roll, [4], rarityOrder);
+      });
+      for (const rarity of potionRarities) {
         const potion = await getRandomPotionByRarity(rarity);
-        if (potion) {
-          const existing = result.find((item) => item.itemName === potion.name);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            result.push({ itemName: potion.name, price: randomInt(potion.price_min, potion.price_max), quantity: 1 });
-          }
-        }
+        if (potion) addOrIncrementItem(result, potion.name, randomInt(potion.price_min, potion.price_max));
       }
-      const poisonRarities: string[] = [];
-      for (let i = 0; i < 2; i++) poisonRarities.push('Uncommon');
-      for (let i = 0; i < 2; i++) poisonRarities.push('Rare');
-      for (let i = 0; i < poisonRarities.length; i++) {
-        let rarity = poisonRarities[i];
+      // Poisons
+      let poisonRarities = getTypeArray({ Uncommon: 2, Rare: 2 });
+      poisonRarities = poisonRarities.map((base) => {
         const roll = randomInt(1, 4);
-        if (roll === 4) {
-          const idx = rarityOrder.indexOf(rarity);
-          if (idx < rarityOrder.length - 1) {
-            rarity = rarityOrder[idx + 1];
-          }
-        }
+        return upgradeByCategoryOrder(base, roll, [4], rarityOrder);
+      });
+      for (const rarity of poisonRarities) {
         const poison = await getRandomPoisonByRarity(rarity);
-        if (poison) {
-          const existing = result.find((item) => item.itemName === poison.name);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            result.push({ itemName: poison.name, price: randomInt(poison.price_min, poison.price_max), quantity: 1 });
-          }
-        }
+        if (poison) addOrIncrementItem(result, poison.name, randomInt(poison.price_min, poison.price_max));
       }
       return result;
     }
@@ -305,51 +272,26 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       const result: ShipmentItem[] = [];
       const tableOrder = ['A', 'B', 'C', 'D'];
       for (let i = 0; i < 8; i++) {
-        let tableIdx = i < 5 ? 0 : 1;
+        const baseIdx = i < 5 ? 0 : 1;
         const roll = randomInt(1, 6);
-        if (roll === 5 && tableIdx < tableOrder.length - 1) {
-          tableIdx += 1;
-        } else if (roll === 6) {
-          tableIdx += 2;
-          if (tableIdx > tableOrder.length - 1) tableIdx = tableOrder.length - 1;
-        }
-        const table = tableOrder[tableIdx];
+        const table = upgradeByCategoryOrder(tableOrder[baseIdx], roll, { 5: 1, 6: 2 }, tableOrder);
         const item = await getRandomMagicItemByTable(table);
-        if (item) {
-          const existing = result.find((shipmentItem) => shipmentItem.itemName === item.name);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            result.push({ itemName: item.name, price: randomInt(item.price_min, item.price_max), quantity: 1 });
-          }
-        }
+        if (item) addOrIncrementItem(result, item.name, randomInt(item.price_min, item.price_max));
       }
       return result;
     }
     case 'plants': {
       const result: ShipmentItem[] = [];
-      const baseRarities = ['Common', 'Common', 'Uncommon', 'Uncommon', 'Rare', 'Rare'];
+      let rarities = getTypeArray({ Common: 2, Uncommon: 2, Rare: 2 });
       const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary'];
-      for (let i = 0; i < 6; i++) {
-        let rarity = baseRarities[i];
+      // Use unified upgrade helper: roll 3 = +1 step, roll 4 = +2 steps
+      rarities = rarities.map((base) => {
         const roll = randomInt(1, 4);
-        let idx = rarityOrder.indexOf(rarity);
-        if (roll === 3 && idx < rarityOrder.length - 1) {
-          idx += 1;
-        } else if (roll === 4) {
-          idx += 2;
-          if (idx > rarityOrder.length - 1) idx = rarityOrder.length - 1;
-        }
-        rarity = rarityOrder[idx];
+        return upgradeByCategoryOrder(base, roll, { 3: 1, 4: 2 }, rarityOrder);
+      });
+      for (const rarity of rarities) {
         const seed = await getRandomSeedByRarity(rarity);
-        if (seed) {
-          const existing = result.find((item) => item.itemName === seed.name);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            result.push({ itemName: seed.name, price: randomInt(seed.price_min, seed.price_max), quantity: 1 });
-          }
-        }
+        if (seed) addOrIncrementItem(result, seed.name, randomInt(seed.price_min, seed.price_max));
       }
       return result;
     }
@@ -369,153 +311,75 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
         'Fey',
         'Undead',
       ];
-      const rarityOrder = [
-        { min: 1, max: 3, rarity: 'Common' },
-        { min: 4, max: 12, rarity: 'Uncommon' },
-        { min: 13, max: 15, rarity: 'Rare' },
-        { min: 16, max: 19, rarity: 'Very Rare' },
-        { min: 20, max: 20, rarity: 'Legendary' },
-      ];
-      for (let i = 0; i < 4; i++) {
-        const rarityRoll = randomInt(1, 20);
-        const rarity = rarityOrder.find((r) => rarityRoll >= r.min && rarityRoll <= r.max)?.rarity || 'Common';
+      // Use helper to get base rarities
+      const rarities = Array(4).fill(0).map(() => typeFromInclusiveRanges(randomInt(1, 20), REAGENT_RARITY_RANGES, 'Common'));
+      for (const rarity of rarities) {
         const type = types[randomInt(0, types.length - 1)];
         const reagent = await getRandomReagentByRarityAndType(rarity, type);
-        if (reagent) {
-          const existing = result.find((item) => item.itemName === reagent.name);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            result.push({
-              itemName: reagent.name,
-              price: randomInt(reagent.price_min, reagent.price_max),
-              quantity: 1,
-            });
-          }
-        }
+        if (reagent) addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max));
       }
       return result;
     }
     case 'otherworld': {
       const result: ShipmentItem[] = [];
-      for (let i = 0; i < 3; i++) {
-        let rarity = 'Uncommon';
+      // Use helper to get base rarities
+  let rarities = Array(3).fill('Uncommon');
+      const rarityOrder = ['Uncommon', 'Rare', 'Very Rare'];
+      rarities = rarities.map((base) => {
         const roll = randomInt(1, 6);
-        if (roll === 5) rarity = 'Rare';
-        else if (roll === 6) rarity = 'Very Rare';
+        return upgradeByCategoryOrder(base, roll, { 5: 1, 6: 2 }, rarityOrder);
+      });
+      for (const rarity of rarities) {
         const metal = await getRandomMetalByRarityExcludingPlanes(rarity, 'Material');
-        if (metal) {
-          const existing = result.find((item) => item.itemName === metal.name);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            result.push({ itemName: metal.name, price: randomInt(metal.price_min, metal.price_max), quantity: 1 });
-          }
-        }
+        if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max));
       }
       return result;
     }
     case 'smuggle': {
       const result: ShipmentItem[] = [];
+      // Use helper to get base rarities
+  let rarities = Array(4).fill('Uncommon');
+      const rarityOrder = ['Uncommon', 'Rare', 'Very Rare'];
+      rarities = rarities.map((base) => {
+        const roll = randomInt(1, 6);
+        return upgradeByCategoryOrder(base, roll, { 5: 1, 6: 2 }, rarityOrder);
+      });
       for (let i = 0; i < 4; i++) {
+        const rarity = rarities[i];
         const typeRoll = randomInt(1, 8);
-        const rarityRoll = randomInt(1, 6);
-        let rarity = 'Uncommon';
-        if (rarityRoll === 5) rarity = 'Rare';
-        else if (rarityRoll === 6) rarity = 'Very Rare';
-
         if (typeRoll === 1) {
           const metal = await getRandomMetalByRarity(rarity);
-          if (metal) {
-            const existing = result.find((item) => item.itemName === metal.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName: metal.name, price: randomInt(metal.price_min, metal.price_max), quantity: 1 });
-            }
-          }
+          if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max));
         } else if (typeRoll === 2) {
           const combo = await generateRandomWeaponWithMetalByRarity(rarity);
           if (combo) {
             const { weapon, metal } = combo;
-            const price = Math.round(
-              (randomInt(metal.price_min, metal.price_max) * weapon.plates + weapon.price) * 1.33
-            );
+            const metalPrice = randomInt(metal.price_min, metal.price_max);
+            const price = calculateMetalItemPrice(weapon, metalPrice);
             const itemName = `${metal.name} ${weapon.name}`;
-            const existing = result.find((item) => item.itemName === itemName);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName, price, quantity: 1 });
-            }
+            addOrIncrementItem(result, itemName, price);
           }
         } else if (typeRoll === 3) {
           const meal = await getRandomMealByRarity(rarity);
-          if (meal) {
-            const existing = result.find((item) => item.itemName === meal.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName: meal.name, price: randomInt(meal.price_min, meal.price_max), quantity: 1 });
-            }
-          }
+          if (meal) addOrIncrementItem(result, meal.name, randomInt(meal.price_min, meal.price_max));
         } else if (typeRoll === 4) {
           const potion = await getRandomPotionByRarity(rarity);
-          if (potion) {
-            const existing = result.find((item) => item.itemName === potion.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName: potion.name, price: randomInt(potion.price_min, potion.price_max), quantity: 1 });
-            }
-          }
+          if (potion) addOrIncrementItem(result, potion.name, randomInt(potion.price_min, potion.price_max));
         } else if (typeRoll === 5) {
           const poison = await getRandomPoisonByRarity(rarity);
-          if (poison) {
-            const existing = result.find((item) => item.itemName === poison.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName: poison.name, price: randomInt(poison.price_min, poison.price_max), quantity: 1 });
-            }
-          }
+          if (poison) addOrIncrementItem(result, poison.name, randomInt(poison.price_min, poison.price_max));
         } else if (typeRoll === 6) {
           const reagent = await getRandomReagentByRarity(rarity);
-          if (reagent) {
-            const existing = result.find((item) => item.itemName === reagent.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({
-                itemName: reagent.name,
-                price: randomInt(reagent.price_min, reagent.price_max),
-                quantity: 1,
-              });
-            }
-          }
+          if (reagent) addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max));
         } else if (typeRoll === 7) {
           const seed = await getRandomSeedByRarity(rarity);
-          if (seed) {
-            const existing = result.find((item) => item.itemName === seed.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName: seed.name, price: randomInt(seed.price_min, seed.price_max), quantity: 1 });
-            }
-          }
+          if (seed) addOrIncrementItem(result, seed.name, randomInt(seed.price_min, seed.price_max));
         } else if (typeRoll === 8) {
-          let table = 'A';
-          if (rarityRoll === 5) table = 'B';
-          else if (rarityRoll === 6) table = 'C';
+          const tableOrder = ['A', 'B', 'C'];
+          const rarityRoll = randomInt(1, 6);
+          const table = upgradeByCategoryOrder('A', rarityRoll, { 5: 1, 6: 2 }, tableOrder);
           const item = await getRandomMagicItemByTable(table);
-          if (item) {
-            const existing = result.find((shipmentItem) => shipmentItem.itemName === item.name);
-            if (existing) {
-              existing.quantity += 1;
-            } else {
-              result.push({ itemName: item.name, price: randomInt(item.price_min, item.price_max), quantity: 1 });
-            }
-          }
+          if (item) addOrIncrementItem(result, item.name, randomInt(item.price_min, item.price_max));
         }
       }
       return result;
@@ -632,9 +496,8 @@ export async function createBoatStatusDescription(boat: Boat): Promise<string> {
  */
 export function calculateMetalItemPrice(
   item: { plates: number; price: number },
-  metal: { price_min: number; price_max: number }
+  metalPrice: number
 ): number {
-  const metalPrice = randomInt(metal.price_min, metal.price_max);
   return Math.round((metalPrice * item.plates + item.price) * 1.33);
 }
 

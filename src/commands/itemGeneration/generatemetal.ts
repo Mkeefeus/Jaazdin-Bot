@@ -2,11 +2,8 @@ import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Metal } from '../../db/models/Metal';
 import { Op } from 'sequelize';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole, rarityChoices } from '~/functions/helpers';
+import { checkUserRole, rarityChoices, randomInt } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-import { randomInt } from 'crypto';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatemetal')
