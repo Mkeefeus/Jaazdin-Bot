@@ -19,8 +19,6 @@ function convertJobNameForBoats(jobName: string): string {
     .join(' ');
 }
 
-//TODO player command only.
-
 export const data = new SlashCommandBuilder()
   .setName('jobreward')
   .setDescription('Figure out what job reward you received')

@@ -1,8 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
-import { Boat } from '~/db/models/Boat';
-import { Job } from '~/db/models/Job';
-import { findBoatByName, createBoatStatusDescription } from '~/functions/boatHelpers';
-import { checkUserRole, formatNames } from '~/functions/helpers';
+import { findBoatByName, createBoatStatusDescription, boatNameAutocomplete } from '~/functions/boatHelpers';
+import { checkUserRole, jobNameAutocomplete } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder()
@@ -17,21 +15,9 @@ export async function autocomplete(interaction: AutocompleteInteraction): Promis
   const focusedOption = interaction.options.getFocused(true);
 
   if (focusedOption.name === 'boat') {
-    const boats = await Boat.findAll();
-    await interaction.respond(
-      boats.map((boat) => ({
-        name: formatNames(boat.dataValues.boatName),
-        value: boat.dataValues.boatName,
-      }))
-    );
+    await boatNameAutocomplete(interaction);
   } else if (focusedOption.name === 'job') {
-    const jobs = await Job.findAll();
-    await interaction.respond(
-      jobs.map((job) => ({
-        name: formatNames(job.dataValues.name),
-        value: job.dataValues.name,
-      }))
-    );
+    await jobNameAutocomplete(interaction);
   }
 }
 
