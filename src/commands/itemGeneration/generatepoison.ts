@@ -1,11 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Poison } from '../../db/models/Poison';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { randomInt } from 'crypto';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatepoison')
@@ -15,13 +13,7 @@ export const data = new SlashCommandBuilder()
       .setName('rarity')
       .setDescription('Rarity of the poison')
       .setRequired(true)
-      .setChoices([
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' },
-      ])
+      .setChoices(rarityChoices)
   );
 
 export async function getRandomPoisonByRarity(rarity: string): Promise<Poison | null> {

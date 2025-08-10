@@ -33,6 +33,31 @@ export function checkUserRole(interaction: ChatInputCommandInteraction, role: Ro
     : roleManager.cache.has(RoleMap[role]);
 }
 
+export const rarityChoices = [
+  { name: 'Common', value: 'Common' },
+  { name: 'Uncommon', value: 'Uncommon' },
+  { name: 'Rare', value: 'Rare' },
+  { name: 'Very Rare', value: 'Very Rare' },
+  { name: 'Legendary', value: 'Legendary' },
+];
+
+export const creatureTypeChoices = [
+  { name: 'Aberration', value: 'Aberration' },
+  { name: 'Beast', value: 'Beast' },
+  { name: 'Celestial', value: 'Celestial' },
+  { name: 'Construct', value: 'Construct' },
+  { name: 'Dragon', value: 'Dragon' },
+  { name: 'Elemental', value: 'Elemental' },
+  { name: 'Fey', value: 'Fey' },
+  { name: 'Fiend', value: 'Fiend' },
+  { name: 'Giant', value: 'Giant' },
+  { name: 'Humanoid', value: 'Humanoid' },
+  { name: 'Monstrosity', value: 'Monstrosity' },
+  { name: 'Ooze', value: 'Ooze' },
+  { name: 'Plant', value: 'Plant' },
+  { name: 'Undead', value: 'Undead' },
+];
+
 // Helper to format plant names for display (capitalize words)
 export function formatNames(name: string): string {
   return name
@@ -91,83 +116,6 @@ export async function jobNameAutocomplete(interaction: AutocompleteInteraction):
       }))
       .sort((a, b) => a.name.localeCompare(b.name))
   );
-}
-
-/**
- * Handle standard error responses with ephemeral replies
- */
-export async function handleError(
-  interaction: ChatInputCommandInteraction,
-  message: string,
-  error?: unknown
-): Promise<void> {
-  console.error('Command error:', error);
-  await interaction.reply({
-    content: message,
-    ephemeral: true,
-  });
-}
-
-/**
- * Create a standard embed with consistent styling
- */
-export function createStandardEmbed(title: string, description: string, color: number = 0x2e86c1): EmbedBuilder {
-  return new EmbedBuilder().setTitle(title).setDescription(description).setColor(color);
-}
-
-/**
- * Create a success embed
- */
-export function createSuccessEmbed(title: string, description: string): EmbedBuilder {
-  return createStandardEmbed(title, description, 0x00ff00);
-}
-
-/**
- * Create an error embed
- */
-export function createErrorEmbed(title: string, description: string): EmbedBuilder {
-  return createStandardEmbed(title, description, 0xff0000);
-}
-
-/**
- * Split embeds into chunks for Discord's 10 embed limit
- */
-export function chunkEmbeds(embeds: EmbedBuilder[], chunkSize: number = 10): EmbedBuilder[][] {
-  const chunks: EmbedBuilder[][] = [];
-  for (let i = 0; i < embeds.length; i += chunkSize) {
-    chunks.push(embeds.slice(i, i + chunkSize));
-  }
-  return chunks;
-}
-
-/**
- * Send multiple embeds respecting Discord's limits
- */
-export async function sendEmbedChunks(
-  interaction: ChatInputCommandInteraction,
-  embeds: EmbedBuilder[],
-  ephemeral: boolean = false
-): Promise<void> {
-  if (embeds.length === 0) {
-    await interaction.reply({ content: 'No results found.', ephemeral: true });
-    return;
-  }
-
-  const chunks = chunkEmbeds(embeds);
-
-  // Send first chunk as reply
-  await interaction.reply({
-    embeds: chunks[0],
-    ephemeral: ephemeral,
-  });
-
-  // Send remaining chunks as follow-ups
-  for (let i = 1; i < chunks.length; i++) {
-    await interaction.followUp({
-      embeds: chunks[i],
-      ephemeral: ephemeral,
-    });
-  }
 }
 
 type ConfirmActionOptions = {

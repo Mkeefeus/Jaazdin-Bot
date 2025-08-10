@@ -1,11 +1,8 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { MagicItem } from '../../db/models/MagicItem';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, randomInt } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-import { randomInt } from 'crypto';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatemagicitem')

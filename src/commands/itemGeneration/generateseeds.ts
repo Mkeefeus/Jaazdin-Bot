@@ -1,11 +1,8 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Seed } from '../../db/models/Seed';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-import { randomInt } from 'crypto';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generateseeds')
@@ -15,13 +12,7 @@ export const data = new SlashCommandBuilder()
       .setName('rarity')
       .setDescription('Rarity of the seed')
       .setRequired(true)
-      .setChoices([
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' },
-      ])
+      .setChoices(rarityChoices)
   );
 
 export async function getRandomSeedByRarity(rarity: string): Promise<Seed | null> {

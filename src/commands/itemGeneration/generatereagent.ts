@@ -1,49 +1,21 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Reagent } from '../../db/models/Reagent';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, rarityChoices, randomInt, creatureTypeChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-import { randomInt } from 'crypto';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatereagent')
   .setDescription('Generate a random reagent by rarity and creature type')
   .addStringOption((option) =>
-    option
-      .setName('rarity')
-      .setDescription('Rarity of the metal')
-      .setRequired(true)
-      .addChoices(
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' }
-      )
+    option.setName('rarity').setDescription('Rarity of the reagent').setRequired(true).addChoices(rarityChoices)
   )
   .addStringOption((option) =>
     option
       .setName('creaturetype')
-      .setDescription('Creature type of the pet')
+      .setDescription('Creature type of the reagent')
       .setRequired(true)
-      .setChoices([
-        { name: 'Aberration', value: 'Aberration' },
-        { name: 'Beast', value: 'Beast' },
-        { name: 'Celestial', value: 'Celestial' },
-        { name: 'Construct', value: 'Construct' },
-        { name: 'Dragon', value: 'Dragon' },
-        { name: 'Elemental', value: 'Elemental' },
-        { name: 'Fey', value: 'Fey' },
-        { name: 'Fiend', value: 'Fiend' },
-        { name: 'Giant', value: 'Giant' },
-        { name: 'Humanoid', value: 'Humanoid' },
-        { name: 'Monstrosity', value: 'Monstrosity' },
-        { name: 'Ooze', value: 'Ooze' },
-        { name: 'Plant', value: 'Plant' },
-        { name: 'Undead', value: 'Undead' },
-      ])
+      .setChoices(creatureTypeChoices)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {

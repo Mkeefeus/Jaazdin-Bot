@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Armor } from '../../db/models/Armor';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
 import { getRandomMetalByRarity } from './generatemetal';
@@ -16,13 +16,7 @@ export const data = new SlashCommandBuilder()
       .setName('rarity')
       .setDescription('Rarity of the metal')
       .setRequired(true)
-      .setChoices([
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' },
-      ])
+      .setChoices(rarityChoices)
   );
 
 // Utility function for use in other scripts

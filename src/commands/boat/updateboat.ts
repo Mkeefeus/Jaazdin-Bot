@@ -5,6 +5,7 @@ import {
   boatNameAutocomplete,
   generateShipmentItems,
   boatAtSeaEmbedBuilder,
+  tableToGenerateChoices,
 } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
@@ -25,18 +26,7 @@ export const data = new SlashCommandBuilder()
       .setName('table')
       .setDescription('What type of loot the boat will generate')
       .setRequired(false)
-      .setChoices([
-        { name: 'Metal Trading', value: 'metals' },
-        { name: 'Weapons & Armor', value: 'weaponry' },
-        { name: 'Exotic Creatures', value: 'pets' },
-        { name: 'Fine Cuisine', value: 'meals' },
-        { name: 'Potions & Poisons', value: 'poisonsPotions' },
-        { name: 'Magic Items', value: 'magicItems' },
-        { name: 'Seeds & Plants', value: 'plants' },
-        { name: 'Magical Reagents', value: 'reagents' },
-        { name: 'Otherworldly Materials', value: 'otherworld' },
-        { name: 'Contraband Goods', value: 'smuggle' },
-      ])
+      .setChoices(tableToGenerateChoices)
   )
   .addBooleanOption((opt) => opt.setName('istier2').setDescription('Is this a tier 2 boat?').setRequired(false))
   .addBooleanOption((opt) => opt.setName('isrunning').setDescription('Is this boat running?').setRequired(false))

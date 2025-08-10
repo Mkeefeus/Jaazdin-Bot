@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Pet } from '../../db/models/Pet';
 import { Op } from 'sequelize';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, creatureTypeChoices, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { randomInt } from 'crypto';
 
@@ -25,35 +25,14 @@ export const data = new SlashCommandBuilder()
       .setName('rarity')
       .setDescription('Rarity of the pet')
       .setRequired(true)
-      .setChoices([
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' },
-      ])
+      .setChoices(rarityChoices)
   )
   .addStringOption((option) =>
     option
       .setName('creaturetype')
       .setDescription('Creature type of the pet')
       .setRequired(true)
-      .setChoices([
-        { name: 'Aberration', value: 'Aberration' },
-        { name: 'Beast', value: 'Beast' },
-        { name: 'Celestial', value: 'Celestial' },
-        { name: 'Construct', value: 'Construct' },
-        { name: 'Dragon', value: 'Dragon' },
-        { name: 'Elemental', value: 'Elemental' },
-        { name: 'Fey', value: 'Fey' },
-        { name: 'Fiend', value: 'Fiend' },
-        { name: 'Giant', value: 'Giant' },
-        { name: 'Humanoid', value: 'Humanoid' },
-        { name: 'Monstrosity', value: 'Monstrosity' },
-        { name: 'Ooze', value: 'Ooze' },
-        { name: 'Plant', value: 'Plant' },
-        { name: 'Undead', value: 'Undead' },
-      ])
+      .setChoices(creatureTypeChoices)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {

@@ -1,11 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Meal } from '../../db/models/Meal';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { randomInt } from 'crypto';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatemeal')
@@ -13,15 +11,9 @@ export const data = new SlashCommandBuilder()
   .addStringOption((option) =>
     option
       .setName('rarity')
-      .setDescription('Rarity of the metal')
+      .setDescription('Rarity of the meal')
       .setRequired(true)
-      .setChoices([
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' },
-      ])
+      .setChoices(rarityChoices)
   );
 
 export async function getRandomMealByRarity(rarity: string): Promise<Meal | null> {

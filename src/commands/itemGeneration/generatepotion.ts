@@ -1,11 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Potion } from '../../db/models/Potion';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { randomInt } from 'crypto';
-
-//TODO gm command only.
 
 export const data = new SlashCommandBuilder()
   .setName('generatepotion')
@@ -13,15 +11,9 @@ export const data = new SlashCommandBuilder()
   .addStringOption((option) =>
     option
       .setName('rarity')
-      .setDescription('Rarity of the metal')
+      .setDescription('Rarity of the potion')
       .setRequired(true)
-      .setChoices([
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' },
-      ])
+      .setChoices(rarityChoices)
   );
 
 export async function getRandomPotionByRarity(rarity: string): Promise<Potion | null> {

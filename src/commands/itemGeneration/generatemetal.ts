@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Metal } from '../../db/models/Metal';
 import { Op } from 'sequelize';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { randomInt } from 'crypto';
 
@@ -16,13 +16,7 @@ export const data = new SlashCommandBuilder()
       .setName('rarity')
       .setDescription('Rarity of the metal')
       .setRequired(true)
-      .addChoices(
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' }
-      )
+      .addChoices(rarityChoices)
   );
 
 export async function getRandomMetalByRarity(rarity: string): Promise<Metal | null> {

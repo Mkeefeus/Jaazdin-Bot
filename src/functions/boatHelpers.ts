@@ -52,6 +52,19 @@ export async function boatNameAutocomplete(
   await interaction.respond(filtered);
 }
 
+export const tableToGenerateChoices = [
+  { name: 'Metal Trading', value: 'metals' },
+  { name: 'Weapons & Armor', value: 'weaponry' },
+  { name: 'Exotic Creatures', value: 'pets' },
+  { name: 'Fine Cuisine', value: 'meals' },
+  { name: 'Potions & Poisons', value: 'poisonsPotions' },
+  { name: 'Magic Items', value: 'magicItems' },
+  { name: 'Seeds & Plants', value: 'plants' },
+  { name: 'Magical Reagents', value: 'reagents' },
+  { name: 'Otherworldly Materials', value: 'otherworld' },
+  { name: 'Contraband Goods', value: 'smuggle' },
+];
+
 /**
  * Create a standard item generation embed
  */

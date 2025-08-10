@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Weapon } from '../../db/models/Weapon';
 import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { checkUserRole, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { getRandomMetalByRarity } from './generatemetal';
 import { Op } from 'sequelize';
@@ -16,13 +16,7 @@ export const data = new SlashCommandBuilder()
       .setName('rarity')
       .setDescription('Rarity of the metal')
       .setRequired(true)
-      .setChoices([
-        { name: 'Common', value: 'Common' },
-        { name: 'Uncommon', value: 'Uncommon' },
-        { name: 'Rare', value: 'Rare' },
-        { name: 'Very Rare', value: 'Very Rare' },
-        { name: 'Legendary', value: 'Legendary' },
-      ])
+      .setChoices(rarityChoices)
   );
 
 export async function generateRandomWeaponWithMetalByRarity(rarity: string) {
