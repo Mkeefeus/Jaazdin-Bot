@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,7 +14,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  interaction.deferReply({ ephemeral: true });
+  interaction.deferReply({ flags: MessageFlags.Ephemeral });
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 

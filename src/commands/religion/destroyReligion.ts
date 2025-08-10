@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { Domain } from '~/db/models/Religion';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
@@ -21,7 +21,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!religion) {
     await interaction.reply({
       content: 'Could not find the specified religion.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -31,7 +31,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!domain) {
     await interaction.reply({
       content: 'Could not find the domain for this religion.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -39,7 +39,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }

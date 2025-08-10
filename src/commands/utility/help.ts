@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { checkUserRole } from '~/functions/helpers';
@@ -84,7 +84,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (userCommands.length === 0) {
     await interaction.reply({
       content: '❌ No commands are available for your current role.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -121,7 +121,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       text: `Total commands available: ${userCommands.length}`,
     });
 
-  await interaction.reply({ embeds: [embed], ephemeral: true });
+  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
 
 export default {

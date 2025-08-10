@@ -10,6 +10,8 @@ interface TimerAttributes {
   type: TimerType;
   user: string; // Discord ID of the user
   character: string; // Character associated with the timer
+  repeatable: boolean; // Whether the timer is repeatable
+  repeat_weeks?: number; // Weeks to repeat if repeatable
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -23,6 +25,8 @@ export class Timer extends Model<TimerAttributes, TimerCreationAttributes> imple
   declare type: TimerType;
   declare user: string;
   declare character: string;
+  declare repeatable: boolean;
+  declare repeat_weeks?: number;
   @CreatedAt declare createdAt?: Date;
   @UpdatedAt declare updatedAt?: Date;
 }
@@ -54,6 +58,15 @@ Timer.init(
     character: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    repeatable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    repeat_weeks: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
   },
   {

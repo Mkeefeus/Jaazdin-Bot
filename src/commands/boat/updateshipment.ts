@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
 import { checkUserRole } from '~/functions/helpers';
 import { parseChangeString } from '~/functions/helpers';
@@ -18,7 +18,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -32,7 +32,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!shipment) {
     await interaction.reply({
       content: `No shipment found for boat **${boatName}** with item **${itemName}**.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -49,7 +49,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     await interaction.reply({
       content: `Shipment for **${itemName}** on boat **${boatName}** has been deleted (quantity set to ${quantity}).`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -60,7 +60,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (price === null && quantity === null) {
     await interaction.reply({
       content: 'No updates provided. Please specify at least one field to update.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -73,12 +73,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     await interaction.reply({
       content: `Shipment for **${itemName}** on boat **${boatName}** updated successfully.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   } catch (error) {
     await interaction.reply({
       content: `Failed to update shipment: ${error}`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

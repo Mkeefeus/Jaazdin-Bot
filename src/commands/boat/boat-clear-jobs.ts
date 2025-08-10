@@ -6,6 +6,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder,
+  MessageFlags,
 } from 'discord.js';
 import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
@@ -24,7 +25,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -41,7 +42,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (currentJobs.length === 0) {
     await interaction.reply({
       content: `ℹ️ Boat "${boat.boatName}" already has no jobs assigned.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -73,7 +74,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const response = await interaction.reply({
     embeds: [embed],
     components: [row],
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 
   try {

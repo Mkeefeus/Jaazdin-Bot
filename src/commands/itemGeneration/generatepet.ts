@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Pet } from '../../db/models/Pet';
 import { Op } from 'sequelize';
 import { createItemEmbed } from '~/functions/boatHelpers';
@@ -32,7 +32,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.DM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -44,7 +44,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!pet) {
     await interaction.reply({
       content: `No pets found for rarity "${rarity}" and creature type "${creatureType}".`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }

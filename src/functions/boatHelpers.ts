@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
 import { formatNames, randomInt } from './helpers';
 import path from 'path';
@@ -26,7 +26,7 @@ export async function findBoatByName(interaction: ChatInputCommandInteraction, n
   if (!boat) {
     await interaction.reply({
       content: `⚠️ **Boat Not Found**\n\nNo boat named "${formatNames(name)}" exists in the system.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return null;
   }

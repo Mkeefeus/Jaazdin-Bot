@@ -10,6 +10,7 @@ import {
   ComponentType,
   APIEmbed,
   JSONEncodable,
+  MessageFlags,
 } from 'discord.js';
 import { Roles } from '~/types/roles';
 
@@ -81,7 +82,7 @@ export async function parseChangeString(
 
   if (!match) {
     if (interaction) {
-      await interaction.reply({ content: errorMsg, ephemeral: true });
+      await interaction.reply({ content: errorMsg, flags: MessageFlags.Ephemeral });
     }
     return null;
   }
@@ -183,7 +184,7 @@ export async function confirmAction(options: ConfirmActionOptions): Promise<bool
       },
     ],
     components: [row],
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 
   try {

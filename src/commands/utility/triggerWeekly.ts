@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { readdirSync } from 'fs';
 import path from 'path';
 import { WeeklyFunctions } from '~/types/weeklyfunctions';
@@ -21,7 +21,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
   await interaction.reply({
     content: `Weekly tasks have been triggered.`,
-    ephemeral: true,
+    flags: MessageFlags.Ephemeral,
   });
 }
 

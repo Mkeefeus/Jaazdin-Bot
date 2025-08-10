@@ -38,10 +38,22 @@ async function update() {
     if (timer.weeks_remaining <= 0) {
       currTimers.complete[timer.user] = currTimers.complete[timer.user] || [];
       currTimers.complete[timer.user].push(timer.dataValues);
-      continue;
+      if (timer.repeatable) {
+        timer.id = undefined; // Reset ID for new instance
+        Timer.create({
+          name: timer.name,
+          type: timer.type,
+          user: timer.user,
+          character: timer.character,
+          repeatable: timer.repeatable,
+          weeks_remaining: timer.repeat_weeks as number,
+          repeat_weeks: timer.repeat_weeks as number,
+        });
+      }
+    } else {
+      currTimers[timer.type][timer.user] = currTimers[timer.type][timer.user] || [];
+      currTimers[timer.type][timer.user].push(timer.dataValues);
     }
-    currTimers[timer.type][timer.user] = currTimers[timer.type][timer.user] || [];
-    currTimers[timer.type][timer.user].push(timer.dataValues);
     await timer.save();
   }
 }
@@ -125,7 +137,7 @@ async function post() {
             title: `${typeIcons[type]} Completed ${formatNames(type)}s${chunks.length > 1 ? ` (${index + 1}/${chunks.length})` : ''}`,
             fields: chunk.map((timer) => ({
               name: `${formatNames(timer.character)}'s ${formatNames(timer.name)}`.slice(0, 256), // Limit field name
-              value: `Player: <@${timer.user}>`.slice(0, 1024), // Limit field value
+              value: `Player: <@${timer.user}>${timer.repeatable ? ' (Repeating)' : ''}`.slice(0, 1024), // Limit field value
               inline: true,
             })),
             color: typeColors[type],

@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
 import { formatNames } from './helpers';
 
@@ -14,7 +14,7 @@ export async function findReligionByName(
   if (!religion) {
     await interaction.reply({
       content: `Religion "${formatNames(name)}" not found.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return null;
   }
@@ -31,7 +31,7 @@ export async function checkReligionExists(interaction: ChatInputCommandInteracti
   if (existingReligion) {
     await interaction.reply({
       content: `A religion with the name "${formatNames(name)}" already exists.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return true;
   }

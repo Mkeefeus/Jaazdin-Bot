@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
 import { boatNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, formatNames } from '~/functions/helpers';
@@ -14,7 +14,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -28,7 +28,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!shipment) {
     await interaction.reply({
       content: `⚠️ **Shipment Not Found**\n\nNo shipment found for boat **${formatNames(boatName)}** with item **${formatNames(itemName)}**.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return null;
   }

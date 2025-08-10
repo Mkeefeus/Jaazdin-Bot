@@ -35,6 +35,9 @@ export const data = new SlashCommandBuilder()
       .setRequired(true)
       .setMaxLength(CHAR_MAX_LENGTH)
   )
+  .addBooleanOption((option) =>
+    option.setName('repeatable').setDescription('Whether the timer is repeatable').setRequired(false)
+  )
   .addUserOption((option) =>
     option.setName('player').setDescription('The discord id of the player, leave blank if yourself').setRequired(false)
   );
@@ -52,6 +55,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const type = interaction.options.getString('type')?.toLowerCase();
   const discordId = (interaction.options.getUser('player') || interaction.user).id;
   const char = interaction.options.getString('character')?.toLowerCase();
+  const repeatable = interaction.options.getBoolean('repeatable') || false;
   //todo check to see if timer name doesn't already exist.
 
   if (!name || !weeks || !type || !char) {
@@ -88,6 +92,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     weeks_remaining: weeks,
     user: discordId,
     character: char,
+    repeatable: repeatable,
+    repeat_weeks: repeatable ? weeks : undefined,
   });
 
   await interaction.reply({
@@ -101,6 +107,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           { name: 'Duration', value: `🕒 ${weeks} week(s)`, inline: true },
           { name: 'Character', value: formatNames(char), inline: true },
           { name: 'Player', value: `<@${discordId}>`, inline: true },
+          { name: 'Repeatable', value: repeatable ? 'Yes' : 'No', inline: true },
         ],
         timestamp: new Date().toISOString(),
         footer: { text: 'Timer successfully created!' },

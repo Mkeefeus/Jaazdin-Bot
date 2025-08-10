@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import {
   findReligionByName,
   checkReligionExists,
@@ -45,7 +45,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     if (!domainData) {
       await interaction.reply({
         content: `Domain "${domainName}" not found.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }

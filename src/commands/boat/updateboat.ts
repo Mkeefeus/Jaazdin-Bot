@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
 import {
   findBoatByName,
@@ -140,7 +140,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -158,7 +158,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (error) {
     await interaction.reply({
       content: error,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -180,9 +180,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     const embed = await boatAtSeaEmbedBuilder(boat);
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
   } catch (error) {
-    await interaction.reply({ content: `Failed to update boat: ${error}`, ephemeral: true });
+    await interaction.reply({ content: `Failed to update boat: ${error}`, flags: MessageFlags.Ephemeral });
   }
 }
 

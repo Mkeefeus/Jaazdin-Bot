@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Reagent } from '../../db/models/Reagent';
 import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, rarityChoices, randomInt, creatureTypeChoices } from '~/functions/helpers';
@@ -22,7 +22,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.DM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -34,7 +34,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!reagentChosen) {
     await interaction.reply({
       content: `No reagents found for rarity "${rarity}" and creature type "${creatureType}".`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }

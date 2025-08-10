@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
 import { checkReligionExists, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { replyWithUserMention } from '~/functions/helpers';
@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!domainData) {
     await interaction.reply({
       content: `Domain "${domain}" not found.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
@@ -48,7 +48,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -67,7 +67,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   if (!currentJobs.includes(jobName)) {
     await interaction.reply({
       content: `⚠️ Job "${jobName}" is not assigned to boat "${boat.boatName}".`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }

@@ -1,5 +1,5 @@
 // src/index.ts
-import { Client, Events, GatewayIntentBits, Collection } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Collection, MessageFlags } from 'discord.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -62,7 +62,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.error(error);
       const errorMessage = {
         content: 'There was an error while executing this command!',
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       };
       await interaction.respond([{ name: errorMessage.content, value: 'error' }]);
     }
@@ -80,7 +80,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     console.error(error);
     const errorMessage = {
       content: 'There was an error while executing this command!',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     };
 
     if (interaction.replied || interaction.deferred) {

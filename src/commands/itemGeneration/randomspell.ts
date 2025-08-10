@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Spell } from '~/db/models/Spell';
 import { createItemEmbed } from '~/functions/boatHelpers';
 
@@ -64,7 +64,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     if (spells.length === 0) {
       await interaction.reply({
         content: `No spells found for level ${level}${school ? ` in ${school} school` : ''}.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -88,7 +88,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   } catch (error) {
     await interaction.reply({
       content: `Failed to generate random spell: ${error}`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

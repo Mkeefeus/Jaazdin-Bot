@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
 import { createBoatStatusDescription, tableToGenerateChoices, generateShipmentItems } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -75,7 +75,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     });
 
     if (!created) {
-      await interaction.reply({ content: `A boat named "${boatName}" already exists.`, ephemeral: true });
+      await interaction.reply({ content: `A boat named "${boatName}" already exists.`, flags: MessageFlags.Ephemeral });
       return;
     }
 
@@ -110,12 +110,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     await interaction.reply({
       embeds: [embed],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   } catch (error) {
     await interaction.reply({
       content: `Failed to add boat: ${error}`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   }
 }

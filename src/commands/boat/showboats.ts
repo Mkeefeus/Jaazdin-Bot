@@ -54,7 +54,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const embeds: EmbedBuilder[] = await createBoatEmbed(runningBoats);
   if (embeds.length === 0) {
-    await interaction.reply({ content: 'No boats found.', ephemeral: true });
+    await interaction.reply({ content: 'No boats found.', flags: MessageFlags.Ephemeral });
     return;
   }
 

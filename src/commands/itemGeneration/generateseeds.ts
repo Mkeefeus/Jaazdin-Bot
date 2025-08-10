@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Seed } from '../../db/models/Seed';
 import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
@@ -24,7 +24,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.DM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -35,7 +35,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!seed) {
     await interaction.reply({
       content: `No seeds found for rarity: ${rarity}`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     return;
   }
