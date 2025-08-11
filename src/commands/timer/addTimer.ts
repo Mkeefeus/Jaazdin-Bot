@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
 import { checkUserRole, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
-import { TimerType } from '~/types/timertype';
+import { TimerType } from '~/types/timers';
 
 const NAME_MAX_LENGTH = 100;
 const CHAR_MAX_LENGTH = 15;

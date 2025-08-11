@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 import { db } from '../db';
-import { TimerType } from '~/types/timertype';
+import { TimerType } from '~/types/timers';
 
 interface TimerAttributes {
   id?: number;

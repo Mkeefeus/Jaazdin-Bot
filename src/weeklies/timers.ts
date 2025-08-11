@@ -1,17 +1,10 @@
 import { Timer } from '~/db/models/Timer';
-import { TimerType } from '~/types/timertype';
+import { SortedTimers } from '~/types/timers';
 import { client } from '..';
 import { TextChannel, MessageCreateOptions } from 'discord.js';
-import { formatNames } from '~/functions/helpers';
+import { createTimerEmbed } from '~/commands/timer/showTimer';
 
-type TimerUserMap = {
-  [userId: string]: Timer['dataValues'][];
-};
-type CurrTimers = {
-  [key in TimerType]: TimerUserMap;
-};
-
-const currTimers: CurrTimers = {
+const currTimers: SortedTimers = {
   building: {},
   plant: {},
   item: {},
@@ -69,37 +62,7 @@ async function post() {
     console.log('Target channel is not a text channel or not found.');
     return;
   }
-
-  const typeIcons: { [key in TimerType]: string } = {
-    plant: '🌱',
-    building: '🏗️',
-    item: '📦',
-    other: '🔧',
-    complete: '✅',
-  };
-
-  const typeColors: { [key in TimerType]: number } = {
-    plant: 0x4caf50, // Green
-    building: 0x795548, // Brown
-    item: 0x2196f3, // Blue
-    other: 0x9e9e9e, // Gray
-    complete: 0x00ff00,
-  };
-
-  interface EmbedField {
-    name: string;
-    value: string;
-    inline: boolean;
-  }
-
-  interface Embed {
-    title: string;
-    fields: EmbedField[];
-    color: number;
-    timestamp: string;
-  }
-
-  const allEmbeds: Embed[] = [];
+  const allEmbeds = createTimerEmbed(currTimers, true);
   const usersWithCompletedTimers = new Set<string>(); // Track users with completed timers
 
   // Handle completed timers
@@ -107,82 +70,6 @@ async function post() {
     // Add users with completed timers to the set
     for (const userId of Object.keys(currTimers.complete)) {
       usersWithCompletedTimers.add(userId);
-    }
-
-    // Group completed timers by type
-    const completedTimersByType: { [key in TimerType]?: Timer['dataValues'][] } = {};
-
-    for (const [userId, timers] of Object.entries(currTimers.complete)) {
-      for (const timer of timers) {
-        if (!completedTimersByType[timer.type]) {
-          completedTimersByType[timer.type] = [];
-        }
-        completedTimersByType[timer.type]!.push({ ...timer, user: userId });
-      }
-    }
-
-    // Create completed embeds with chunking
-    for (const type of ['plant', 'building', 'item', 'other'] as TimerType[]) {
-      const timers = completedTimersByType[type];
-      if (timers && timers.length > 0) {
-        // Split into chunks of 25 fields (Discord's limit)
-        const chunks = [];
-        for (let i = 0; i < timers.length; i += 25) {
-          chunks.push(timers.slice(i, i + 25));
-        }
-
-        // Create multiple embeds if needed
-        chunks.forEach((chunk, index) => {
-          const embed = {
-            title: `${typeIcons[type]} Completed ${formatNames(type)}s${chunks.length > 1 ? ` (${index + 1}/${chunks.length})` : ''}`,
-            fields: chunk.map((timer) => ({
-              name: `${formatNames(timer.character)}'s ${formatNames(timer.name)}`.slice(0, 256), // Limit field name
-              value: `Player: <@${timer.user}>${timer.repeatable ? ' (Repeating)' : ''}`.slice(0, 1024), // Limit field value
-              inline: true,
-            })),
-            color: typeColors[type],
-            timestamp: new Date().toISOString(),
-          };
-          allEmbeds.push(embed);
-        });
-      }
-    }
-  }
-
-  // Handle active timers (not complete) - FIXED VERSION
-  for (const type of ['plant', 'building', 'item', 'other'] as TimerType[]) {
-    const typeTimers = currTimers[type];
-    if (typeTimers && Object.keys(typeTimers).length > 0) {
-      const allTimersForType = [];
-
-      for (const [userId, timers] of Object.entries(typeTimers)) {
-        for (const timer of timers) {
-          allTimersForType.push({ ...timer, user: userId });
-        }
-      }
-
-      if (allTimersForType.length > 0) {
-        // Split into chunks of 25 fields (Discord's limit)
-        const chunks = [];
-        for (let i = 0; i < allTimersForType.length; i += 25) {
-          chunks.push(allTimersForType.slice(i, i + 25));
-        }
-
-        // Create multiple embeds if needed
-        chunks.forEach((chunk, index) => {
-          const embed = {
-            title: `${typeIcons[type]} Active ${formatNames(type)}s${chunks.length > 1 ? ` (${index + 1}/${chunks.length})` : ''}`,
-            fields: chunk.map((timer) => ({
-              name: `${formatNames(timer.character)}'s ${formatNames(timer.name)}`.slice(0, 256), // Limit field name
-              value: `Player: <@${timer.user}>\nWeeks remaining: ${timer.weeks_remaining}`.slice(0, 1024), // Limit field value
-              inline: true,
-            })),
-            color: typeColors[type],
-            timestamp: new Date().toISOString(),
-          };
-          allEmbeds.push(embed);
-        });
-      }
     }
   }
 
