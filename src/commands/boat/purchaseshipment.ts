@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
-import { boatNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
+import { boatNameAutocomplete, itemNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 
@@ -61,8 +61,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 // Autocomplete for boat name and item name
 export async function autocomplete(interaction: AutocompleteInteraction) {
-  // This command only needs boat name autocomplete
-  await boatNameAutocomplete(interaction);
+  const focusedOption = interaction.options.getFocused(true);
+  if (focusedOption.name === 'boat') {
+    await boatNameAutocomplete(interaction, { runningOnly: true, inTown: true }); // Only running boats
+  } else if (focusedOption.name === 'item') {
+    await itemNameAutocomplete(interaction);
+  }
 }
 
 export const help = {

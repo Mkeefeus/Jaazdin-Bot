@@ -2,6 +2,8 @@ import { readdirSync } from 'fs';
 import path from 'path';
 import { LastWeeklyRunTime } from '~/db/models/LastWeeklyRunTime';
 import { WeeklyFunctions } from '~/types/weeklyfunctions';
+import { CronJob } from 'cron';
+import cronParser from 'cron-parser';
 
 async function executeWeeklyTasks() {
   // Perform the weekly task here
@@ -19,22 +21,62 @@ async function executeWeeklyTasks() {
   }
 }
 
-export default function setupWeeklyTasks() {
-  setInterval(async () => {
-    console.log('Checking weekly tasks');
-    const lastRun = await LastWeeklyRunTime.findOne();
-    const now = new Date();
-    const nextRuntime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + ((1 + 7 - now.getDay()) % 7), 0, 1);
+async function checkAndRunMissedWeeklyTasks() {
+  const now = new Date();
+  const timezone = 'America/New_York';
 
-    if (!lastRun) {
-      executeWeeklyTasks();
-      await LastWeeklyRunTime.create({ value: now }, { silent: true });
-    } else if (now >= nextRuntime) {
-      executeWeeklyTasks();
-      await LastWeeklyRunTime.update({ value: now }, { where: { id: lastRun?.getDataValue('id') }, silent: true });
+  // Get the most recent scheduled Monday 12:01am occurrence
+  const cronExpression = cronParser.parse('1 0 * * 1', {
+    tz: timezone,
+    currentDate: now,
+  });
+  const lastScheduled = cronExpression.prev().toDate();
+
+  const lastRun = await LastWeeklyRunTime.findOne();
+
+  if (!lastRun) {
+    // No previous run recorded, execute weekly tasks
+    console.log('No previous weekly run found. Executing weekly tasks on startup.');
+    await executeWeeklyTasks();
+    await LastWeeklyRunTime.create({ value: now }, { silent: true });
+  } else {
+    const lastRunDate = new Date(lastRun.getDataValue('value'));
+
+    // If the last run was before the most recent scheduled occurrence, run now
+    if (lastRunDate < lastScheduled) {
+      console.log(
+        `Weekly tasks missed (last run: ${lastRunDate.toISOString()}, last scheduled: ${lastScheduled.toISOString()}). Running now.`
+      );
+      await executeWeeklyTasks();
+      await LastWeeklyRunTime.update({ value: now }, { where: { id: lastRun.getDataValue('id') }, silent: true });
     } else {
-      //always run tasks for dev purposes
-      // executeWeeklyTasks();
+      console.log('Weekly tasks are up to date.');
     }
-  }, 600000);
+  }
+}
+
+export default function setupWeeklyTasks() {
+  // Check for missed weekly tasks on startup
+  checkAndRunMissedWeeklyTasks();
+
+  new CronJob(
+    '1 0 * * 1', // 00:01 every Monday
+    // '* * * * *', // Every minute
+    async () => {
+      console.log('Weekly tasks triggered');
+      const now = new Date();
+      const lastRun = await LastWeeklyRunTime.findOne();
+
+      await executeWeeklyTasks();
+
+      if (!lastRun) {
+        await LastWeeklyRunTime.create({ value: now }, { silent: true });
+      } else {
+        await LastWeeklyRunTime.update({ value: now }, { where: { id: lastRun.getDataValue('id') }, silent: true });
+      }
+    },
+    null,
+    true, // start the job now
+    'America/New_York' // set your timezone, e.g. 'America/New_York'
+  );
 }

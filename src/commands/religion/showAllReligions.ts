@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { Religion } from '~/db/models/Religion';
-import { replyWithUserMention } from '~/functions/helpers';
+import { formatNames, replyWithUserMention } from '~/functions/helpers';
 import showReligion from './showReligion';
 
 export const data = new SlashCommandBuilder().setName('showallreligions').setDescription('Shows all active religions');
@@ -27,7 +27,7 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
     if (religions.length > 1) {
       const otherReligions = religions.slice(1);
       const fields = otherReligions.map((religion) => ({
-        name: `${religion.dataValues.name}`,
+        name: `${formatNames(religion.dataValues.name)}`,
         value: `${religion.dataValues.follower_count} followers`,
         inline: false,
       }));

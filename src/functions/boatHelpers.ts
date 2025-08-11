@@ -64,6 +64,27 @@ export async function boatNameAutocomplete(
   await interaction.respond(filtered);
 }
 
+export async function itemNameAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
+  const boatName = interaction.options.getString('boat');
+  if (!boatName) {
+    await interaction.respond([]);
+    return;
+  }
+
+  const shipments = await Shipment.findAll({
+    where: { boatName },
+    attributes: ['itemName'],
+  });
+
+  const choices = shipments
+    .map((shipment) => shipment.itemName)
+    .filter((itemName) => itemName.toLowerCase().includes(interaction.options.getFocused(true).value.toLowerCase()))
+    .slice(0, 25)
+    .map((itemName) => ({ name: formatNames(itemName), value: itemName }));
+
+  await interaction.respond(choices);
+}
+
 export const tableToGenerateChoices = [
   { name: 'Metal Trading', value: 'metals' },
   { name: 'Weapons & Armor', value: 'weaponry' },
@@ -147,7 +168,11 @@ export function upgradeByCategoryOrder(
   return order[Math.min(idx + step, order.length - 1)];
 }
 
-export function typeFromInclusiveRanges(roll: number, ranges: { min: number; max: number; value: string }[], fallback: string): string {
+export function typeFromInclusiveRanges(
+  roll: number,
+  ranges: { min: number; max: number; value: string }[],
+  fallback: string
+): string {
   for (const range of ranges) {
     if (roll >= range.min && roll <= range.max) return range.value;
   }
@@ -217,9 +242,12 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
     case 'pets': {
       const result: ShipmentItem[] = [];
       // Use helper to get base rarities
-      const rarities = Array(5).fill(0).map(() => typeFromInclusiveRanges(randomInt(1, 20), PET_RARITY_RANGES, 'Common'));
+      const rarities = Array(5)
+        .fill(0)
+        .map(() => typeFromInclusiveRanges(randomInt(1, 20), PET_RARITY_RANGES, 'Common'));
       for (const rarity of rarities) {
-        let pet = null, type: string;
+        let pet = null,
+          type: string;
         do {
           type = typeFromInclusiveRanges(randomInt(1, 20), PET_TYPE_RANGES, 'Beast');
           pet = await getRandomPetByRarityAndType(rarity, type);
@@ -312,7 +340,9 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
         'Undead',
       ];
       // Use helper to get base rarities
-      const rarities = Array(4).fill(0).map(() => typeFromInclusiveRanges(randomInt(1, 20), REAGENT_RARITY_RANGES, 'Common'));
+      const rarities = Array(4)
+        .fill(0)
+        .map(() => typeFromInclusiveRanges(randomInt(1, 20), REAGENT_RARITY_RANGES, 'Common'));
       for (const rarity of rarities) {
         const type = types[randomInt(0, types.length - 1)];
         const reagent = await getRandomReagentByRarityAndType(rarity, type);
@@ -323,7 +353,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
     case 'otherworld': {
       const result: ShipmentItem[] = [];
       // Use helper to get base rarities
-  let rarities = Array(3).fill('Uncommon');
+      let rarities = Array(3).fill('Uncommon');
       const rarityOrder = ['Uncommon', 'Rare', 'Very Rare'];
       rarities = rarities.map((base) => {
         const roll = randomInt(1, 6);
@@ -338,7 +368,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
     case 'smuggle': {
       const result: ShipmentItem[] = [];
       // Use helper to get base rarities
-  let rarities = Array(4).fill('Uncommon');
+      let rarities = Array(4).fill('Uncommon');
       const rarityOrder = ['Uncommon', 'Rare', 'Very Rare'];
       rarities = rarities.map((base) => {
         const roll = randomInt(1, 6);
@@ -494,10 +524,7 @@ export async function createBoatStatusDescription(boat: Boat): Promise<string> {
 /**
  * Calculate price for a metal-based item (weapons, armor)
  */
-export function calculateMetalItemPrice(
-  item: { plates: number; price: number },
-  metalPrice: number
-): number {
+export function calculateMetalItemPrice(item: { plates: number; price: number }, metalPrice: number): number {
   return Math.round((metalPrice * item.plates + item.price) * 1.33);
 }
 
