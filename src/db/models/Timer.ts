@@ -75,7 +75,24 @@ Timer.init(
 );
 
 async function seed() {
-  await Timer.sync({ force: true });
+  //await Timer.sync({ force: true });
+  const timersData = (await import('~/../timers.json')).default;
+  try {
+    for (const timer of timersData) {
+      await Timer.create({
+        name: timer.name,
+        weeks_remaining: timer.weeksRemaining,
+        type: (typeof timer.type === 'string' ? TimerType[timer.type as keyof typeof TimerType] : timer.type),
+        user: timer.user,
+        character: timer.character,
+        repeatable: timer.repeatable,
+        repeat_weeks: timer.repeatWeeks,
+      });
+    }
+    console.log('Timers seeded!');
+  } catch (error) {
+    console.error('Could not seed timers:', error);
+  }
 }
 
 export { seed };
