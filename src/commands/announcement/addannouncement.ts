@@ -1,0 +1,122 @@
+import {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ActionRowBuilder,
+  Interaction,
+  TextChannel,
+  MessageFlags,
+} from 'discord.js';
+import { Announcement } from '~/db/models/Announcement';
+import { showAnnouncement } from '~/functions/announcementHelpers';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
+
+const CHANNEL_ID = process.env.BOT_CHANNEL_ID;
+
+export const data = new SlashCommandBuilder()
+  .setName('addannouncement')
+  .setDescription('Make a new announcement')
+  .addIntegerOption((option) =>
+    option.setName('weeks').setDescription('Weeks remaining (min 1)').setRequired(true).setMinValue(1)
+  )
+  .addBooleanOption((option) =>
+    option.setName('post_now').setDescription('Post announcement immediately').setRequired(false)
+  );
+
+export async function execute(interaction: ChatInputCommandInteraction) {
+  // Only allow GMs to use this command
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'Only GMs can make announcements.',
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
+
+  // Get weeks and post_now from command
+  const weeks = interaction.options.getInteger('weeks', true);
+  const post_now = interaction.options.getBoolean('post_now') ?? false;
+
+  // Show modal for input
+  const modal = new ModalBuilder()
+    .setCustomId(`addannouncement-modal|${weeks}|${post_now}`)
+    .setTitle('Add Announcement');
+
+  const nameInput = new TextInputBuilder()
+    .setCustomId('announcement-name')
+    .setLabel('Announcement Name')
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true);
+
+  const messageInput = new TextInputBuilder()
+    .setCustomId('announcement-message')
+    .setLabel('Announcement Message')
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true);
+
+  modal.addComponents(
+    new ActionRowBuilder<TextInputBuilder>().addComponents(nameInput),
+    new ActionRowBuilder<TextInputBuilder>().addComponents(messageInput)
+  );
+
+  await interaction.showModal(modal);
+}
+
+// Modal submit handler
+export async function handleModalSubmit(interaction: Interaction) {
+  if (!interaction.isModalSubmit() || !interaction.customId.startsWith('addannouncement-modal|')) return;
+
+  const name = interaction.fields.getTextInputValue('announcement-name');
+  const message = interaction.fields.getTextInputValue('announcement-message');
+
+  // Extract weeks and post_now from customId
+  // Format: addannouncement-modal|<weeks>|<post_now>
+  const customIdParts = interaction.customId.split('|');
+  const weeks = Number(customIdParts[1]);
+  const post_now = customIdParts[2] === 'true';
+
+  const announcement = await Announcement.create({ name, message, weeks });
+  // Show embed
+  const embed = showAnnouncement(announcement);
+  await interaction.reply({
+    content: `Announcement created.${post_now ? ' It will be posted immediately.' : ''}`,
+    embeds: [embed],
+    flags: MessageFlags.Ephemeral,
+  });
+
+  if (post_now) {
+    if (!CHANNEL_ID) {
+      console.error('BOT_CHANNEL_ID is not defined');
+      return;
+    }
+
+    // Post the announcement immediately
+    try {
+      const channel = await interaction.client.channels.fetch(CHANNEL_ID);
+      if (channel instanceof TextChannel) {
+        announcement.weeks = announcement.weeks - 1;
+        await announcement.save();
+        const embed = showAnnouncement(announcement);
+        await channel.send({ embeds: [embed] });
+      }
+    } catch (error) {
+      console.error('Failed to send announcement:', error);
+    }
+  }
+}
+
+export const help = {
+  name: 'addannouncement',
+  description: 'Make a new announcement',
+  requiredRole: Roles.GM,
+  category: 'announcement',
+};
+
+export default {
+  data,
+  execute,
+  handleModalSubmit
+};

@@ -79,7 +79,7 @@ async function post() {
     const userMentions = Array.from(usersWithCompletedTimers)
       .map((userId) => `<@${userId}>`)
       .join(' ');
-    messageContent = `🎉 The following players have completed timers: ${userMentions}`;
+    messageContent = "temp to not ping everyone." //`🎉 The following players have completed timers: ${userMentions}`;
   }
 
   // Send message with pings and embeds

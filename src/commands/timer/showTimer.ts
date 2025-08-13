@@ -139,7 +139,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (embeds.length === 0) {
     return interaction.reply({ content: 'No timers found.', flags: MessageFlags.Ephemeral });
   }
-  await interaction.reply({ embeds });
+  await interaction.reply({ embeds, flags: MessageFlags.Ephemeral });
 }
 
 export const help = {

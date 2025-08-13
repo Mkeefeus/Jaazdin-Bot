@@ -4,8 +4,6 @@ import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { Roles } from '~/types/roles';
 
-//TODO gm command only.
-
 export const data = new SlashCommandBuilder()
   .setName('destroyreligion')
   .setDescription('Will remove a religion from the active religions')

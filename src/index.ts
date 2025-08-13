@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import { Command } from './types/command';
 import setupWeeklyTasks from './weeklies/weekly';
+import { handleModalSubmit } from './commands/announcement/addannouncement';
 
 // Extend the Client type to include commands
 declare module 'discord.js' {
@@ -49,6 +50,11 @@ for (const folder of commandFolders) {
 }
 
 client.on(Events.InteractionCreate, async (interaction) => {
+  // Handle modal submit for addannouncement
+  if (interaction.isModalSubmit() && interaction.customId.startsWith('addannouncement-modal|')) {
+    await handleModalSubmit(interaction);
+    return;
+  }
   if (interaction.isAutocomplete()) {
     const command = client.commands.get(interaction.commandName);
     if (!command || !command.autocomplete) {
@@ -62,7 +68,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.error(error);
       const errorMessage = {
         content: 'There was an error while executing this command!',
-        flags: MessageFlags.Ephemeral,
+        MessageFlags: MessageFlags.Ephemeral,
       };
       await interaction.respond([{ name: errorMessage.content, value: 'error' }]);
     }
@@ -80,7 +86,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     console.error(error);
     const errorMessage = {
       content: 'There was an error while executing this command!',
-      flags: MessageFlags.Ephemeral,
+      MessageFlags: MessageFlags.Ephemeral,
     };
 
     if (interaction.replied || interaction.deferred) {
