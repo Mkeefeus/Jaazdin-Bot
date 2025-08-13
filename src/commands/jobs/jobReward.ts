@@ -2,10 +2,9 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
   EmbedBuilder,
-  AutocompleteInteraction,
-  Colors,
+  AutocompleteInteraction
 } from 'discord.js';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
 import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/functions/helpers';
@@ -59,14 +58,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   // Convert job name to match the format used in boat jobsAffected (capitalize words)
   const capitalizedJobName = convertJobNameForBoats(jobName);
 
+  // Use SQLite's json_each to check if the job matches any element in jobsAffected array
   const effectiveBoats = await Boat.findAll({
     where: {
       isInTown: true,
       isRunning: true,
-      // SQLite-compatible JSON search using LIKE with JSON array string matching
-      jobsAffected: {
-        [Op.like]: `%"${capitalizedJobName}"%`,
-      },
+      [Op.and]: [
+        Sequelize.literal(`EXISTS (SELECT 1 FROM json_each(Boat.jobs_affected) WHERE json_each.value = '${capitalizedJobName}')`)
+      ]
     },
   });
   for (const boat of effectiveBoats) {
@@ -89,11 +88,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   // string of all the boats that affected the roll
   const boatNames = effectiveBoats.map((boat) => boat.boatName).join(', ');
 
-  const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier} ${boatNames ? `\n\n**Boats:**\n${boatNames}` : ''}, Final Roll: ${modifiedRoll}`;
+  const title = `${formatNames(jobData.getDataValue('name'))} Tier ${tier}, Roll: ${roll}, Final Roll: ${modifiedRoll}`;
   const message = `${rolledTier.getDataValue('bonus')} ${boatNames ? `\n\n**Boats affecting the roll:**\n${boatNames}` : ''}`;
 
+  // Generate a random color for the embed
+  const randomColor = Math.floor(Math.random() * 0xffffff);
   await replyWithUserMention(interaction, [
-    new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Green),
+    new EmbedBuilder().setTitle(title).setDescription(message).setColor(randomColor),
   ]);
 }
 

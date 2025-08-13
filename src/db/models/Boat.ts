@@ -58,6 +58,7 @@ export class Shipment extends Model {
   declare itemName: string;
   declare price: number;
   declare quantity: number;
+  declare type: string;
 }
 
 Shipment.init(
@@ -88,6 +89,10 @@ Shipment.init(
     },
     quantity: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.STRING(10),
       allowNull: false,
     },
   },
@@ -140,6 +145,7 @@ async function seed() {
         itemName: shipment.itemName,
         price: shipment.price,
         quantity: shipment.quantity,
+        type: shipment.type
       });
     }
     console.log('Shipments seeded!');

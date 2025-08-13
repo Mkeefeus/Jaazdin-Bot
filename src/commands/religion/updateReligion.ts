@@ -1,9 +1,5 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
-import {
-  findReligionByName,
-  checkReligionExists,
-  religionCommandAutocomplete,
-} from '~/functions/religionHelpers';
+import { findReligionByName, checkReligionExists, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { replyWithUserMention, parseChangeString } from '~/functions/helpers';
 import showReligion from './showReligion';
 import { Domain } from '~/db/models/Religion';
@@ -59,6 +55,15 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     interaction
   );
   if (newFollowerCount === null) return;
+
+  // Cap the follower count at 0 if it's below. 
+  if (newFollowerCount < 0) {
+    await interaction.reply({
+        content: `Follower count is below 0 from this change. Please provide a valid follower count.`,
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+  }
 
   // Check to see if the new name to update doesn't already exist
   if (new_name !== name) {

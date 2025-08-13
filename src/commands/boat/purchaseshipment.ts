@@ -41,7 +41,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     await interaction.reply({
       content: `💰 **Purchase Complete!**\n\nYou purchased the last **${formatNames(itemName)}** from **${formatNames(boatName)}** for **${price} gp**.\n\n⚠️ This item is now sold out!`,
-      flags: MessageFlags.Ephemeral,
+      //flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -54,7 +54,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   await interaction.reply({
     content: `💰 **Purchase Complete!**\n\nYou purchased **${formatNames(itemName)}** from **${formatNames(boatName)}** for **${price} gp**.\n\n📦 Remaining quantity: **${shipment.quantity}**`,
-    flags: MessageFlags.Ephemeral,
+    //flags: MessageFlags.Ephemeral,
   });
 }
 

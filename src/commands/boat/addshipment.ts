@@ -11,6 +11,7 @@ export const data = new SlashCommandBuilder()
   .setDescription('Add a new shipment item to a boat')
   .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
   .addStringOption((opt) => opt.setName('item').setDescription('Item name').setRequired(true))
+  .addStringOption((opt) => opt.setName('type').setDescription('Item type').setRequired(true))
   .addIntegerOption((opt) => opt.setName('price').setDescription('Item price (gp)').setRequired(true))
   .addIntegerOption((opt) => opt.setName('quantity').setDescription('Quantity').setRequired(true).setMinValue(1));
 
@@ -24,6 +25,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
   const boatName = interaction.options.getString('boat', true);
   const itemName = interaction.options.getString('item', true);
+  const itemType = interaction.options.getString('type', true);
   const price = interaction.options.getInteger('price', true);
   const quantity = interaction.options.getInteger('quantity', true);
 
@@ -33,6 +35,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       itemName,
       price,
       quantity,
+      type: itemType
     });
 
     // Update the boat's Discord embed if it exists

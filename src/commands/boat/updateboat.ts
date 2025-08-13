@@ -128,6 +128,7 @@ async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): Promise
         itemName: item.itemName,
         price: item.price,
         quantity: item.quantity,
+        type: item.type,
       });
     }
   } else {

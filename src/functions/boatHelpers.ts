@@ -143,7 +143,7 @@ export function createItemEmbed(
 }
 
 // Type definitions for shipment generation
-export type ShipmentItem = { itemName: string; price: number; quantity: number };
+export type ShipmentItem = { itemName: string; price: number; quantity: number; type: string };
 type MetalPriceCache = { [metalName: string]: number };
 
 export function getTypeArray(counts: { [rarity: string]: number }): string[] {
@@ -182,10 +182,10 @@ export function typeFromInclusiveRanges(
 /**
  * Add an item to the result array or increment its quantity if it already exists.
  */
-function addOrIncrementItem(result: ShipmentItem[], itemName: string, price: number) {
+function addOrIncrementItem(result: ShipmentItem[], itemName: string, price: number, type: string) {
   const existing = result.find((item) => item.itemName === itemName);
   if (existing) existing.quantity += 1;
-  else result.push({ itemName, price, quantity: 1 });
+  else result.push({ itemName, price, quantity: 1, type });
 }
 
 /**
@@ -204,7 +204,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       });
       for (const rarity of rarities) {
         const metal = await getRandomMetalByRarity(rarity);
-        if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max));
+        if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max), 'metal');
       }
       return result;
     }
@@ -226,7 +226,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           if (!(metal.name in metalsInUse)) metalsInUse[metal.name] = randomInt(metal.price_min, metal.price_max);
           const itemName = `${metal.name} ${weapon.name}`;
           const price = calculateMetalItemPrice(weapon, metalsInUse[metal.name]);
-          addOrIncrementItem(result, itemName, price);
+          addOrIncrementItem(result, itemName, price, 'weapon');
         } else {
           const combo = await generateRandomArmorWithMetalByRarity(rarity);
           if (!combo) continue;
@@ -234,7 +234,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           if (!(metal.name in metalsInUse)) metalsInUse[metal.name] = randomInt(metal.price_min, metal.price_max);
           const itemName = `${metal.name} ${armor.name}`;
           const price = calculateMetalItemPrice(armor, metalsInUse[metal.name]);
-          addOrIncrementItem(result, itemName, price);
+          addOrIncrementItem(result, itemName, price, 'armor');
         }
       }
       return result;
@@ -252,7 +252,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           type = typeFromInclusiveRanges(randomInt(1, 20), PET_TYPE_RANGES, 'Beast');
           pet = await getRandomPetByRarityAndType(rarity, type);
         } while (!pet);
-        addOrIncrementItem(result, pet.name, randomInt(pet.price_min, pet.price_max));
+        addOrIncrementItem(result, pet.name, randomInt(pet.price_min, pet.price_max), 'pet');
       }
       return result;
     }
@@ -267,7 +267,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       });
       for (const rarity of rarities) {
         const meal = await getRandomMealByRarity(rarity);
-        if (meal) addOrIncrementItem(result, meal.name, randomInt(meal.price_min, meal.price_max));
+        if (meal) addOrIncrementItem(result, meal.name, randomInt(meal.price_min, meal.price_max), 'meal');
       }
       return result;
     }
@@ -282,7 +282,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       });
       for (const rarity of potionRarities) {
         const potion = await getRandomPotionByRarity(rarity);
-        if (potion) addOrIncrementItem(result, potion.name, randomInt(potion.price_min, potion.price_max));
+        if (potion) addOrIncrementItem(result, potion.name, randomInt(potion.price_min, potion.price_max), 'potion');
       }
       // Poisons
       let poisonRarities = getTypeArray({ Uncommon: 2, Rare: 2 });
@@ -292,7 +292,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       });
       for (const rarity of poisonRarities) {
         const poison = await getRandomPoisonByRarity(rarity);
-        if (poison) addOrIncrementItem(result, poison.name, randomInt(poison.price_min, poison.price_max));
+        if (poison) addOrIncrementItem(result, poison.name, randomInt(poison.price_min, poison.price_max), 'poison');
       }
       return result;
     }
@@ -304,7 +304,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
         const roll = randomInt(1, 6);
         const table = upgradeByCategoryOrder(tableOrder[baseIdx], roll, { 5: 1, 6: 2 }, tableOrder);
         const item = await getRandomMagicItemByTable(table);
-        if (item) addOrIncrementItem(result, item.name, randomInt(item.price_min, item.price_max));
+        if (item) addOrIncrementItem(result, item.name, randomInt(item.price_min, item.price_max), 'magic item');
       }
       return result;
     }
@@ -319,7 +319,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       });
       for (const rarity of rarities) {
         const seed = await getRandomSeedByRarity(rarity);
-        if (seed) addOrIncrementItem(result, seed.name, randomInt(seed.price_min, seed.price_max));
+        if (seed) addOrIncrementItem(result, seed.name, randomInt(seed.price_min, seed.price_max), 'seed');
       }
       return result;
     }
@@ -346,7 +346,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       for (const rarity of rarities) {
         const type = types[randomInt(0, types.length - 1)];
         const reagent = await getRandomReagentByRarityAndType(rarity, type);
-        if (reagent) addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max));
+        if (reagent) addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max), 'reagent');
       }
       return result;
     }
@@ -361,7 +361,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       });
       for (const rarity of rarities) {
         const metal = await getRandomMetalByRarityExcludingPlanes(rarity, 'Material');
-        if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max));
+        if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max), 'metal');
       }
       return result;
     }
@@ -379,7 +379,7 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
         const typeRoll = randomInt(1, 8);
         if (typeRoll === 1) {
           const metal = await getRandomMetalByRarity(rarity);
-          if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max));
+          if (metal) addOrIncrementItem(result, metal.name, randomInt(metal.price_min, metal.price_max), 'metal');
         } else if (typeRoll === 2) {
           const combo = await generateRandomWeaponWithMetalByRarity(rarity);
           if (combo) {
@@ -387,29 +387,29 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
             const metalPrice = randomInt(metal.price_min, metal.price_max);
             const price = calculateMetalItemPrice(weapon, metalPrice);
             const itemName = `${metal.name} ${weapon.name}`;
-            addOrIncrementItem(result, itemName, price);
+            addOrIncrementItem(result, itemName, price, 'weapon');
           }
         } else if (typeRoll === 3) {
           const meal = await getRandomMealByRarity(rarity);
-          if (meal) addOrIncrementItem(result, meal.name, randomInt(meal.price_min, meal.price_max));
+          if (meal) addOrIncrementItem(result, meal.name, randomInt(meal.price_min, meal.price_max), 'meal');
         } else if (typeRoll === 4) {
           const potion = await getRandomPotionByRarity(rarity);
-          if (potion) addOrIncrementItem(result, potion.name, randomInt(potion.price_min, potion.price_max));
+          if (potion) addOrIncrementItem(result, potion.name, randomInt(potion.price_min, potion.price_max), 'potion');
         } else if (typeRoll === 5) {
           const poison = await getRandomPoisonByRarity(rarity);
-          if (poison) addOrIncrementItem(result, poison.name, randomInt(poison.price_min, poison.price_max));
+          if (poison) addOrIncrementItem(result, poison.name, randomInt(poison.price_min, poison.price_max), 'poison');
         } else if (typeRoll === 6) {
           const reagent = await getRandomReagentByRarity(rarity);
-          if (reagent) addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max));
+          if (reagent) addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max), 'reagent');
         } else if (typeRoll === 7) {
           const seed = await getRandomSeedByRarity(rarity);
-          if (seed) addOrIncrementItem(result, seed.name, randomInt(seed.price_min, seed.price_max));
+          if (seed) addOrIncrementItem(result, seed.name, randomInt(seed.price_min, seed.price_max), 'seed');
         } else if (typeRoll === 8) {
           const tableOrder = ['A', 'B', 'C'];
           const rarityRoll = randomInt(1, 6);
           const table = upgradeByCategoryOrder('A', rarityRoll, { 5: 1, 6: 2 }, tableOrder);
           const item = await getRandomMagicItemByTable(table);
-          if (item) addOrIncrementItem(result, item.name, randomInt(item.price_min, item.price_max));
+          if (item) addOrIncrementItem(result, item.name, randomInt(item.price_min, item.price_max), 'magic item');
         }
       }
       return result;
@@ -425,14 +425,17 @@ export async function boatInTownEmbedBuilder(boat: Boat) {
   if (boat.jobsAffected && Array.isArray(boat.jobsAffected) && boat.jobsAffected.length > 0) {
     desc += `💰 **${boat.jobsAffected.join(', ')}** have their gp wage die amount +1.\n\n`;
   }
+  else {
+    desc += `💰 **No Jobs Bonuses from ${boat.boatName}**\n\n`;
+  }
   if (boat.isTier2 && boat.tier2Ability) desc += `⭐ ${boat.tier2Ability}\n`;
 
   let fields: { name: string; value: string }[] = [];
   if (boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
-    desc += `### Goods:\n\n`;
+    desc += `### ${boatTableDescriptions[boat.tableToGenerate]}:\n\n`;
     const shipments = await Shipment.findAll({ where: { boatName: boat.boatName } });
     fields = shipments.map((s) => ({
-      name: s.itemName,
+      name: `${s.itemName} (${s.type})`,
       value: `💵 Price: ${s.price} gp\n📦 Remaining Stock: ${s.quantity}`,
       inline: true,
     }));

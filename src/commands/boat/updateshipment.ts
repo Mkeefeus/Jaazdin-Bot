@@ -11,6 +11,7 @@ export const data = new SlashCommandBuilder()
   .setDescription('Update a shipment item for a boat (by boat and item name)')
   .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
   .addStringOption((opt) => opt.setName('item').setDescription('Item name').setRequired(true).setAutocomplete(true))
+  .addStringOption((opt) => opt.setName('type').setDescription('Item type').setRequired(true).setAutocomplete(true))
   .addIntegerOption((opt) => opt.setName('price').setDescription('New item price (gp)').setRequired(false))
   .addStringOption((opt) => opt.setName('quantity').setDescription('New quantity (+x, -x, =x').setRequired(false));
 
@@ -25,6 +26,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const boatName = interaction.options.getString('boat', true);
   const itemName = interaction.options.getString('item', true);
+  const itemType = interaction.options.getString('type');
   const price = interaction.options.getInteger('price');
   const quantityRaw = interaction.options.getString('quantity');
 
@@ -56,8 +58,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (price !== null) shipment.price = price;
   if (quantity !== null) shipment.quantity = quantity;
+  if(itemType !== null) shipment.type = itemType;
 
-  if (price === null && quantity === null) {
+  if (price === null && quantity === null && itemType === null) {
     await interaction.reply({
       content: 'No updates provided. Please specify at least one field to update.',
       flags: MessageFlags.Ephemeral,

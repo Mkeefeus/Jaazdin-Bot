@@ -57,6 +57,7 @@ async function update() {
             itemName: item.itemName,
             price: item.price,
             quantity: item.quantity,
+            type: item.type,
           });
         }
       }

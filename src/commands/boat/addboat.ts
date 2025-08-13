@@ -90,6 +90,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           itemName: item.itemName,
           price: item.price,
           quantity: item.quantity,
+          type: item.type,
         });
       }
     }
