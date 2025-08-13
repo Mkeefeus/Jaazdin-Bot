@@ -2,8 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from '
 import { Metal } from '../../db/models/Metal';
 import { Op } from 'sequelize';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole, rarityChoices, randomInt } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { rarityChoices, randomInt } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()
   .setName('generatemetal')
@@ -19,13 +18,13 @@ export async function getRandomMetalByRarity(rarity: string): Promise<Metal | nu
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.DM)) {
-    await interaction.reply({
-      content: 'You do not have permission to use this command.',
-      flags: MessageFlags.Ephemeral,
-    });
-    return;
-  }
+  // if (!checkUserRole(interaction, Roles.DM)) {
+  //   await interaction.reply({
+  //     content: 'You do not have permission to use this command.',
+  //     flags: MessageFlags.Ephemeral,
+  //   });
+  //   return;
+  // }
 
   const rarity = interaction.options.getString('rarity', true);
 
@@ -53,7 +52,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export const help = {
   name: 'generatemetal',
   description: 'Generate a random metal by rarity',
-  requiredRole: Roles.DM,
+  // requiredRole: Roles.DM,
   category: 'items',
 };
 

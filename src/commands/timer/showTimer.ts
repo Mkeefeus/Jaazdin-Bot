@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
 import { formatNames } from '~/functions/helpers';
 import { SortedTimers, TimerType, typeColors, typeIcons } from '~/types/timers';
@@ -137,7 +137,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const sortedTimers = sortTimersByTypeAndUser(timers);
   const embeds = createTimerEmbed(sortedTimers, false);
   if (embeds.length === 0) {
-    return interaction.reply({ content: 'No timers found.', ephemeral: true });
+    return interaction.reply({ content: 'No timers found.', flags: MessageFlags.Ephemeral });
   }
   await interaction.reply({ embeds });
 }
+
+export const help = {
+  name: 'showTimer',
+  description: 'Displays the active and completed timers for a user.',
+  category: 'timers',
+};

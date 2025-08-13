@@ -54,7 +54,7 @@ async function loadCommands() {
 
   for (const folder of commandFolders) {
     const commandsPath = path.join(foldersPath, folder);
-    const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
+    const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.ts') && file !== path.basename(__filename));
 
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
@@ -65,9 +65,8 @@ async function loadCommands() {
 
         if ('help' in command) {
           commands.push(command.help);
-          console.log(`Loaded help data for command: ${command.help.name}`);
         } else {
-          console.log(`[WARNING] The command at ${filePath} is missing a required "help" property.`);
+          console.warn(`[WARNING] The command at ${filePath} is missing a required "help" property.`);
         }
       } catch (error) {
         console.error(`Error loading help data for command from ${filePath}:`, error);

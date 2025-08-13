@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { MagicItem } from '../../db/models/MagicItem';
 import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, randomInt } from '~/functions/helpers';
@@ -45,7 +45,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.DM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
-      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -57,7 +56,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (!item) {
     await interaction.reply({
       content: `No items found for table ${table}.`,
-      flags: MessageFlags.Ephemeral,
     });
     return;
   }
@@ -71,7 +69,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     0x8e44ad
   );
 
-  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+  await interaction.reply({ embeds: [embed] });
 }
 
 export const help = {

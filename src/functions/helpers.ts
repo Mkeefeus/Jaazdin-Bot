@@ -105,7 +105,7 @@ export async function replyWithUserMention(
   await interaction.reply({
     content: userMention(interaction.user.id),
     embeds: embeds,
-    ephemeral: ephemeral,
+    flags: ephemeral ? MessageFlags.Ephemeral : undefined,
   });
 }
 
@@ -119,7 +119,7 @@ export async function replyWithUserMentionText(
 ): Promise<void> {
   await interaction.reply({
     content: `${userMention(interaction.user.id)} ${content}`,
-    ephemeral: ephemeral,
+    flags: ephemeral ? MessageFlags.Ephemeral : undefined,
   });
 }
 

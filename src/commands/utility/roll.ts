@@ -1,6 +1,8 @@
 import { randomInt } from 'crypto';
-import { ChatInputCommandInteraction, SlashCommandBuilder, userMention } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder, userMention } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
+import { checkUserRole } from '~/functions/helpers';
+import { Roles } from '~/types/roles';
 
 type RollFormula = {
   limiter?: number;
@@ -385,6 +387,15 @@ function formatRolls(rolls: Roll[], formula: string, modifier?: number | number[
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
+
+  if (checkUserRole(interaction, Roles.BOT_DEV)) {
+    // Admin-specific logic
+    interaction.reply({
+      content: 'This command is WIP, check back later',
+      flags: MessageFlags.Ephemeral,
+    });
+  }
+
   const formula = interaction.options.getString('formula')?.toLowerCase();
   if (!formula) {
     await interaction.reply('Please provide a formula to roll');

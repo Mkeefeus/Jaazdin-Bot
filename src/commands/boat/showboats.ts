@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
 import { boatInTownEmbedBuilder } from '~/functions/boatHelpers';
 
@@ -64,10 +64,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     if (i === 0) {
       // First message uses reply
-      await interaction.reply({ embeds: embedChunk, ephemeral: false });
+      await interaction.reply({ embeds: embedChunk, flags: MessageFlags.Ephemeral});
     } else {
       // Subsequent messages use followUp
-      await interaction.followUp({ embeds: embedChunk, ephemeral: false });
+      await interaction.followUp({ embeds: embedChunk, flags: MessageFlags.Ephemeral});
     }
   }
 }
