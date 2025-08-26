@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun run src/index.ts",
+    "start:prd": "NODE_ENV=production bun run src/index.ts",
     "build": "tsc",
     "deploy": "bun run deploy-commands.ts",
     "pretty": "prettier --write .",
@@ -21,6 +22,8 @@
     "cron-parser": "^5.3.0",
     "discord.js": "^14.21.0",
     "dotenv": "^16.6.1",
+    "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.7",
     "sequelize-typescript": "^2.1.6",

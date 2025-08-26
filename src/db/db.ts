@@ -2,11 +2,22 @@ import { Sequelize } from 'sequelize';
 
 let sequelize: Sequelize | null = null;
 
+const dialect = process.env.NODE_ENV === 'production' ? 'postgres' : 'sqlite';
+const storage = process.env.NODE_ENV === 'production' ? undefined : 'database.sqlite';
+const dialectOptions = process.env.NODE_ENV === 'production' ? { ssl: { require: true, rejectUnauthorized: false } } : {};
+const database = process.env.DB_TABLE;
+const username = process.env.DB_USERNAME;
+const password = process.env.DB_PASSWORD;
+
 export const db =
   sequelize ||
   new Sequelize({
-    dialect: 'sqlite',
-    storage: 'database.sqlite',
+    database,
+    username,
+    password,
+    dialect,
+    storage,
+    dialectOptions,
     logging: (msg) => console.log(`\u001b[1;46m [DB] \u001b[0m \u001b[1;36m ${msg} \u001b[0m `),
     pool: {
       max: 1, // Reduce concurrent connections
