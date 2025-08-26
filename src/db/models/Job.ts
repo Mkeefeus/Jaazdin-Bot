@@ -113,3 +113,5 @@ async function seed() {
 }
 
 export { seed };
+
+Job.sync();

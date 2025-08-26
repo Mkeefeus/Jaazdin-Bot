@@ -54,3 +54,5 @@ async function seed() {
 }
 
 export { seed };
+
+Poison.sync();

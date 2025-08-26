@@ -155,3 +155,5 @@ async function seed() {
 }
 
 export { seed };
+
+Boat.sync();

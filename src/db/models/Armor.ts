@@ -48,3 +48,5 @@ async function seed() {
 }
 
 export { seed };
+
+Armor.sync();

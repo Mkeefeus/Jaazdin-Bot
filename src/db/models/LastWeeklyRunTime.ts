@@ -18,3 +18,5 @@ LastWeeklyRunTime.init(
     timestamps: false,
   }
 );
+
+LastWeeklyRunTime.sync();

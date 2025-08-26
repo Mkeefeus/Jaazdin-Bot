@@ -66,3 +66,5 @@ async function seed() {
 }
 
 export { seed };
+
+Announcement.sync();

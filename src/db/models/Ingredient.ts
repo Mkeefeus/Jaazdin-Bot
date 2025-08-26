@@ -71,3 +71,5 @@ async function seed() {
 }
 
 export { seed };
+
+Ingredient.sync();

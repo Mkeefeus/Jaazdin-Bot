@@ -60,3 +60,5 @@ async function seed() {
 }
 
 export { seed };
+
+Pet.sync();
