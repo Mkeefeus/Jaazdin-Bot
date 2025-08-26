@@ -109,3 +109,5 @@ async function seed() {
 export { seed };
 
 Religion.sync();
+
+Domain.sync();

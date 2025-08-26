@@ -39,7 +39,7 @@ Announcement.init(
       allowNull: false,
     },
     weeks: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
   },
