@@ -4,6 +4,7 @@ import { LastWeeklyRunTime } from '~/db/models/LastWeeklyRunTime';
 import { WeeklyFunctions } from '~/types/weeklyfunctions';
 import { CronJob } from 'cron';
 import cronParser from 'cron-parser';
+import { TIMEZONE } from '~/constants';
 
 async function executeWeeklyTasks() {
   // Perform the weekly task here
@@ -23,11 +24,10 @@ async function executeWeeklyTasks() {
 
 async function checkAndRunMissedWeeklyTasks() {
   const now = new Date();
-  const timezone = 'America/New_York';
 
   // Get the most recent scheduled Monday 12:01am occurrence
   const cronExpression = cronParser.parse('1 0 * * 1', {
-    tz: timezone,
+    tz: TIMEZONE,
     currentDate: now,
   });
   const lastScheduled = cronExpression.prev().toDate();

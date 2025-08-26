@@ -18,7 +18,12 @@ export const db =
     dialect,
     storage,
     dialectOptions,
-    logging: (msg) => console.log(`\u001b[1;46m [DB] \u001b[0m \u001b[1;36m ${msg} \u001b[0m `),
+    // logging: (msg) => console.log(`\u001b[1;46m [DB] \u001b[0m \u001b[1;36m ${msg} \u001b[0m `),
+    logging: (msg) => {
+      if (msg.toLowerCase().includes('error')) {
+      console.error(`\u001b[1;41m [DB ERROR] \u001b[0m \u001b[1;31m ${msg} \u001b[0m`);
+      }
+    },
     pool: {
       max: 1, // Reduce concurrent connections
       min: 0,

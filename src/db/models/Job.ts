@@ -28,7 +28,7 @@ Job.init(
       autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   },
@@ -54,7 +54,7 @@ JobTier.init(
       },
     },
     bonus: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     roll_min: {

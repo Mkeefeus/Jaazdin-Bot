@@ -22,11 +22,11 @@ Domain.init(
       autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     dominant_effect: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT, //Use text to support longer strings
       allowNull: false,
     },
   },
@@ -44,7 +44,7 @@ Religion.init(
       autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     follower_count: {
@@ -108,6 +108,5 @@ async function seed() {
 
 export { seed };
 
-Religion.sync();
-
 Domain.sync();
+Religion.sync();
