@@ -8,6 +8,8 @@ const dialectOptions = process.env.NODE_ENV === 'production' ? { ssl: { require:
 const database = process.env.DB_TABLE;
 const username = process.env.DB_USERNAME;
 const password = process.env.DB_PASSWORD;
+const host = process.env.DB_HOST || 'localhost';
+const port = Number(process.env.DB_PORT) || 5432;
 
 export const db =
   sequelize ||
@@ -15,6 +17,8 @@ export const db =
     database,
     username,
     password,
+    host,
+    port,
     dialect,
     storage,
     dialectOptions,

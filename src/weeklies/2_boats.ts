@@ -33,7 +33,7 @@ async function update() {
       await boat.save();
 
       // Remove all shipments for this boat
-      await Shipment.destroy({ where: { boatName: boat.boatName } });
+      await Shipment.destroy({ where: { boatId: boat.id } });
     } else {
       // Boat is arriving in town
       if (boat.isTier2) {
@@ -47,13 +47,13 @@ async function update() {
       // Generate shipment if needed
       if (boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
         // Remove any old shipments for this boat (just in case)
-        await Shipment.destroy({ where: { boatName: boat.boatName } });
+        await Shipment.destroy({ where: { boatId: boat.id } });
 
         const goods = await generateShipmentItems(boat);
         // Insert each item as a row in the Shipment table
         for (const item of goods) {
           await Shipment.create({
-            boatName: boat.boatName,
+            boatId: boat.id,
             itemName: item.itemName,
             price: item.price,
             quantity: item.quantity,

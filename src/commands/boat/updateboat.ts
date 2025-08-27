@@ -111,7 +111,7 @@ async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): Promise
 
   if (shouldHaveShipmentAfterUpdate) {
     // Remove old shipments for this boat
-    await Shipment.destroy({ where: { boatName: boat.boatName } });
+    await Shipment.destroy({ where: { boatId: boat.id } });
 
     // Generate new shipment if the boat should have one
     const goods = await generateShipmentItems({
@@ -124,7 +124,7 @@ async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): Promise
     // Insert new shipment items
     for (const item of goods) {
       await Shipment.create({
-        boatName: boat.boatName,
+        boatId: boat.id,
         itemName: item.itemName,
         price: item.price,
         quantity: item.quantity,
@@ -133,7 +133,7 @@ async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): Promise
     }
   } else {
     // Remove shipments if boat should not have them
-    await Shipment.destroy({ where: { boatName: boat.boatName } });
+    await Shipment.destroy({ where: { boatId: boat.id } });
   }
 }
 

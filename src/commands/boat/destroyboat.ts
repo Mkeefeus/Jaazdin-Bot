@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   // Check if boat has shipments
-  const shipments: Shipment[] = await Shipment.findAll({ where: { boatName: boat.boatName } });
+  const shipments: Shipment[] = await Shipment.findAll({ where: { boatId: boat.id } });
 
   const confirmed = confirmAction({
     interaction,

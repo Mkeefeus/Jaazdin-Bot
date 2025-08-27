@@ -82,11 +82,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // If the boat is in town and has a table to generate, create a shipment
     if (boat.isInTown && boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
       // Remove any existing shipments for this boat (shouldn't be any, but for safety)
-      await Shipment.destroy({ where: { boatName: boat.boatName } });
+      await Shipment.destroy({ where: { boatId: boat.id } });
       const goods = await generateShipmentItems(boat);
       for (const item of goods) {
         await Shipment.create({
-          boatName: boat.boatName,
+          boatId: boat.id,
           itemName: item.itemName,
           price: item.price,
           quantity: item.quantity,

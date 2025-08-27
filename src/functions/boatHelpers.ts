@@ -433,7 +433,7 @@ export async function boatInTownEmbedBuilder(boat: Boat) {
   let fields: { name: string; value: string }[] = [];
   if (boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
     desc += `### ${boatTableDescriptions[boat.tableToGenerate]}:\n\n`;
-    const shipments = await Shipment.findAll({ where: { boatName: boat.boatName } });
+    const shipments = await Shipment.findAll({ where: { boatId: boat.id } });
     fields = shipments.map((s) => ({
       name: `${s.itemName} (${s.type})`,
       value: `💵 Price: ${s.price} gp\n📦 Remaining Stock: ${s.quantity}`,
@@ -513,7 +513,7 @@ export async function createBoatStatusDescription(boat: Boat): Promise<string> {
 
   // Add actual shipment info if in town
   if (boat.isInTown && boat.tableToGenerate && boat.tableToGenerate !== 'NA') {
-    const shipmentInfo = await formatShipmentInfo(boat.boatName);
+    const shipmentInfo = await formatShipmentInfo(boat.id);
     description += shipmentInfo;
   } else if (!boat.isInTown) {
     description += '*Boat is at sea - no shipments available*';
@@ -571,8 +571,8 @@ export function formatBoatInfo(boat: Boat): string {
 /**
  * Format shipment information for display
  */
-export async function formatShipmentInfo(boatName: string): Promise<string> {
-  const shipments = await Shipment.findAll({ where: { boatName } });
+export async function formatShipmentInfo(boatId: number): Promise<string> {
+  const shipments = await Shipment.findAll({ where: { boatId } });
 
   if (shipments.length === 0) {
     return 'No active shipments';
@@ -625,7 +625,7 @@ export async function updateBoatEmbed(boatName: string): Promise<boolean> {
     // Create updated embed
     const { EmbedBuilder } = await import('discord.js');
     const boatInfo = formatBoatInfo(boat);
-    const shipmentInfo = await formatShipmentInfo(boat.boatName);
+    const shipmentInfo = await formatShipmentInfo(boat.id);
     const tableDescription = boatTableDescriptions[boat.tableToGenerate] || 'Unknown';
 
     let desc = boatInfo;

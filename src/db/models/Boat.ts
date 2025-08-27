@@ -1,7 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class Boat extends Model {
+  declare id: number;
   declare boatName: string;
   declare city: string;
   declare country: string;
@@ -15,16 +17,23 @@ export class Boat extends Model {
   declare weeksLeft: number;
   declare isInTown: boolean;
   declare messageId: string | null; // Store Discord message ID for the boat's embed
+  @CreatedAt declare createdAt?: Date;
+  @UpdatedAt declare updatedAt?: Date;
 }
 
 Boat.init(
   {
-    boatName: {
-      type: DataTypes.STRING(40),
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
-    city: DataTypes.STRING(40),
-    country: DataTypes.STRING(40),
+    boatName: {
+      type: DataTypes.TEXT,
+      unique: true,
+    },
+    city: DataTypes.TEXT,
+    country: DataTypes.TEXT,
     waitTime: DataTypes.INTEGER,
     timeInTown: DataTypes.INTEGER,
     jobsAffected: {
@@ -32,33 +41,32 @@ Boat.init(
       allowNull: true,
       defaultValue: [],
     },
-    tier2Ability: DataTypes.STRING(255),
-    tableToGenerate: DataTypes.STRING(40),
+    tier2Ability: DataTypes.TEXT,
+    tableToGenerate: DataTypes.TEXT,
     isRunning: DataTypes.BOOLEAN,
     isTier2: DataTypes.BOOLEAN,
     weeksLeft: DataTypes.INTEGER,
     isInTown: DataTypes.BOOLEAN,
     messageId: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.TEXT,
       allowNull: true,
       defaultValue: null,
     },
   },
   {
     sequelize: db,
-    modelName: 'Boat',
-    tableName: 'boats',
-    timestamps: false,
   }
 );
 
 export class Shipment extends Model {
   declare id: number;
-  declare boatName: string;
+  declare boatId: number;
   declare itemName: string;
   declare price: number;
   declare quantity: number;
   declare type: string;
+  @CreatedAt declare createdAt?: Date;
+  @UpdatedAt declare updatedAt?: Date;
 }
 
 Shipment.init(
@@ -68,61 +76,38 @@ Shipment.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    boatName: {
-      type: DataTypes.STRING(40),
+    boatId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'boat_name',
       references: {
-        model: 'boats',
-        key: 'boatName',
+        model: Boat,
+        key: 'id',
       },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
-    itemName: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    price: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    type: {
-      type: DataTypes.STRING(10),
-      allowNull: false,
-    },
+    itemName: DataTypes.TEXT,
+    price: DataTypes.INTEGER,
+    quantity: DataTypes.INTEGER,
+    type: DataTypes.TEXT,
   },
   {
     sequelize: db,
-    modelName: 'Shipment',
-    tableName: 'shipments',
-    timestamps: false,
   }
 );
 
-Boat.hasMany(Shipment, {
-  foreignKey: 'boat_name', // <-- use the DB column name
-  sourceKey: 'boatName',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
-});
+Boat.hasMany(Shipment);
 
-Shipment.belongsTo(Boat, {
-  foreignKey: 'boat_name',
-  targetKey: 'boatName',
-});
+Shipment.belongsTo(Boat);
 
 async function seed() {
   // Use await import for portability
   const boatsData = (await import('~/../boats.json')).default || (await import('~/../boats.json'));
   const shipmentsData = (await import('~/../shipments.json')).default || (await import('~/../shipments.json'));
+  const boats: Boat[] = [];
   try {
     for (const boat of boatsData) {
-      await Boat.create({
+      boats.push(await Boat.create({
         boatName: boat.boatName,
         city: boat.city,
         country: boat.country,
@@ -135,13 +120,13 @@ async function seed() {
         isTier2: boat.isTier2,
         weeksLeft: boat.weeksLeft,
         isInTown: boat.isInTown,
-      });
+      }));
     }
     console.log('Boats seeded!');
 
     for (const shipment of shipmentsData) {
       await Shipment.create({
-        boatName: shipment.boatName,
+        boatId: boats.find(boat => boat.boatName === shipment.boatName)?.id,
         itemName: shipment.itemName,
         price: shipment.price,
         quantity: shipment.quantity,
