@@ -14,6 +14,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         });
         return;
     }
+    console.log('Restart command invoked by', interaction.user.tag);
     await interaction.reply({
         content: 'Restarting...',
         flags: MessageFlags.Ephemeral
