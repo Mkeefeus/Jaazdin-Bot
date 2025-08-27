@@ -4,8 +4,8 @@ import { Roles } from '~/types/roles';
 import { exec } from 'child_process';
 
 export const data = new SlashCommandBuilder().
-    setName('restart').
-    setDescription('Restarts the bot process');
+    setName('update').
+    setDescription('Updates the bot code and restarts');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
     if (!checkUserRole(interaction, [Roles.BOT_DEV, Roles.GM])) {
