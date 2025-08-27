@@ -21,17 +21,35 @@ const RoleMap = {
   [Roles.DM]: process.env.DM_ROLE_ID,
 };
 
-export function checkUserRole(interaction: ChatInputCommandInteraction, role: Roles) {
+export function checkUserRole(
+  interaction: ChatInputCommandInteraction,
+  roles: Roles | Roles[]
+) {
   if (!interaction.member) {
     return false;
   }
-  const roleManager = interaction.member.roles as GuildMemberRoleManager;
-  if (!roleManager || !roleManager.cache || !RoleMap[role]) {
+
+  // Get the role IDs to check
+  const roleIds = Array.isArray(roles)
+    ? roles.map((role) => RoleMap[role]).filter((id): id is string => typeof id === 'string')
+    : [RoleMap[roles]].filter((id): id is string => typeof id === 'string');
+
+  if (roleIds.length === 0) {
     return false;
   }
-  return Array.isArray(interaction.member.roles)
-    ? interaction.member.roles.includes(RoleMap[role])
-    : roleManager.cache.has(RoleMap[role]);
+
+  // Discord.js v14: interaction.member.roles is a GuildMemberRoleManager
+  const memberRoles =
+    "roles" in interaction.member && interaction.member.roles instanceof GuildMemberRoleManager
+      ? interaction.member.roles
+      : null;
+
+  if (!memberRoles) {
+    return false;
+  }
+
+  // Check if the member has any of the specified roles
+  return roleIds.some((roleId) => memberRoles.cache.has(roleId));
 }
 
 export const rarityChoices = [
