@@ -4,7 +4,7 @@ import { Roles } from '~/types/roles';
 import { exec } from 'child_process';
 
 export const data = new SlashCommandBuilder().
-    setName('update').
+    setName('codeupdate').
     setDescription('Updates the bot code and restarts');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -20,22 +20,32 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         content: 'Updating...',
         flags: MessageFlags.Ephemeral
     });
-    await new Promise<void>((resolve, reject) => {
-        exec('git pull', (error, stdout, stderr) => {
-            if (error) {
-                interaction.followUp({
-                    content: `Git pull failed: ${stderr || error.message}`,
-                    flags: MessageFlags.Ephemeral
-                });
-                reject(error);
-            } else {
-                interaction.followUp({
-                    content: `Git pull output:\n${stdout}`,
-                    flags: MessageFlags.Ephemeral
-                });
-                resolve();
-            }
+
+    let followUpContent = '';
+    try {
+        console.log('Running git pull...');
+        await new Promise<void>((resolve, reject) => {
+            exec('git pull', (error, stdout, stderr) => {
+                console.log(stdout, stderr);
+                if (error) {
+                    followUpContent = `Git pull failed: ${stderr || error.message}`;
+                    reject(error);
+                } else {
+                    followUpContent = `Git pull completed. Output:\n${stdout}`;
+                    resolve();
+                }
+            });
         });
+    } catch (_error) {
+        // followUpContent is already set
+    }
+
+    await interaction.followUp({
+        content: followUpContent,
+        flags: MessageFlags.Ephemeral
     });
+
+    console.log('Restarting to apply updates...');
+
     process.exit(0);
 }
