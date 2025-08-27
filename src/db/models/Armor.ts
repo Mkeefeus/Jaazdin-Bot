@@ -1,18 +1,27 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class Armor extends Model {
+  declare id: number;
   declare name: string;
   declare plates: number;
   declare price: number;
   declare invalidMetals: string[];
+  @CreatedAt declare createdAt?: Date;
+  @UpdatedAt declare updatedAt?: Date;
 }
 
 Armor.init(
   {
-    name: {
-      type: DataTypes.STRING(40),
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
+    },
+    name: {
+      type: DataTypes.TEXT,
+      unique: true,
     },
     plates: DataTypes.INTEGER,
     price: DataTypes.INTEGER,
@@ -23,9 +32,6 @@ Armor.init(
   },
   {
     sequelize: db,
-    modelName: 'Armor',
-    tableName: 'armors',
-    timestamps: false,
   }
 );
 
