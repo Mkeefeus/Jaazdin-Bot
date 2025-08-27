@@ -98,7 +98,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.once(Events.ClientReady, (readyClient) => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+  console.log(`Ready! Logged in as ${readyClient.user.tag} in ${process.env.NODE_ENV == 'production' ? 'production' : 'development'} mode`);
   setupWeeklyTasks();
 });
 
