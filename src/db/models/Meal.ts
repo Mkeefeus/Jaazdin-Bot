@@ -10,12 +10,18 @@ export class Meal extends Model {
 
 Meal.init(
   {
-    name: {
-      type: DataTypes.STRING(100),
+    id: {
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
     },
     rarity: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     price_min: {
@@ -29,9 +35,6 @@ Meal.init(
   },
   {
     sequelize: db,
-    modelName: 'Meal',
-    tableName: 'meals',
-    timestamps: false,
   }
 );
 

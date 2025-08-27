@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from 'db/db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export enum IngredientCategory {
   bread = 'bread',
@@ -22,8 +23,8 @@ export class Ingredient extends Model {
   declare id: number;
   declare name: string;
   declare category: IngredientCategory;
-  declare createdAt: Date;
-  declare updatedAt: Date;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
 }
 
 Ingredient.init(
@@ -63,7 +64,7 @@ async function seed() {
         category: ingredient.category,
       });
     });
-    console.log('Seeded ingredients');
+    console.log('Ingredients seeded!');
   } catch (error) {
     console.error('Error in seedDatabase:', error);
     throw error;

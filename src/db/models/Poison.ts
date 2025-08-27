@@ -1,21 +1,30 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class Poison extends Model {
   declare name: string;
   declare rarity: string;
   declare price_min: number;
   declare price_max: number;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
 }
 
 Poison.init(
   {
-    name: {
-      type: DataTypes.STRING(100),
+    id: {
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
     },
     rarity: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     price_min: {
@@ -29,9 +38,6 @@ Poison.init(
   },
   {
     sequelize: db,
-    modelName: 'Poison',
-    tableName: 'poisons',
-    timestamps: false,
   }
 );
 

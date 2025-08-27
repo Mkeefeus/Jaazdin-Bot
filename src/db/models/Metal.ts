@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class Metal extends Model {
   declare name: string;
@@ -8,16 +9,24 @@ export class Metal extends Model {
   declare price_max: number;
   declare plane: string;
   declare runesmithed: boolean;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
 }
 
 Metal.init(
   {
-    name: {
-      type: DataTypes.STRING(100),
+    id: {
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
     },
     rarity: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     price_min: {
@@ -29,7 +38,7 @@ Metal.init(
       allowNull: false,
     },
     plane: {
-      type: DataTypes.STRING(40),
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     runesmithed: {
@@ -39,9 +48,6 @@ Metal.init(
   },
   {
     sequelize: db,
-    modelName: 'Metal',
-    tableName: 'metals',
-    timestamps: false,
   }
 );
 

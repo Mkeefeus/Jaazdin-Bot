@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class Reagent extends Model {
   declare name: string;
@@ -7,16 +8,18 @@ export class Reagent extends Model {
   declare price_min: number;
   declare price_max: number;
   declare type: string;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
 }
 
 Reagent.init(
   {
     name: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.TEXT,
       primaryKey: true,
     },
     rarity: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     price_min: {
@@ -28,15 +31,12 @@ Reagent.init(
       allowNull: false,
     },
     type: {
-      type: DataTypes.STRING(40),
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   },
   {
     sequelize: db,
-    modelName: 'Reagent',
-    tableName: 'reagents',
-    timestamps: false,
   }
 );
 

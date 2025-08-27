@@ -1,31 +1,35 @@
-import { Sequelize } from 'sequelize';
+import { Options, Sequelize } from 'sequelize';
 
 let sequelize: Sequelize | null = null;
 
-const dialect = process.env.NODE_ENV === 'production' ? 'postgres' : 'sqlite';
-const storage = process.env.NODE_ENV === 'production' ? undefined : 'database.sqlite';
-const dialectOptions = process.env.NODE_ENV === 'production' ? { ssl: { require: true, rejectUnauthorized: false } } : {};
-const database = process.env.DB_TABLE;
-const username = process.env.DB_USERNAME;
-const password = process.env.DB_PASSWORD;
-const host = process.env.DB_HOST || 'localhost';
-const port = Number(process.env.DB_PORT) || 5432;
+const dbsettings: Partial<Options> =
+  process.env.NODE_ENV === 'production'
+    ? {
+        database: process.env.DB_TABLE,
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
+        host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT) || 5432,
+        dialect: 'postgres',
+        dialectOptions: {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        },
+      }
+    : {
+        dialect: 'sqlite',
+        storage: 'database.sqlite',
+      };
 
 export const db =
   sequelize ||
   new Sequelize({
-    database,
-    username,
-    password,
-    host,
-    port,
-    dialect,
-    storage,
-    dialectOptions,
-    // logging: (msg) => console.log(`\u001b[1;46m [DB] \u001b[0m \u001b[1;36m ${msg} \u001b[0m `),
+    ...dbsettings,
     logging: (msg) => {
       if (msg.toLowerCase().includes('error')) {
-      console.error(`\u001b[1;41m [DB ERROR] \u001b[0m \u001b[1;31m ${msg} \u001b[0m`);
+        console.error(`\u001b[1;41m [DB ERROR] \u001b[0m \u001b[1;31m ${msg} \u001b[0m`);
       }
     },
     pool: {

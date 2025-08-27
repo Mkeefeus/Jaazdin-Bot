@@ -1,17 +1,22 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from 'db/db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class Religion extends Model {
   declare id: number;
   declare name: string;
   declare follower_count: number;
   declare domain_id: number;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
 }
 
 export class Domain extends Model {
   declare id: number;
   declare name: string;
   declare dominant_effect: string;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
 }
 
 Domain.init(
@@ -24,6 +29,7 @@ Domain.init(
     name: {
       type: DataTypes.TEXT,
       allowNull: false,
+      unique: true,
     },
     dominant_effect: {
       type: DataTypes.TEXT, //Use text to support longer strings
@@ -46,6 +52,7 @@ Religion.init(
     name: {
       type: DataTypes.TEXT,
       allowNull: false,
+      unique: true,
     },
     follower_count: {
       type: DataTypes.INTEGER,
@@ -62,7 +69,6 @@ Religion.init(
   },
   {
     sequelize: db,
-    timestamps: true,
   }
 );
 

@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class Pet extends Model {
   declare name: string;
@@ -7,13 +8,21 @@ export class Pet extends Model {
   declare price_min: number;
   declare price_max: number;
   declare type: string;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
 }
 
 Pet.init(
   {
-    name: {
-      type: DataTypes.STRING(100),
+    id: {
+      type: DataTypes.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
     },
     cr: {
       type: DataTypes.FLOAT,
@@ -28,15 +37,12 @@ Pet.init(
       allowNull: false,
     },
     type: {
-      type: DataTypes.STRING(40),
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   },
   {
     sequelize: db,
-    modelName: 'Pet',
-    tableName: 'pets',
-    timestamps: false,
   }
 );
 

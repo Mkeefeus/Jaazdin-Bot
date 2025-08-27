@@ -33,6 +33,7 @@ export async function seed() {
     await LastWeeklyRunTime.create({
       value: lastMondayRunTime,
     });
+    console.log('LastWeeklyRunTime seeded!');
 }
 
 LastWeeklyRunTime.sync();

@@ -34,7 +34,6 @@ Job.init(
   },
   {
     sequelize: db,
-    timestamps: true,
   }
 );
 
@@ -68,7 +67,6 @@ JobTier.init(
   },
   {
     sequelize: db,
-    timestamps: true,
   }
 );
 
@@ -103,6 +101,7 @@ async function seed() {
         });
       }
     }
+    console.log('Jobs and Job Tiers seeded!');
   } catch (err) {
     let message = 'Unknown Error';
     if (err instanceof Error) {

@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
+import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class MagicItem extends Model {
   declare id: number;
@@ -9,6 +10,8 @@ export class MagicItem extends Model {
   declare roll_max: number;
   declare price_min: number;
   declare price_max: number;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
 }
 
 MagicItem.init(
@@ -45,9 +48,6 @@ MagicItem.init(
   },
   {
     sequelize: db,
-    modelName: 'MagicItem',
-    tableName: 'magic_items',
-    timestamps: false,
   }
 );
 
