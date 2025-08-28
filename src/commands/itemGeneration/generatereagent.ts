@@ -19,7 +19,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.DM)) {
+  if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
       flags: MessageFlags.Ephemeral,
@@ -68,6 +68,6 @@ export async function getRandomReagentByRarity(rarity: string) {
 export const help = {
   name: 'generatereagent',
   description: 'Generate a random reagent by rarity and creature type',
-  requiredRole: Roles.DM,
+  requiredRole: [Roles.GM, Roles.DM],
   category: 'items',
 };

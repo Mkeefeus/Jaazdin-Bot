@@ -1,8 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Meal } from '../../db/models/Meal';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { checkUserRole, rarityChoices, randomInt } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { rarityChoices, randomInt } from '~/functions/helpers';
 
 export const data = new SlashCommandBuilder()
   .setName('generatemeal')
@@ -18,14 +17,6 @@ export async function getRandomMealByRarity(rarity: string): Promise<Meal | null
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.DM)) {
-    await interaction.reply({
-      content: 'You do not have permission to use this command.',
-      flags: MessageFlags.Ephemeral,
-    });
-    return;
-  }
-
   const rarity = interaction.options.getString('rarity', true);
 
   const meal = await getRandomMealByRarity(rarity);
@@ -51,6 +42,5 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export const help = {
   name: 'generatemeal',
   description: 'Generate a random meal by rarity',
-  requiredRole: Roles.DM,
   category: 'items',
 };

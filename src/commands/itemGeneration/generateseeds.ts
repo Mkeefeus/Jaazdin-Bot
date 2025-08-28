@@ -21,7 +21,7 @@ export async function getRandomSeedByRarity(rarity: string): Promise<Seed | null
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.DM)) {
+  if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
       flags: MessageFlags.Ephemeral,
@@ -55,6 +55,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export const help = {
   name: 'generateseeds',
   description: 'Generate a random seed by rarity',
-  requiredRole: Roles.DM,
+  requiredRole: [Roles.GM, Roles.DM],
   category: 'items',
 };

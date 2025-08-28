@@ -4,6 +4,7 @@ import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
 import { getRandomMetalByRarity } from './generatemetal';
+import { HelpData } from '~/types/command';
 
 export const data = new SlashCommandBuilder()
   .setName('generatearmor')
@@ -25,7 +26,7 @@ export async function generateRandomArmorWithMetalByRarity(rarity: string) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.DM)) {
+  if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
       flags: MessageFlags.Ephemeral,
@@ -57,12 +58,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     0xaaaaaa
   );
 
-  await interaction.reply({ embeds: [embed] });
+  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'generatearmor',
   description: 'Generate a random armor with a random valid metal by rarity',
-  requiredRole: Roles.DM,
+  requiredRole: [Roles.DM, Roles.GM],
   category: 'items',
 };

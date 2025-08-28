@@ -29,7 +29,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.DM)) {
+  if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
       flags: MessageFlags.Ephemeral,
@@ -84,6 +84,6 @@ export async function getRandomPetByRarityAndType(rarity: string, creatureType: 
 export const help = {
   name: 'generatepet',
   description: 'Generate a random pet by rarity and creature type',
-  requiredRole: Roles.DM,
+  requiredRole: [Roles.GM, Roles.DM],
   category: 'items',
 };

@@ -42,7 +42,7 @@ export async function getRandomMagicItemByRarity(rarity: string): Promise<MagicI
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.DM)) {
+  if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
     });
@@ -75,6 +75,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export const help = {
   name: 'generatemagicitem',
   description: 'Generate a random magic item by table type',
-  requiredRole: Roles.DM,
+  requiredRole: [Roles.GM, Roles.DM],
   category: 'items',
 };

@@ -18,7 +18,7 @@ export async function getRandomPotionByRarity(rarity: string): Promise<Potion | 
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.DM)) {
+  if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
       flags: MessageFlags.Ephemeral,
@@ -52,6 +52,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export const help = {
   name: 'generatepotion',
   description: 'Generate a random potion by rarity',
-  requiredRole: Roles.DM,
+  requiredRole: [Roles.GM, Roles.DM],
   category: 'items',
 };

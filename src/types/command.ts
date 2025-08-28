@@ -4,7 +4,7 @@ import { Roles } from './roles';
 export type HelpData = {
   name: string;
   description: string;
-  requiredRole: Roles | null;
+  requiredRole?: Roles | Roles[];
   category: string;
 };
 

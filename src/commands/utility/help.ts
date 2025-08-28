@@ -35,16 +35,20 @@ function getUserRoles(interaction: ChatInputCommandInteraction): Roles[] {
 }
 
 function canUseCommand(command: HelpData, userRoles: Roles[]): boolean {
-  // Commands with no role requirement are available to everyone
-  if (command.requiredRole === null) return true;
+  // // Commands with no role requirement are available to everyone
+  // if (command.requiredRole === null) return true;
 
-  // Check if user has the required role or a higher role
-  if (userRoles.includes(Roles.BOT_DEV)) return true; // Bot devs can use everything
-  if (command.requiredRole === Roles.GM && userRoles.includes(Roles.GM)) return true;
-  if (command.requiredRole === Roles.DM && userRoles.includes(Roles.DM)) return true;
-  if (command.requiredRole === Roles.PLAYER && userRoles.includes(Roles.PLAYER)) return true;
+  // // Check if user has the required role or a higher role
+  // if (userRoles.includes(Roles.BOT_DEV)) return true; // Bot devs can use everything
+  // if (command.requiredRole === Roles.GM && userRoles.includes(Roles.GM)) return true;
+  // if (command.requiredRole === Roles.DM && userRoles.includes(Roles.DM)) return true;
+  // if (command.requiredRole === Roles.PLAYER && userRoles.includes(Roles.PLAYER)) return true;
 
-  return false;
+  if (Array.isArray(command.requiredRole)) {
+    return command.requiredRole.some((role) => userRoles.includes(role));
+  }
+
+  return command.requiredRole ? userRoles.includes(command.requiredRole) : true;
 }
 
 async function loadCommands() {
@@ -54,7 +58,9 @@ async function loadCommands() {
 
   for (const folder of commandFolders) {
     const commandsPath = path.join(foldersPath, folder);
-    const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.ts') && file !== path.basename(__filename));
+    const commandFiles = fs
+      .readdirSync(commandsPath)
+      .filter((file) => file.endsWith('.ts') && file !== path.basename(__filename));
 
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
