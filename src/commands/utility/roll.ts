@@ -394,6 +394,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       content: 'This command is WIP, check back later',
       flags: MessageFlags.Ephemeral,
     });
+    return;
   }
 
   const formula = interaction.options.getString('formula')?.toLowerCase();
