@@ -12,6 +12,7 @@ import {
   JSONEncodable,
   MessageFlags,
 } from 'discord.js';
+import { TIMER_MAX_LENGTH } from '~/constants';
 import { Roles } from '~/types/roles';
 
 const RoleMap = {
@@ -21,10 +22,7 @@ const RoleMap = {
   [Roles.DM]: process.env.DM_ROLE_ID,
 };
 
-export function checkUserRole(
-  interaction: ChatInputCommandInteraction,
-  roles: Roles | Roles[]
-) {
+export function checkUserRole(interaction: ChatInputCommandInteraction, roles: Roles | Roles[]) {
   if (!interaction.member) {
     return false;
   }
@@ -40,7 +38,7 @@ export function checkUserRole(
 
   // Discord.js v14: interaction.member.roles is a GuildMemberRoleManager
   const memberRoles =
-    "roles" in interaction.member && interaction.member.roles instanceof GuildMemberRoleManager
+    'roles' in interaction.member && interaction.member.roles instanceof GuildMemberRoleManager
       ? interaction.member.roles
       : null;
 
@@ -90,7 +88,7 @@ export async function parseChangeString(
   change: string | null | undefined,
   current: number,
   variableName: string,
-  interaction?: ChatInputCommandInteraction
+  interaction: ChatInputCommandInteraction
 ): Promise<number | null> {
   if (change == null) return current;
   const changeRegex = /^([+-=])(\d+)$/;
@@ -106,9 +104,31 @@ export async function parseChangeString(
   }
   const operator = match[1];
   const value = parseInt(match[2], 10);
-  if (operator === '+') return current + value;
-  if (operator === '-') return current - value;
-  if (operator === '=') return value;
+  if (operator === '+') {
+    if (current + value > TIMER_MAX_LENGTH) {
+      await interaction.reply({ content: `Cannot exceed ${TIMER_MAX_LENGTH} weeks.`, flags: MessageFlags.Ephemeral });
+      return null;
+    }
+    return current + value;
+  }
+  if (operator === '-') {
+    if (current - value < 0) {
+      await interaction.reply({ content: `Cannot go below 0 weeks.`, flags: MessageFlags.Ephemeral });
+      return null;
+    }
+    return current - value;
+  }
+  if (operator === '=') {
+    if (value > TIMER_MAX_LENGTH) {
+      await interaction.reply({ content: `Cannot exceed ${TIMER_MAX_LENGTH} weeks.`, flags: MessageFlags.Ephemeral });
+      return null;
+    }
+    if (value < 0) {
+      await interaction.reply({ content: `Cannot go below 0 weeks.`, flags: MessageFlags.Ephemeral });
+      return null;
+    }
+    return value;
+  }
   return null;
 }
 

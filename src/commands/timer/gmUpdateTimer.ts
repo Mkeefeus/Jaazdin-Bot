@@ -38,10 +38,16 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
     const value = focusedOption.value?.toLowerCase() || '';
     const choices = timers
       .filter((t) => t.name.toLowerCase().includes(value) && t.id !== undefined)
-      .map((t) => ({
-        name: `${formatNames(t.name)} (${formatNames(t.character)}, ${t.weeks_remaining} weeks left)`,
-        value: (t.id as number).toString(), // Ensure value is always defined
-      }));
+      .map((t) => {
+        let displayName = `${formatNames(t.name)} (${formatNames(t.character)}, ${t.weeks_remaining} weeks left)`;
+        if (displayName.length > 100) {
+          displayName = displayName.slice(0, 97) + '...';
+        }
+        return {
+          name: displayName,
+          value: (t.id as number).toString(),
+        };
+      });
     await interaction.respond(choices);
   }
 }
@@ -73,7 +79,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return interaction.reply(`Failed to find timer.`);
   }
 
-  const newWeeks = await parseChangeString(change, timer.weeks_remaining, "change", interaction);
+  const newWeeks = await parseChangeString(change, timer.weeks_remaining, 'change', interaction);
   if (newWeeks === null) return;
   timer.weeks_remaining = newWeeks;
   await timer.save();

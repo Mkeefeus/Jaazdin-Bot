@@ -4,10 +4,10 @@ import { checkUserRole, formatNames } from '~/functions/helpers';
 import { HelpData } from '~/types/command';
 import { Roles } from '~/types/roles';
 import { TimerType } from '~/types/timers';
+import { TIMER_MAX_LENGTH } from '~/constants';
 
 const NAME_MAX_LENGTH = 100;
 const CHAR_MAX_LENGTH = 15;
-const TIMER_MAX_LENGTH = 52;
 
 export const data = new SlashCommandBuilder()
   .setName('addtimer')
@@ -41,7 +41,7 @@ export const data = new SlashCommandBuilder()
     option.setName('repeatable').setDescription('Whether the timer is repeatable').setRequired(false)
   )
   .addUserOption((option) =>
-    option.setName('player').setDescription('The discord id of the player, leave blank if yourself').setRequired(false)
+    option.setName('player').setDescription('(GM ONLY) The discord id of the player, leave blank if yourself').setRequired(false)
   );
 
 const ICON_MAP: Record<string, string> = {
