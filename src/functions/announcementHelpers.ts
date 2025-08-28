@@ -10,6 +10,6 @@ export function showAnnouncement(announcement: Announcement) {
   // Emojis: 📢 for title, ⏳ for weeks
   const title = `📢 ${announcement.name}`;
   const description = `${announcement.message}
-\n⏳ **Weeks Remaining:** ${announcement.weeks}`;
+\n⏳ **Weeks Remaining:** ${announcement.weeks + 1}`;
   return new EmbedBuilder().setTitle(title).setDescription(description).setColor(Colors.Orange);
 }

@@ -47,12 +47,18 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  const timerId = interaction.options.getString('timer');
+  const timerIdString = interaction.options.getString('timer');
   const change = interaction.options.getString('change');
   const discordId = interaction.user.id;
 
-  if (!timerId || change === null) {
+  if (!timerIdString || change === null) {
     return interaction.reply('Please provide both the timer and the change in weeks.');
+  }
+
+  const timerId = parseInt(timerIdString, 10);
+
+  if (isNaN(timerId)) {
+    return interaction.reply('Failed to find timer.');
   }
 
   const timer = await Timer.findOne({
