@@ -7,6 +7,7 @@ import fs from 'fs/promises';
 import { Command } from './types/command';
 import setupWeeklyTasks from './weeklies/weekly';
 import { handleModalSubmit } from './commands/announcement/addannouncement';
+import { db } from './db/db'; // Import your Sequelize instance
 
 // Extend the Client type to include commands
 declare module 'discord.js' {
@@ -98,8 +99,22 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.once(Events.ClientReady, (readyClient) => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag} in ${process.env.NODE_ENV == 'production' ? 'production' : 'development'} mode`);
+  console.log(
+    `Ready! Logged in as ${readyClient.user.tag} in ${process.env.NODE_ENV == 'production' ? 'production' : 'development'} mode`
+  );
   setupWeeklyTasks();
 });
 
-client.login(token);
+// Wrap startup in an async function
+async function startBot() {
+  try {
+    await db.authenticate(); // Wait for DB connection
+    console.log('Database connection established successfully.');
+    await client.login(token); // Only login after DB is ready
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+    process.exit(1); // Exit if DB connection fails
+  }
+}
+
+startBot();
