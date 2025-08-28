@@ -26,7 +26,7 @@ Armor.init(
     plates: DataTypes.INTEGER,
     price: DataTypes.INTEGER,
     invalidMetals: {
-      type: DataTypes.JSON,
+      type: DataTypes.ARRAY(DataTypes.TEXT),
       allowNull: false,
     },
   },

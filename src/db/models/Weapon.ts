@@ -32,7 +32,7 @@ Weapon.init(
       allowNull: false,
     },
     invalidMetals: {
-      type: DataTypes.JSON,
+      type: DataTypes.ARRAY(DataTypes.TEXT),
       allowNull: false,
     },
   },

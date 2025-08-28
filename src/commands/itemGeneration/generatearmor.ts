@@ -4,7 +4,6 @@ import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
 import { getRandomMetalByRarity } from './generatemetal';
-import { Op } from 'sequelize';
 
 export const data = new SlashCommandBuilder()
   .setName('generatearmor')
@@ -17,12 +16,9 @@ export const data = new SlashCommandBuilder()
 export async function generateRandomArmorWithMetalByRarity(rarity: string) {
   const metal = await getRandomMetalByRarity(rarity);
   if (!metal) return null;
-  const validArmors = await Armor.findAll({
-    where: {
-      invalid_metals: {
-        [Op.notLike]: `%${metal.name}%`,
-      },
-    },
+  const allArmors = await Armor.findAll();
+  const validArmors = allArmors.filter((armor) => {
+    return !armor.invalidMetals || !armor.invalidMetals.includes(metal.name);
   });
   const armor = validArmors[Math.floor(Math.random() * validArmors.length)];
   return { armor, metal };
