@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
+import { HelpData } from '~/types/command';
 import { Roles } from '~/types/roles';
 
 export const data = new SlashCommandBuilder().
@@ -21,3 +22,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     });
     process.exit(0);
 }
+
+export const help: HelpData = {
+    name: 'restart',
+    description: 'Restarts the bot process',
+    requiredRole: Roles.BOT_DEV,
+    category: 'utility'
+};

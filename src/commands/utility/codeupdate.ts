@@ -2,13 +2,14 @@ import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from '
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types/roles';
 import { exec } from 'child_process';
+import { HelpData } from '~/types/command';
 
 export const data = new SlashCommandBuilder().
     setName('codeupdate').
     setDescription('Updates the bot code and restarts');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-    if (!checkUserRole(interaction, [Roles.BOT_DEV, Roles.GM])) {
+    if (!checkUserRole(interaction, Roles.BOT_DEV)) {
         await interaction.reply({
             content: 'You do not have permission to use this command.',
             flags: MessageFlags.Ephemeral
@@ -49,3 +50,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     process.exit(0);
 }
+
+export const help: HelpData = {
+    name: 'codeupdate',
+    description: 'Updates the bot code and restarts',
+    requiredRole: Roles.BOT_DEV,
+    category: 'utility'
+};
