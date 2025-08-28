@@ -3,6 +3,7 @@ import { findReligionByName, checkReligionExists, religionCommandAutocomplete } 
 import { replyWithUserMention, parseChangeString } from '~/functions/helpers';
 import showReligion from './showReligion';
 import { Domain } from '~/db/models/Religion';
+import { HelpData } from '~/types/command';
 
 export const data = new SlashCommandBuilder()
   .setName('updatereligion')
@@ -87,10 +88,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'updatereligion',
   description: 'Update religion properties such as name, domain, or follower count',
-  requiredRole: null,
   category: 'religion',
 };
 

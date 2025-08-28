@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Spell } from '~/db/models/Spell';
 import { createItemEmbed } from '~/functions/boatHelpers';
+import { HelpData } from '~/types/command';
 
 const SPELL_SCHOOLS = [
   'Abjuration',
@@ -102,9 +103,8 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await interaction.respond(filtered);
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'randomspell',
   description: 'Generate a random spell by level and optionally by school',
-  requiredRole: null,
   category: 'items',
 };

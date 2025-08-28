@@ -8,6 +8,7 @@ import {
 import { Domain, Religion } from '~/db/models/Religion';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { replyWithUserMention, formatNames } from '~/functions/helpers';
+import { HelpData } from '~/types/command';
 
 
 export const data = new SlashCommandBuilder()
@@ -52,10 +53,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'showreligion',
   description: 'Display detailed information about a specific religion',
-  requiredRole: null,
   category: 'religion',
 };
 

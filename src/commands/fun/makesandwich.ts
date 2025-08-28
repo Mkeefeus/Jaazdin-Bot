@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { IngredientCategory, Ingredient } from '../../db/models/Ingredient.js';
+import { HelpData } from '~/types/command.js';
 
 // Fun rating messages
 const TASTE_RATINGS = [
@@ -125,10 +126,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'makesandwich',
   description: 'Generate a random sandwich using ingredients from the kitchen',
-  requiredRole: null,
   category: 'fun',
 };
 

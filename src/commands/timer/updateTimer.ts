@@ -87,7 +87,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export const help = {
   name: 'updatetimer',
   description: 'Update the duration of one of your timers using +x, -x, or =x format',
-  requiredRole: null,
   category: 'timers',
 };
 

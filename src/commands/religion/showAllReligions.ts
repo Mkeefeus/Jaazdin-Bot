@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from '
 import { Religion } from '~/db/models/Religion';
 import { formatNames, replyWithUserMention } from '~/functions/helpers';
 import showReligion from './showReligion';
+import { HelpData } from '~/types/command';
 
 export const data = new SlashCommandBuilder().setName('showallreligions').setDescription('Shows all active religions');
 
@@ -47,10 +48,9 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
 
 export { showAllReligions };
 
-export const help = {
+export const help: HelpData = {
   name: 'showallreligions',
   description: 'Display all religions and their information',
-  requiredRole: null,
   category: 'religion',
 };
 

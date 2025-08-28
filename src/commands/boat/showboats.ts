@@ -75,6 +75,5 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export const help = {
   name: 'showboats',
   description: 'Display all boats and their current status',
-  requiredRole: null,
   category: 'boats',
 };

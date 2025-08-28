@@ -1,6 +1,7 @@
 import { db } from 'db/db';
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
+import { HelpData } from '~/types/command';
 
 export const data = new SlashCommandBuilder()
   .setName('addingredient')
@@ -83,10 +84,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'addingredient',
   description: "Adds an ingredient to Kreider's kitchen",
-  requiredRole: null,
   category: 'fun',
 };
 

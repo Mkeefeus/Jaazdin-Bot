@@ -8,6 +8,7 @@ import { Op, Sequelize } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
 import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/functions/helpers';
+import { HelpData } from '~/types/command';
 
 // Helper function to convert job name from database format to boat format
 function convertJobNameForBoats(jobName: string): string {
@@ -102,10 +103,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await jobNameAutocomplete(interaction);
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'jobreward',
   description: 'Calculate and display job reward based on boats and tier',
-  requiredRole: null,
   category: 'jobs',
 };
 

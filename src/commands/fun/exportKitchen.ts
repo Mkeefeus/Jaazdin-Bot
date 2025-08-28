@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { Ingredient } from '~/db/models/Ingredient';
 import { writeFile } from 'fs/promises';
 import { resolve } from 'path';
+import { HelpData } from '~/types/command';
 
 export const data = new SlashCommandBuilder()
   .setName('exportkitchen')
@@ -29,9 +30,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'exportkitchen',
   description: 'Save the kitchen to a JSON file',
-  requiredRole: null,
   category: 'fun',
 };

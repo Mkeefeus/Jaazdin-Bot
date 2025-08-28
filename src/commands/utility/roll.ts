@@ -2,6 +2,7 @@ import { randomInt } from 'crypto';
 import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder, userMention } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
+import { HelpData } from '~/types/command';
 import { Roles } from '~/types/roles';
 
 type RollFormula = {
@@ -440,9 +441,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.editReply({ content: userMention(interaction.user.id), embeds: [embed] });
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'roll',
   description: 'Roll dice with advanced modifiers and options',
-  requiredRole: null,
+  requiredRole: Roles.BOT_DEV,
   category: 'utility',
 };

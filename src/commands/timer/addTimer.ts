@@ -1,11 +1,13 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
 import { checkUserRole, formatNames } from '~/functions/helpers';
+import { HelpData } from '~/types/command';
 import { Roles } from '~/types/roles';
 import { TimerType } from '~/types/timers';
 
 const NAME_MAX_LENGTH = 100;
 const CHAR_MAX_LENGTH = 15;
+const TIMER_MAX_LENGTH = 52;
 
 export const data = new SlashCommandBuilder()
   .setName('addtimer')
@@ -14,7 +16,7 @@ export const data = new SlashCommandBuilder()
     option.setName('name').setDescription('The name of the timer.').setRequired(true).setMaxLength(NAME_MAX_LENGTH)
   )
   .addIntegerOption((option) =>
-    option.setName('weeks').setDescription('The amount of weeks before the timer ends').setRequired(true).setMinValue(1)
+    option.setName('weeks').setDescription('The amount of weeks before the timer ends (max 1 year)').setRequired(true).setMinValue(1).setMaxValue(TIMER_MAX_LENGTH)
   )
   .addStringOption((option) =>
     option
@@ -116,10 +118,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'addtimer',
   description: 'Add a new timer for yourself or another user',
-  requiredRole: null,
   category: 'timers',
 };
 

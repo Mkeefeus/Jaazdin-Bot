@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
+import { HelpData } from '~/types/command';
 
 export const data = new SlashCommandBuilder()
   .setName('kitchen')
@@ -142,10 +143,9 @@ function getCategoryEmoji(category: IngredientCategory): string {
   return emojiMap[category];
 }
 
-export const help = {
+export const help: HelpData = {
   name: 'kitchen',
   description: "Display all ingredients in Kreider's kitchen organized by category",
-  requiredRole: null,
   category: 'fun',
 };
 
