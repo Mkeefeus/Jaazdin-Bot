@@ -52,7 +52,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
 export const help: HelpData = {
   name: 'addreligion',
-  description: 'Add a new religion with specified name and domain',
+  description: 'Add a new religion with specified name, domain and followers',
   category: 'religion',
 };
 

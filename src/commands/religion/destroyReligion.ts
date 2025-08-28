@@ -89,7 +89,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 
 export const help = {
   name: 'destroyreligion',
-  description: 'Remove a religion from the database',
+  description: 'GM specific - Remove a religion from the database',
   requiredRole: Roles.GM,
   category: 'religion',
 };

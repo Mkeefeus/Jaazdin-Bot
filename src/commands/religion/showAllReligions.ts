@@ -8,7 +8,7 @@ export const data = new SlashCommandBuilder().setName('showallreligions').setDes
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const allMessages = await showAllReligions();
-  await replyWithUserMention(interaction, allMessages);
+  await replyWithUserMention(interaction, allMessages, true);
 }
 
 async function showAllReligions(): Promise<EmbedBuilder[]> {

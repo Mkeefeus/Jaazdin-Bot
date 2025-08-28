@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const message = await showReligion(selectedReligion);
 
-  await replyWithUserMention(interaction, [message]);
+  await replyWithUserMention(interaction, [message], true);
 }
 
 async function showReligion(religion: Religion | null): Promise<EmbedBuilder> {
