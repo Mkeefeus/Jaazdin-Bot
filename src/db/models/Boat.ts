@@ -37,8 +37,8 @@ Boat.init(
     waitTime: DataTypes.INTEGER,
     timeInTown: DataTypes.INTEGER,
     jobsAffected: {
-      type: DataTypes.JSON,
-      allowNull: true,
+      type: DataTypes.ARRAY(DataTypes.TEXT),
+      allowNull: false,
       defaultValue: [],
     },
     tier2Ability: DataTypes.TEXT,

@@ -64,9 +64,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     where: {
       isInTown: true,
       isRunning: true,
-      [Op.and]: [
-        Sequelize.literal(`EXISTS (SELECT 1 FROM json_each(Boat.jobs_affected) WHERE json_each.value = '${capitalizedJobName}')`)
-      ]
+      jobsAffected: { [Op.contains]: [capitalizedJobName] }
     },
   });
   for (const boat of effectiveBoats) {
