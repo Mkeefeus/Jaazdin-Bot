@@ -114,4 +114,6 @@ async function post() {
   }
 }
 
-export { update, post };
+const order = 2;
+
+export { update, post, order };

@@ -34,4 +34,6 @@ async function post() {
   }
 }
 
-export { update, post };
+const order = 3;
+
+export { update, post, order };

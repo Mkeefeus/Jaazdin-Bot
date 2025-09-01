@@ -1,24 +1,69 @@
 import { readdirSync } from 'fs';
 import path from 'path';
 import { LastWeeklyRunTime } from '~/db/models/LastWeeklyRunTime';
-import { WeeklyFunctions } from '~/types/weeklyfunctions';
+import { WeeklyData } from '~/types/weeklydata';
 import { CronJob } from 'cron';
 import cronParser from 'cron-parser';
 import { TIMEZONE } from '~/constants';
 
 async function executeWeeklyTasks() {
-  // Perform the weekly task here
-  const weeklyFiles = readdirSync(path.join(__dirname)).filter((file) => file.endsWith('.ts'));
-  for (const file of weeklyFiles) {
-    if (file === path.basename(__filename)) continue;
-    const { update, post } = (await import(path.join(__dirname, file))) as WeeklyFunctions;
-    if (!update || !post) {
-      //Some sort of warning
-      console.log(`Missing update or post method for ${file}.`);
+  try {
+    console.log('Starting weekly tasks execution...');
+
+    // Get all TypeScript files in the current directory except this file
+    const weeklyFiles = readdirSync(__dirname)
+      .filter((file) => file.endsWith('.ts') && file !== path.basename(__filename));
+
+    if (weeklyFiles.length === 0) {
+      console.log('No weekly task files found.');
       return;
     }
-    await update();
-    await post();
+
+    // Load and collect all tasks
+    const tasks: WeeklyData[] = [];
+    for (const file of weeklyFiles) {
+      try {
+        const module = await import(path.join(__dirname, file));
+        const { update, post, order } = module as WeeklyData;
+
+        if (typeof update !== 'function' || typeof post !== 'function') {
+          console.warn(`Skipping ${file}: missing required update or post function`);
+          continue;
+        }
+
+        tasks.push({ update, post, order: order ?? 0 });
+      } catch (error) {
+        console.error(`Failed to load weekly task from ${file}:`, error);
+      }
+    }
+
+    if (tasks.length === 0) {
+      console.log('No valid weekly tasks found.');
+      return;
+    }
+
+    // Sort by order (lower numbers = earlier posting)
+    tasks.sort((a, b) => (a.order as number) - (b.order as number));
+
+    console.log(`Executing ${tasks.length} weekly task(s)...`);
+
+    // Execute tasks in priority order
+    for (const [index, task] of tasks.entries()) {
+      try {
+        console.log(`Executing task ${index + 1}/${tasks.length} (order: ${task.order})`);
+        await task.update();
+        await task.post();
+        console.log(`Task ${index + 1} completed successfully`);
+      } catch (error) {
+        console.error(`Task ${index + 1} failed:`, error);
+        // Continue with other tasks even if one fails
+      }
+    }
+
+    console.log('Weekly tasks execution completed.');
+  } catch (error) {
+    console.error('Failed to execute weekly tasks:', error);
+    throw error;
   }
 }
 

@@ -50,4 +50,6 @@ async function post() {
   }
 }
 
-export { update, post };
+const order = 9999; // announcements should always be last
+
+export { update, post, order };
