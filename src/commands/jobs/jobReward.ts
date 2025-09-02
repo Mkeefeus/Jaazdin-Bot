@@ -4,7 +4,7 @@ import {
   EmbedBuilder,
   AutocompleteInteraction
 } from 'discord.js';
-import { Op, Sequelize } from 'sequelize';
+import { Op } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
 import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/functions/helpers';
