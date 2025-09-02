@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
+import { TIMER_MAX_LENGTH } from '~/constants';
 import { Boat, Shipment } from '~/db/models/Boat';
 import {
   findBoatByName,
@@ -73,12 +74,10 @@ function buildBoatUpdatesFromOptions(
   // and only if relevant fields that affect weeksLeft were changed
   if (
     updates.weeksLeft === undefined &&
-    (
-      updates.waitTime !== undefined ||
+    (updates.waitTime !== undefined ||
       updates.timeInTown !== undefined ||
       updates.isTier2 !== undefined ||
-      updates.isInTown !== undefined
-    )
+      updates.isInTown !== undefined)
   ) {
     // Calculate weeksLeft based on boat state and timing values
     const waitTime = interaction.options.getInteger('waittime') ?? existingBoat?.waitTime;
@@ -167,7 +166,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   // If weeksLeft is to be updated using the string system, do it here
   const weeksLeftRaw = interaction.options.getString('weeksleft');
   if (weeksLeftRaw !== null) {
-    const newWeeksLeft = await parseChangeString(weeksLeftRaw, boat.weeksLeft, 'weeks left', interaction);
+    const newWeeksLeft = await parseChangeString(
+      weeksLeftRaw,
+      boat.weeksLeft,
+      'weeks left',
+      0,
+      TIMER_MAX_LENGTH,
+      interaction
+    );
     if (newWeeksLeft === null) return;
     updates.weeksLeft = newWeeksLeft;
   }

@@ -39,7 +39,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  const quantity = await parseChangeString(quantityRaw, shipment.quantity, 'quantity', interaction);
+  const quantity = await parseChangeString(quantityRaw, shipment.quantity, 'quantity', 0, null, interaction);
   if (quantity === null) return;
 
   // If quantity is zero or less, delete the shipment
@@ -58,7 +58,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (price !== null) shipment.price = price;
   if (quantity !== null) shipment.quantity = quantity;
-  if(itemType !== null) shipment.type = itemType;
+  if (itemType !== null) shipment.type = itemType;
 
   if (price === null && quantity === null && itemType === null) {
     await interaction.reply({

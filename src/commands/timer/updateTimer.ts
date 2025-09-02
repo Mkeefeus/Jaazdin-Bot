@@ -1,4 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
+import { TIMER_MAX_LENGTH } from '~/constants';
 import { Timer } from '~/db/models/Timer';
 import { formatNames, parseChangeString } from '~/functions/helpers';
 
@@ -72,7 +73,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return interaction.reply(`Failed to find timer.`);
   }
 
-  const newWeeks = await parseChangeString(change, timer.weeks_remaining, 'change', interaction);
+  const newWeeks = await parseChangeString(change, timer.weeks_remaining, 'change', 0, TIMER_MAX_LENGTH, interaction);
   if (newWeeks === null) return;
 
   timer.weeks_remaining = newWeeks;

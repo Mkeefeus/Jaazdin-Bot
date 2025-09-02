@@ -53,6 +53,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     follower_count,
     selectedReligion.dataValues.follower_count,
     'follower count',
+    0, null,
     interaction
   );
   if (newFollowerCount === null) return;

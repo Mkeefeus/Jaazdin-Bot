@@ -71,8 +71,16 @@ export async function itemNameAutocomplete(interaction: AutocompleteInteraction)
     return;
   }
 
+  // Find the boat by name to get its ID
+  const boat = await Boat.findOne({ where: { boatName } });
+  if (!boat) {
+    await interaction.respond([]);
+    return;
+  }
+
+  // Find shipments by boatId
   const shipments = await Shipment.findAll({
-    where: { boatName },
+    where: { boatId: boat.id },
     attributes: ['itemName'],
   });
 

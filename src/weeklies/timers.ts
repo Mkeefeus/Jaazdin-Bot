@@ -75,7 +75,7 @@ async function post() {
 
   // Create ping message for users with completed timers
   let messageContent = '';
-  if (usersWithCompletedTimers.size > 0) {
+  if (usersWithCompletedTimers.size > 0 && process.env.NODE_ENV === 'production') {
     const userMentions = Array.from(usersWithCompletedTimers)
       .map((userId) => `<@${userId}>`)
       .join(' ');

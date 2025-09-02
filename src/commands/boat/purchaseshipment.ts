@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
-import { Shipment } from '~/db/models/Boat';
+import { Boat, Shipment } from '~/db/models/Boat';
 import { boatNameAutocomplete, itemNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
 import { formatNames } from '~/functions/helpers';
 
@@ -21,8 +21,18 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const boatName = interaction.options.getString('boat', true);
   const itemName = interaction.options.getString('item', true);
 
-  // Use helper to find shipment with error handling
-  const shipment = await Shipment.findOne({ where: { boatName, itemName } });
+  // Find the boat first
+  const boat = await Boat.findOne({ where: { boatName } });
+  if (!boat) {
+    await interaction.reply({
+      content: `⚠️ **Boat Not Found**\n\nNo boat found with name **${formatNames(boatName)}**.`,
+      flags: MessageFlags.Ephemeral,
+    });
+    return null;
+  }
+
+  // Use boatId to find shipment
+  const shipment = await Shipment.findOne({ where: { boatId: boat.id, itemName } });
 
   if (!shipment) {
     await interaction.reply({
