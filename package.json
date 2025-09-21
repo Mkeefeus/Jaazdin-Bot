@@ -11,7 +11,7 @@
     "build": "tsc",
     "deploy": "bun run pretty && bun run deploy-commands.ts",
     "pretty": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "tsc --noEmit && eslint ."
   },
   "keywords": [],
   "author": "",

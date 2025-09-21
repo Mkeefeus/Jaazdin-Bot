@@ -21,6 +21,8 @@ export default defineConfig(
           ignoreRestSiblings: true,
         },
       ],
+      // Flag duplicate imports from the same module
+      'no-duplicate-imports': 'error',
     },
   },
   {
