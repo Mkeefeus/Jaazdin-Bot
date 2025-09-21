@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteracti
 import { Shipment } from '~/db/models/Boat';
 import { boatNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, formatNames } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 //TODO gm command only.
 

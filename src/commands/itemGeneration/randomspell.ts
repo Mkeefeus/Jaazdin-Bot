@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Spell } from '~/db/models/Spell';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 const SPELL_SCHOOLS = [
   'Abjuration',

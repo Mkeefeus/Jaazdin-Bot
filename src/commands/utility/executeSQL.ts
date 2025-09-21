@@ -1,7 +1,7 @@
 import { db } from '~/db/db';
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('sql')

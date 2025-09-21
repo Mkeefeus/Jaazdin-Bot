@@ -12,7 +12,7 @@ import {
 import { Announcement } from '~/db/models/Announcement';
 import { showAnnouncement } from '~/functions/announcementHelpers';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 const CHANNEL_ID = process.env.BOT_CHANNEL_ID;
 

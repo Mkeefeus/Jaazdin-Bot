@@ -3,7 +3,7 @@ import { checkUserRole } from '~/functions/helpers';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readdir } from 'fs/promises';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('resetdb')

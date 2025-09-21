@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from '
 import { Seed } from '../../db/models/Seed';
 import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('generateseeds')

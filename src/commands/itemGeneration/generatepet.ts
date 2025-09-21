@@ -3,7 +3,7 @@ import { Pet } from '../../db/models/Pet';
 import { Op } from 'sequelize';
 import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, creatureTypeChoices, rarityChoices, randomInt } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 // Rarity boundaries by CR
 const RARITY_BOUNDS = [

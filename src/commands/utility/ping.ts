@@ -1,6 +1,6 @@
 import { db } from 'db/db';
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 export const data = new SlashCommandBuilder().setName('ping').setDescription('Replies with Pong!');
 

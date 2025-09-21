@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('gmremovetimer')

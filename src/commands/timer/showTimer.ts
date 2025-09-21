@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
 import { formatNames } from '~/functions/helpers';
-import { SortedTimers, TimerType, typeColors, typeIcons } from '~/types/timers';
+import { SortedTimers, TimerType, typeColors, typeIcons } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('showtimers')

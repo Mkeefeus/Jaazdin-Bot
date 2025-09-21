@@ -2,9 +2,9 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from '
 import { Weapon } from '../../db/models/Weapon';
 import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
 import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 import { getRandomMetalByRarity } from './generatemetal';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('generateweapon')

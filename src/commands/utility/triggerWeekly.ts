@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { readdirSync } from 'fs';
 import path from 'path';
-import { WeeklyData } from '~/types/weeklydata';
-import { Roles } from '~/types/roles';
+import { WeeklyData } from '~/types';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder().setName('triggerweeklies').setDescription('Triggers the weekly tasks');
 

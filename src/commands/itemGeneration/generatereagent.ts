@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from '
 import { Reagent } from '../../db/models/Reagent';
 import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, rarityChoices, randomInt, creatureTypeChoices } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('generatereagent')

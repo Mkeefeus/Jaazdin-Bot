@@ -1,13 +1,23 @@
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import {
+  AutocompleteInteraction,
+  ChatInputCommandInteraction,
+  Colors,
+  EmbedBuilder,
+  MessageFlags,
+  SlashCommandBuilder,
+} from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { checkUserRole } from '~/functions/helpers';
-import { Command, HelpData } from '~/types/command';
-import { Roles } from '~/types/roles';
+import { CommandFile, HelpData } from '~/types';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('help')
-  .setDescription('Show all available commands based on your permissions');
+  .setDescription('Get information about commands')
+  .addStringOption((option) =>
+    option.setName('command').setDescription('The command to get help for').setAutocomplete(true)
+  );
 
 const commands: HelpData[] = [];
 
@@ -22,7 +32,7 @@ const categoryEmojis: { [key: string]: string } = {
   utility: '🛠️',
 };
 
-function getUserRoles(interaction: ChatInputCommandInteraction): Roles[] {
+function getUserRoles(interaction: ChatInputCommandInteraction | AutocompleteInteraction): Roles[] {
   const userRoles: Roles[] = [];
 
   // Check each role
@@ -35,15 +45,6 @@ function getUserRoles(interaction: ChatInputCommandInteraction): Roles[] {
 }
 
 function canUseCommand(command: HelpData, userRoles: Roles[]): boolean {
-  // // Commands with no role requirement are available to everyone
-  // if (command.requiredRole === null) return true;
-
-  // // Check if user has the required role or a higher role
-  // if (userRoles.includes(Roles.BOT_DEV)) return true; // Bot devs can use everything
-  // if (command.requiredRole === Roles.GM && userRoles.includes(Roles.GM)) return true;
-  // if (command.requiredRole === Roles.DM && userRoles.includes(Roles.DM)) return true;
-  // if (command.requiredRole === Roles.PLAYER && userRoles.includes(Roles.PLAYER)) return true;
-
   if (Array.isArray(command.requiredRole)) {
     return command.requiredRole.some((role) => userRoles.includes(role));
   }
@@ -67,10 +68,12 @@ async function loadCommands() {
       const fileUrl = new URL(`file://${filePath}`).href;
 
       try {
-        const command = (await import(fileUrl)) as Command;
+        const command = (await import(fileUrl)) as CommandFile;
 
-        if ('help' in command) {
+        if (command.help) {
           commands.push(command.help);
+        } else if (command.commandData) {
+          commands.push(command.commandData);
         } else {
           console.warn(`[WARNING] The command at ${filePath} is missing a required "help" property.`);
         }
@@ -81,10 +84,59 @@ async function loadCommands() {
   }
 }
 
+export async function autocomplete(interaction: AutocompleteInteraction) {
+  const focusedValue = interaction.options.getFocused();
+  if (commands.length == 0) {
+    await loadCommands();
+  }
+  const userRoles = getUserRoles(interaction);
+  const userCommands = commands.filter((cmd) => canUseCommand(cmd, userRoles) /*&& cmd.args*/);
+  const filtered = userCommands.filter((cmd) => cmd.name.startsWith(focusedValue));
+  await interaction.respond(filtered.map((cmd) => ({ name: `/${cmd.name}`, value: cmd.name })).slice(0, 25));
+}
+
+async function executeSubhelp(interaction: ChatInputCommandInteraction, command: string) {
+  const userCommands = commands.filter((cmd) => canUseCommand(cmd, getUserRoles(interaction)));
+  if (userCommands.length === 0) {
+    await interaction.reply({
+      content: '❌ No commands are available for your current role.',
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
+  const commandData = userCommands.find((cmd) => cmd.name === command);
+  if (!commandData) {
+    await interaction.reply({ content: `❌ Command \`${command}\` not found.`, flags: MessageFlags.Ephemeral });
+    return;
+  }
+
+  let optionsString = (commandData.options || [])
+    .map((option) => {
+      return `\`${option.name}\` (${option.type})${option.required ? ' [required]' : ''}${option.description ? ` - ${option.description}` : ''}`;
+    })
+    .join('\n');
+  if (optionsString === '') {
+    optionsString = 'No options available for this command.';
+  }
+
+  const embed = new EmbedBuilder()
+    .setTitle(`🤖 Help: /${commandData.name}`)
+    .setColor(Colors.Gold)
+    .setDescription(commandData.description)
+    .addFields({ name: 'Options', value: optionsString });
+  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+}
+
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (commands.length == 0) {
     await loadCommands();
   }
+  const command = interaction.options.getString('command');
+  if (command) {
+    await executeSubhelp(interaction, command);
+    return;
+  }
+
   const userCommands = commands.filter((cmd) => canUseCommand(cmd, getUserRoles(interaction)));
   if (userCommands.length === 0) {
     await interaction.reply({
@@ -132,4 +184,5 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 export default {
   data,
   execute,
+  autocomplete,
 };

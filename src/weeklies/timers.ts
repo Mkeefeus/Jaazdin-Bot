@@ -1,5 +1,5 @@
 import { Timer } from '~/db/models/Timer';
-import { SortedTimers } from '~/types/timers';
+import { SortedTimers } from '~/types';
 import { client } from '..';
 import { TextChannel, MessageCreateOptions } from 'discord.js';
 import { createTimerEmbed } from '~/commands/timer/showTimer';

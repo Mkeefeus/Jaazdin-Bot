@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from '
 import { Poison } from '../../db/models/Poison';
 import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, rarityChoices, randomInt } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('generatepoison')

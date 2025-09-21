@@ -1,7 +1,7 @@
 import { readdirSync } from 'fs';
 import path from 'path';
 import { LastWeeklyRunTime } from '~/db/models/LastWeeklyRunTime';
-import { WeeklyData } from '~/types/weeklydata';
+import { WeeklyData } from '~/types';
 import { CronJob } from 'cron';
 import cronParser from 'cron-parser';
 import { TIMEZONE } from '~/constants';

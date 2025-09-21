@@ -1,8 +1,8 @@
 import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 import { exec } from 'child_process';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 export const data = new SlashCommandBuilder().
     setName('codeupdate').

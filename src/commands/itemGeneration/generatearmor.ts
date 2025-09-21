@@ -1,10 +1,10 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Armor } from '../../db/models/Armor';
 import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
 import { getRandomMetalByRarity } from './generatemetal';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('generatearmor')

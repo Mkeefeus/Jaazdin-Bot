@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteracti
 import { Shipment } from '~/db/models/Boat';
 import { checkUserRole } from '~/functions/helpers';
 import { parseChangeString } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 import { Boat } from '~/db/models/Boat';
 import { updateBoatEmbed } from '~/functions/boatHelpers';
 

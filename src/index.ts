@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
-import { Command } from './types/command';
+import { CommandFile } from './types';
 import setupWeeklyTasks from './weeklies/weekly';
 import { handleModalSubmit } from './commands/announcement/addannouncement';
 import { db } from './db/db'; // Import your Sequelize instance
@@ -12,7 +12,7 @@ import { db } from './db/db'; // Import your Sequelize instance
 // Extend the Client type to include commands
 declare module 'discord.js' {
   export interface Client {
-    commands: Collection<string, Command>;
+    commands: Collection<string, CommandFile>;
   }
 }
 
@@ -43,7 +43,7 @@ for (const folder of commandFolders) {
     const filePath = path.join(commandsPath, file);
     const fileUrl = new URL(`file://${filePath}`).href;
 
-    const command = (await import(fileUrl)) as Command;
+    const command = (await import(fileUrl)) as CommandFile;
     if ('data' in command && 'execute' in command) {
       client.commands.set(command.data.name, command);
     }

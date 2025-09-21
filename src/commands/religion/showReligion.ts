@@ -8,7 +8,7 @@ import {
 import { Domain, Religion } from '~/db/models/Religion';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { replyWithUserMention, formatNames } from '~/functions/helpers';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 
 export const data = new SlashCommandBuilder()

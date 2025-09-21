@@ -2,7 +2,7 @@ import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, Sla
 import { Shipment } from '~/db/models/Boat';
 import { findBoatByName, boatNameAutocomplete } from '~/functions/boatHelpers';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('destroyboat')

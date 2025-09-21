@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteracti
 import { TIMER_MAX_LENGTH } from '~/constants';
 import { Timer } from '~/db/models/Timer';
 import { checkUserRole, formatNames, parseChangeString } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('gmupdatetimer')

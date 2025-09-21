@@ -2,7 +2,7 @@ import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, Sla
 import { Domain } from '~/db/models/Religion';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('destroyreligion')

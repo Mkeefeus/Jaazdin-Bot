@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { IngredientCategory, Ingredient } from '../../db/models/Ingredient.js';
-import { HelpData } from '~/types/command.js';
+import { HelpData } from '~/types.js';
 
 // Fun rating messages
 const TASTE_RATINGS = [

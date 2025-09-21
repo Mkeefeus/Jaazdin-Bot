@@ -8,7 +8,7 @@ import { Op } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
 import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/functions/helpers';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 // Helper function to convert job name from database format to boat format
 function convertJobNameForBoats(jobName: string): string {

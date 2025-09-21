@@ -9,7 +9,7 @@ import {
   tableToGenerateChoices,
 } from '~/functions/boatHelpers';
 import { checkUserRole, parseChangeString } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('updateboat')

@@ -3,7 +3,7 @@ import { findReligionByName, checkReligionExists, religionCommandAutocomplete } 
 import { replyWithUserMention, parseChangeString } from '~/functions/helpers';
 import showReligion from './showReligion';
 import { Domain } from '~/db/models/Religion';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('updatereligion')

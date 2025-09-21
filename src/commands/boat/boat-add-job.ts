@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { findBoatByName, createBoatStatusDescription, boatNameAutocomplete } from '~/functions/boatHelpers';
 import { checkUserRole, jobNameAutocomplete } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('boat-add-job')

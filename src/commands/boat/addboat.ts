@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, Message
 import { Boat, Shipment } from '~/db/models/Boat';
 import { createBoatStatusDescription, tableToGenerateChoices, generateShipmentItems } from '~/functions/boatHelpers';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('addboat')

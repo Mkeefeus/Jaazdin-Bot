@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteracti
 import { MagicItem } from '../../db/models/MagicItem';
 import { createItemEmbed } from '~/functions/boatHelpers';
 import { checkUserRole, randomInt } from '~/functions/helpers';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('generatemagicitem')

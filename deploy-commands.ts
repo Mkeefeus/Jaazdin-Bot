@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Command } from './src/types/command';
+import { CommandFile } from './src/types';
 
 dotenv.config();
 const clientId = process.env.CLIENT_ID;
@@ -35,7 +35,7 @@ try {
       const fileUrl = new URL(`file://${filePath}`).href;
 
       try {
-        const command = (await import(fileUrl)) as Command;
+        const command = (await import(fileUrl)) as CommandFile;
 
         if ('data' in command) {
           commands.push(command.data.toJSON());

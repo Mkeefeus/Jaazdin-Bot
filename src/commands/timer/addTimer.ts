@@ -1,9 +1,9 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
 import { checkUserRole, formatNames } from '~/functions/helpers';
-import { HelpData } from '~/types/command';
-import { Roles } from '~/types/roles';
-import { TimerType } from '~/types/timers';
+import { HelpData } from '~/types';
+import { Roles } from '~/types';
+import { TimerType } from '~/types';
 import { TIMER_MAX_LENGTH } from '~/constants';
 
 const NAME_MAX_LENGTH = 100;

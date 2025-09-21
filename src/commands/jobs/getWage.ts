@@ -1,31 +1,48 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { HelpData } from '~/types/command';
+import { ChatInputCommandInteraction } from 'discord.js';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData} from '~/types';
 
-// Skill bonus
-// Item Bonus
-// Flat bonus
-// Has tool prof
-// Formula: (tier)d(die) + ((Skill + Item + (Math.Max(0, tier - 7)) * (tier >=5 && hasToolProf ? 2 : 1)) + flat bonus
+const commandData: CommandData = {
+  name: 'getwage',
+  description: 'Calculate your wage formula',
+  category: 'jobs',
+  options: [
+    { name: 'tier', type: 'integer', description: 'The tier of the job (1-30)', required: true },
+    {
+      name: 'die',
+      type: 'string',
+      description: 'The wage die (d4, d6, d8, d10, d12)',
+      required: true,
+      choices: ['d4', 'd6', 'd8', 'd10', 'd12'].map((die) => ({ name: die, value: die })),
+    },
+    {
+      name: 'skill_bonus',
+      type: 'integer',
+      description: 'The associated skill bonus (Athletics, WIS, Instrument, etc.)',
+      required: true,
+      minValue: -4,
+      maxValue: 30,
+    },
+    {
+      name: 'item_bonus',
+      type: 'integer',
+      description: 'The item bonus (+1 tools, luckstone, etc)',
+      required: false,
+      minValue: 1,
+    },
+    { name: 'flat_bonus', type: 'string', description: 'The flat bonus (Boats, festivals, etc)', required: false },
+    {
+      name: 'has_proficiency',
+      type: 'boolean',
+      description: 'Whether you have the associated proficiency',
+      required: false,
+    },
+  ],
+};
 
-export const data = new SlashCommandBuilder()
-  .setName('getwage')
-  .setDescription('Calculate your wage formula')
-  .addIntegerOption((option) =>
-    option.setName('tier').setDescription('The tier of the job').setMinValue(1).setMaxValue(30).setRequired(true)
-  )
-  .addStringOption((option) =>
-    option
-      .setName('die')
-      .setDescription('The wage die')
-      .addChoices(['d4', 'd6', 'd8', 'd10', 'd12'].map((die) => ({ name: die, value: die })))
-      .setRequired(true)
-  )
-  .addIntegerOption((option) => option.setName('skill_bonus').setDescription('The skill bonus').setRequired(true).setMinValue(-4).setMaxValue(30))
-  .addIntegerOption((option) =>
-    option.setName('item_bonus').setDescription('The item bonus (+1 tools, luckstone, etc)').setMinValue(1)
-  )
-  .addStringOption((option) => option.setName('flat_bonus').setDescription('The flat bonus (Boats, festivals, etc)'))
-  .addBooleanOption((option) => option.setName('has_proficiency').setDescription('Whether you have tool proficiency'));
+export { commandData as help };
+
+export const data = buildCommand(commandData);
 
 function generateMultipliedBonusString(
   skillBonusString: string,
@@ -78,14 +95,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         fields: [
           { name: 'Breakdown', value: `${dieString} ${totalBonusString || 'No bonuses applied'}`, inline: false },
         ],
-        color: 0x00FF00,
+        color: 0x00ff00,
       },
     ],
   });
 }
-
-export const help: HelpData = {
-  name: 'getwage',
-  category: 'jobs',
-  description: 'Calculate your wage formula',
-};

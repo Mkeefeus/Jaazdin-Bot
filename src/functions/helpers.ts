@@ -12,8 +12,7 @@ import {
   JSONEncodable,
   MessageFlags,
 } from 'discord.js';
-import { TIMER_MAX_LENGTH } from '~/constants';
-import { Roles } from '~/types/roles';
+import { Roles } from '~/types';
 
 const RoleMap = {
   [Roles.BOT_DEV]: process.env.BOT_DEV_ROLE_ID,
@@ -22,7 +21,10 @@ const RoleMap = {
   [Roles.DM]: process.env.DM_ROLE_ID,
 };
 
-export function checkUserRole(interaction: ChatInputCommandInteraction, roles: Roles | Roles[]) {
+export function checkUserRole(
+  interaction: ChatInputCommandInteraction | AutocompleteInteraction,
+  roles: Roles | Roles[]
+) {
   if (!interaction.member) {
     return false;
   }

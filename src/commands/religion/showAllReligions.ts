@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from '
 import { Religion } from '~/db/models/Religion';
 import { formatNames, replyWithUserMention } from '~/functions/helpers';
 import showReligion from './showReligion';
-import { HelpData } from '~/types/command';
+import { HelpData } from '~/types';
 
 export const data = new SlashCommandBuilder().setName('showallreligions').setDescription('Shows all active religions');
 
