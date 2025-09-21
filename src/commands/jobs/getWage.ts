@@ -81,7 +81,8 @@ async function execute(interaction: ChatInputCommandInteraction) {
 
   const cleanedFlatBonus = flatBonus.startsWith('+') ? flatBonus.slice(1).trim() : flatBonus;
 
-  const totalBonusString = `${multipliedBonusString}${cleanedFlatBonus ? `+ ${cleanedFlatBonus} (Flat Bonus)` : ''}`.trim();
+  const totalBonusString =
+    `${multipliedBonusString}${cleanedFlatBonus ? `+ ${cleanedFlatBonus} (Flat Bonus)` : ''}`.trim();
 
   const wageFormula = `${tier}${die}${totalBonus > 0 ? ` + ${totalBonus}` : ''}${cleanedFlatBonus ? ` + ${cleanedFlatBonus}` : ''}`;
 
