@@ -1,7 +1,9 @@
 import { randomInt } from 'crypto';
-import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder, userMention } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, userMention } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types/command';
 import { HelpData } from '~/types';
 import { Roles } from '~/types';
 
@@ -74,15 +76,21 @@ type Roll = {
   // success?: boolean;
 };
 
-export const data = new SlashCommandBuilder()
-  .setName('roll')
-  .setDescription('Rolls a dice formula')
-  .addStringOption((option) =>
-    option
-      .setName('formula')
-      .setDescription('The formula to roll. Check foundry roll docs for information')
-      .setRequired(true)
-  );
+const commandData: CommandData = {
+  name: 'roll',
+  description: 'Rolls a dice formula',
+  category: 'utility',
+  options: [
+    {
+      name: 'formula',
+      description: 'The formula to roll. Check foundry roll docs for information',
+      type: 'string',
+      required: true,
+    },
+  ],
+};
+
+const data = buildCommand(commandData);
 
 function parseRollOptions(modifiers: string): RollOptions {
   const validPatterns = Object.keys(rollOptionDefinitions)
@@ -387,7 +395,7 @@ function formatRolls(rolls: Roll[], formula: string, modifier?: number | number[
   return `**Formula**: ${formula}\n**Results**: (${resultsString})${modifierString}\n`;
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.BOT_DEV)) {
     // Admin-specific logic
     interaction.reply({
@@ -440,9 +448,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.editReply({ content: userMention(interaction.user.id), embeds: [embed] });
 }
 
-export const help: HelpData = {
+const help: HelpData = {
   name: 'roll',
   description: 'Roll dice with advanced modifiers and options',
   requiredRole: Roles.BOT_DEV,
   category: 'utility',
 };
+
+export { commandData, data, execute, help };

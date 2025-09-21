@@ -1,12 +1,19 @@
-import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 import { exec } from 'child_process';
-import { HelpData } from '~/types';
 
-export const data = new SlashCommandBuilder().setName('codeupdate').setDescription('Updates the bot code and restarts');
+const commandData: CommandData = {
+  name: 'codeupdate',
+  description: 'Updates the bot code and restarts',
+  category: 'utility',
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.BOT_DEV)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -49,9 +56,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   process.exit(0);
 }
 
-export const help: HelpData = {
-  name: 'codeupdate',
-  description: 'Updates the bot code and restarts',
-  requiredRole: Roles.BOT_DEV,
-  category: 'utility',
-};
+export { data, execute, commandData };

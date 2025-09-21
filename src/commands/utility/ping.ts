@@ -1,10 +1,17 @@
 import { db } from 'db/db';
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { HelpData } from '~/types';
+import { ChatInputCommandInteraction } from 'discord.js';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder().setName('ping').setDescription('Replies with Pong!');
+const commandData: CommandData = {
+  name: 'ping',
+  description: 'Replies with Pong!',
+  category: 'utility',
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   try {
     await db.authenticate();
     console.log('Connection has been established successfully.');
@@ -14,13 +21,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply('Pong!');
 }
 
-export const help: HelpData = {
-  name: 'ping',
-  description: 'Test bot responsiveness and database connection',
-  category: 'utility',
-};
-
-export default {
-  data,
-  execute,
-};
+export { data, execute, commandData };

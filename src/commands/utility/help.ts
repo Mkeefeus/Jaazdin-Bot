@@ -1,21 +1,24 @@
-import {
-  AutocompleteInteraction,
-  ChatInputCommandInteraction,
-  Colors,
-  EmbedBuilder,
-  MessageFlags,
-  SlashCommandBuilder,
-} from 'discord.js';
-import { loadCommandFiles } from '~/functions/commandHelpers';
+import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder, MessageFlags } from 'discord.js';
+import { loadCommandFiles, buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles, HelpData } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('help')
-  .setDescription('Get information about commands')
-  .addStringOption((option) =>
-    option.setName('command').setDescription('The command to get help for').setAutocomplete(true)
-  );
+const commandData: CommandData = {
+  name: 'help',
+  description: 'Get information about commands',
+  category: 'utility',
+  options: [
+    {
+      name: 'command',
+      type: 'string',
+      description: 'The command to get help for',
+      autocomplete: true,
+    },
+  ],
+};
+
+const data = buildCommand(commandData);
 
 const commands: HelpData[] = [];
 
@@ -50,7 +53,7 @@ function canUseCommand(command: HelpData, userRoles: Roles[]): boolean {
   return command.requiredRole ? userRoles.includes(command.requiredRole) : true;
 }
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused();
   if (commands.length == 0) {
     // await loadCommands();
@@ -95,7 +98,7 @@ async function executeSubhelp(interaction: ChatInputCommandInteraction, command:
   await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   if (commands.length == 0) {
     // await loadCommands();
     const { commandsData } = await loadCommandFiles();
@@ -151,8 +154,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
 
-export default {
-  data,
-  execute,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

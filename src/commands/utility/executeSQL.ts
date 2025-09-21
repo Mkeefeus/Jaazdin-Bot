@@ -1,14 +1,27 @@
 import { db } from '~/db/db';
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('sql')
-  .setDescription('Execute a SQL query on the database')
-  .addStringOption((option) => option.setName('query').setDescription('The SQL query to execute').setRequired(true));
+const commandData: CommandData = {
+  name: 'sql',
+  description: 'Execute a SQL query on the database',
+  category: 'utility',
+  options: [
+    {
+      name: 'query',
+      type: 'string',
+      description: 'The SQL query to execute',
+      required: true,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const hasRole = checkUserRole(interaction, Roles.BOT_DEV);
   if (!hasRole) {
     await interaction.reply('You do not have permission to use this command');
@@ -28,12 +41,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export const help = {
-  name: 'executesql',
-  description: 'Execute raw SQL queries on the database (Bot Dev only)',
-  requiredRole: Roles.BOT_DEV,
-  category: 'utility',
-};
+export { data, execute, commandData };
 
 export default {
   data,

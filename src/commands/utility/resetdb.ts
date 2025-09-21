@@ -1,19 +1,35 @@
-import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types/command';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readdir } from 'fs/promises';
 import { Roles } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('resetdb')
-  .setDescription('Resets the database')
-  .addBooleanOption((option) => option.setName('drop').setDescription('Drop tables if they exist').setRequired(true))
-  .addBooleanOption((option) =>
-    option.setName('seed').setDescription('Seed the database with default data').setRequired(true)
-  );
+const commandData: CommandData = {
+  name: 'resetdb',
+  description: 'Resets the database',
+  category: 'utility',
+  options: [
+    {
+      name: 'drop',
+      description: 'Drop tables if they exist',
+      type: 'boolean',
+      required: true,
+    },
+    {
+      name: 'seed',
+      description: 'Seed the database with default data',
+      type: 'boolean',
+      required: true,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   interaction.deferReply({ flags: MessageFlags.Ephemeral });
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -56,9 +72,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.editReply('DB Reset Complete');
 }
 
-export const help = {
+const help = {
   name: 'resetdb',
   description: 'Reset and reseed the database (Bot Dev only)',
   requiredRole: Roles.BOT_DEV,
   category: 'utility',
 };
+
+export { commandData, data, execute, help };
