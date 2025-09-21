@@ -103,20 +103,6 @@ export type CommandOption =
   | MentionableCommandOption
   | AttachmentCommandOption;
 
-export type HelpDetails = {
-  name: string;
-  description: string;
-  args?: CommandOption[];
-};
-
-export type HelpData = {
-  name: string;
-  description: string;
-  requiredRole?: Roles | Roles[];
-  category: string;
-  options?: CommandOption[];
-};
-
 export type CommandData = {
   name: string;
   description: string;
@@ -129,6 +115,5 @@ export interface CommandFile {
   data: SlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
   autocomplete: (interaction: AutocompleteInteraction) => Promise<void>;
-  help?: HelpData;
-  commandData?: CommandData;
+  commandData: CommandData;
 }

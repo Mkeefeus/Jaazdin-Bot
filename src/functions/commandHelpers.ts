@@ -286,7 +286,22 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
   return builder;
 }
 
-export async function loadCommandFiles() {
+// Function overloads for type-safe returns
+export async function loadCommandFiles(
+  returnType: 'commands'
+): Promise<RESTPostAPIChatInputApplicationCommandsJSONBody[]>;
+export async function loadCommandFiles(returnType: 'commandsData'): Promise<CommandData[]>;
+export async function loadCommandFiles(
+  returnType?: 'both'
+): Promise<{ commands: RESTPostAPIChatInputApplicationCommandsJSONBody[]; commandsData: CommandData[] }>;
+
+export async function loadCommandFiles(
+  returnType?: 'commands' | 'commandsData' | 'both'
+): Promise<
+  | RESTPostAPIChatInputApplicationCommandsJSONBody[]
+  | CommandData[]
+  | { commands: RESTPostAPIChatInputApplicationCommandsJSONBody[]; commandsData: CommandData[] }
+> {
   const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
   const commandsData: CommandData[] = [];
 
@@ -310,16 +325,31 @@ export async function loadCommandFiles() {
           try {
             const command = (await import(filePath)) as CommandFile;
 
-            if (command.data) {
+            if (!command) {
+              console.log(`[WARNING] The command at ${filePath} does not export a valid command.`);
+              continue;
+            }
+            if (!command.data) {
+              console.log(`[WARNING] The command at ${filePath} is missing a required "data" property.`);
+              continue;
+            }
+            if (!command.execute) {
+              console.log(`[WARNING] The command at ${filePath} is missing a required "execute" function.`);
+              continue;
+            }
+            if (!command.commandData) {
+              console.log(`[WARNING] The command at ${filePath} is missing a required "commandData" property.`);
+              continue;
+            }
+
+            // Only process commands if we need them
+            if (returnType === 'commands' || returnType === 'both' || !returnType) {
               commands.push(command.data.toJSON());
               // console.log(`Loaded command: ${command.data.name}`);
-            } else {
-              console.log(`[WARNING] The command at ${filePath} is missing a required "data" property.`);
             }
-            if (command.commandData) {
+            // Only process commandsData if we need them
+            if (returnType === 'commandsData' || returnType === 'both' || !returnType) {
               commandsData.push(command.commandData);
-            } else {
-              console.log(`[WARNING] The command at ${filePath} is missing a required "commandData" property.`);
             }
           } catch (error) {
             console.error(`Error loading command from ${filePath}:`, error);
@@ -335,5 +365,14 @@ export async function loadCommandFiles() {
     console.error('Error loading command files:', error);
   }
 
-  return { commands, commandsData };
+  // Return based on the specified type with proper type safety
+  switch (returnType) {
+    case 'commands':
+      return commands;
+    case 'commandsData':
+      return commandsData;
+    case 'both':
+    default:
+      return { commands, commandsData };
+  }
 }
