@@ -79,15 +79,17 @@ async function execute(interaction: ChatInputCommandInteraction) {
     toolProfMultiplier
   );
 
-  const totalBonusString = `${multipliedBonusString}${flatBonus ? `+ ${flatBonus} (Flat Bonus)` : ''}`.trim();
+  const cleanedFlatBonus = flatBonus.startsWith('+') ? flatBonus.slice(1).trim() : flatBonus;
 
-  const wageFormula = `${tier}${die}${totalBonus > 0 ? ` + ${totalBonus}` : ''} + ${flatBonus}`;
+  const totalBonusString = `${multipliedBonusString}${cleanedFlatBonus ? `+ ${cleanedFlatBonus} (Flat Bonus)` : ''}`.trim();
+
+  const wageFormula = `${tier}${die}${totalBonus > 0 ? ` + ${totalBonus}` : ''}${cleanedFlatBonus ? ` + ${cleanedFlatBonus}` : ''}`;
 
   await interaction.reply({
     embeds: [
       {
         title: 'Wage Calculation',
-        description: `Your wage formula is: **${wageFormula}**`,
+        description: `Your wage formula is: \`\`\`!r ${wageFormula}\`\`\``,
         fields: [
           { name: 'Breakdown', value: `${dieString} ${totalBonusString || 'No bonuses applied'}`, inline: false },
         ],
