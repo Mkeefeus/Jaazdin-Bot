@@ -1,9 +1,10 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
 import { Op } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
+import { buildCommand } from '~/functions/commandHelpers';
 import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/functions/helpers';
-import { HelpData } from '~/types';
+import { CommandData } from '~/types';
 
 // Helper function to convert job name from database format to boat format
 function convertJobNameForBoats(jobName: string): string {
@@ -14,25 +15,39 @@ function convertJobNameForBoats(jobName: string): string {
     .join(' ');
 }
 
-export const data = new SlashCommandBuilder()
-  .setName('jobreward')
-  .setDescription('Figure out what job reward you received')
-  .addStringOption((option) =>
-    option.setName('name').setDescription('The name of the job you are working').setRequired(true).setAutocomplete(true)
-  )
-  .addIntegerOption((option) =>
-    option.setName('tier').setDescription('Enter the current tier you are at').setRequired(true).setMinValue(3)
-  )
-  .addIntegerOption((option) =>
-    option
-      .setName('roll')
-      .setDescription('Enter the roll on the die (not including bonuses)')
-      .setRequired(true)
-      .setMaxValue(100)
-      .setMinValue(1)
-  );
+const commandData: CommandData = {
+  name: 'jobreward',
+  description: 'Figure out what job reward you received',
+  category: 'jobs',
+  options: [
+    {
+      name: 'name',
+      type: 'string',
+      description: 'The name of the job you are working',
+      required: true,
+      autocomplete: true,
+    },
+    {
+      name: 'tier',
+      type: 'integer',
+      description: 'Enter the current tier you are at',
+      required: true,
+      minValue: 3,
+    },
+    {
+      name: 'roll',
+      type: 'integer',
+      description: 'Enter the roll on the die (not including bonuses)',
+      required: true,
+      minValue: 1,
+      maxValue: 100,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const jobName = interaction.options.getString('name');
   const tier = interaction.options.getInteger('tier');
   const roll = interaction.options.getInteger('roll');
@@ -92,18 +107,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   ]);
 }
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   await jobNameAutocomplete(interaction);
 }
 
-export const help: HelpData = {
-  name: 'jobreward',
-  description: 'Calculate and display job reward based on boats and tier',
-  category: 'jobs',
-};
-
-export default {
-  data,
-  execute,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };
