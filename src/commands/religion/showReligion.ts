@@ -1,6 +1,12 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
-import { buildCommand, findReligionByName, formatNames, religionCommandAutocomplete, replyWithUserMention } from '~/helpers';
+import {
+  buildCommand,
+  findReligionByName,
+  formatNames,
+  religionCommandAutocomplete,
+  replyWithUserMention,
+} from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {

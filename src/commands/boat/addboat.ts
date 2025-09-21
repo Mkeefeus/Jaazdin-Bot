@@ -1,6 +1,12 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
-import { createBoatStatusDescription, tableToGenerateChoices, generateShipmentItems, buildCommand, checkUserRole } from '~/helpers';
+import {
+  createBoatStatusDescription,
+  tableToGenerateChoices,
+  generateShipmentItems,
+  buildCommand,
+  checkUserRole,
+} from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {

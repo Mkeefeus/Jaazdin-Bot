@@ -1,7 +1,14 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Armor } from '../../db/models/Armor';
 import { CommandData, Roles } from '~/types';
-import { createItemEmbed, calculateMetalItemPrice, buildCommand, checkUserRole, randomInt, rarityChoices } from '~/helpers';
+import {
+  createItemEmbed,
+  calculateMetalItemPrice,
+  buildCommand,
+  checkUserRole,
+  randomInt,
+  rarityChoices,
+} from '~/helpers';
 import { getRandomMetalByRarity } from './generatemetal';
 
 const commandData: CommandData = {
