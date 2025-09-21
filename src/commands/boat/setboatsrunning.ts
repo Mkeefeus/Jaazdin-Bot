@@ -11,7 +11,7 @@ const commandData: CommandData = {
   category: 'boats',
   options: [
     { name: 'running', type: 'boolean', description: 'Set boats to running (true) or not running (false)', required: true },
-    { name: 'exceptions', type: 'string', description: 'Comma-separated boat names to leave unchanged (optional)', required: false },
+    { name: 'exceptions', type: 'string', description: 'Comma-separated boat names to leave unchanged (optional)' },
   ],
 };
 

@@ -18,22 +18,21 @@ const commandData: CommandData = {
   category: 'boats',
   options: [
     { name: 'name', type: 'string', description: 'Boat name (required)', required: true, autocomplete: true },
-    { name: 'city', type: 'string', description: 'City of origin', required: false },
-    { name: 'country', type: 'string', description: 'Country of origin', required: false },
-    { name: 'waittime', type: 'integer', description: 'Weeks at sea', required: false },
-    { name: 'timeintown', type: 'integer', description: 'Weeks in town', required: false },
-    { name: 'tier2ability', type: 'string', description: 'Tier 2 ability description', required: false },
+    { name: 'city', type: 'string', description: 'City of origin' },
+    { name: 'country', type: 'string', description: 'Country of origin' },
+    { name: 'waittime', type: 'integer', description: 'Weeks at sea' },
+    { name: 'timeintown', type: 'integer', description: 'Weeks in town' },
+    { name: 'tier2ability', type: 'string', description: 'Tier 2 ability description' },
     { 
       name: 'table', 
       type: 'string', 
       description: 'What type of loot the boat will generate', 
-      required: false,
       choices: tableToGenerateChoices
     },
-    { name: 'istier2', type: 'boolean', description: 'Is this a tier 2 boat?', required: false },
-    { name: 'isrunning', type: 'boolean', description: 'Is this boat running?', required: false },
-    { name: 'weeksleft', type: 'string', description: 'Weeks left (use +x, -x, =x)', required: false },
-    { name: 'isintown', type: 'boolean', description: 'Is the boat in town?', required: false },
+    { name: 'istier2', type: 'boolean', description: 'Is this a tier 2 boat?' },
+    { name: 'isrunning', type: 'boolean', description: 'Is this boat running?' },
+    { name: 'weeksleft', type: 'string', description: 'Weeks left (use +x, -x, =x)' },
+    { name: 'isintown', type: 'boolean', description: 'Is the boat in town?' },
   ],
 };
 

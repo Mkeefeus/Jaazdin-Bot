@@ -27,15 +27,13 @@ const commandData: CommandData = {
       name: 'item_bonus',
       type: 'integer',
       description: 'The item bonus (+1 tools, luckstone, etc)',
-      required: false,
       minValue: 1,
     },
-    { name: 'flat_bonus', type: 'string', description: 'The flat bonus (Boats, festivals, etc)', required: false },
+    { name: 'flat_bonus', type: 'string', description: 'The flat bonus (Boats, festivals, etc)' },
     {
       name: 'has_proficiency',
       type: 'boolean',
       description: 'Whether you have the associated proficiency',
-      required: false,
     },
   ],
 };

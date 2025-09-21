@@ -13,9 +13,9 @@ const commandData: CommandData = {
     { name: 'name', type: 'string', description: 'Boat name', required: true },
     { name: 'waittime', type: 'integer', description: 'Weeks at sea', required: true },
     { name: 'timeintown', type: 'integer', description: 'Weeks in town', required: true },
-    { name: 'city', type: 'string', description: 'City of origin', required: false },
-    { name: 'country', type: 'string', description: 'Country of origin', required: false },
-    { name: 'tier2ability', type: 'string', description: 'Tier 2 ability description', required: false },
+    { name: 'city', type: 'string', description: 'City of origin' },
+    { name: 'country', type: 'string', description: 'Country of origin' },
+    { name: 'tier2ability', type: 'string', description: 'Tier 2 ability description' },
     { 
       name: 'table', 
       type: 'string', 
@@ -23,10 +23,10 @@ const commandData: CommandData = {
       required: false,
       choices: tableToGenerateChoices
     },
-    { name: 'istier2', type: 'boolean', description: 'Is this a tier 2 boat? (default false)', required: false },
-    { name: 'isrunning', type: 'boolean', description: 'Is this boat running? (default true)', required: false },
-    { name: 'weeksleft', type: 'integer', description: 'Weeks left (default furthest from town or in town for longest time)', required: false },
-    { name: 'isintown', type: 'boolean', description: 'Is the boat in town? (default false)', required: false },
+    { name: 'istier2', type: 'boolean', description: 'Is this a tier 2 boat? (default false)' },
+    { name: 'isrunning', type: 'boolean', description: 'Is this boat running? (default true)' },
+    { name: 'weeksleft', type: 'integer', description: 'Weeks left (default furthest from town or in town for longest time)' },
+    { name: 'isintown', type: 'boolean', description: 'Is the boat in town? (default false)' },
   ],
 };
 

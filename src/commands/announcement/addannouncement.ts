@@ -22,7 +22,7 @@ const commandData: CommandData = {
   category: 'announcement',
   options: [
     { name: 'weeks', type: 'integer', description: 'Weeks remaining (min 1)', required: true, minValue: 1 },
-    { name: 'post_now', type: 'boolean', description: 'Post announcement immediately', required: false },
+    { name: 'post_now', type: 'boolean', description: 'Post announcement immediately' },
   ],
 };
 
