@@ -388,7 +388,6 @@ function formatRolls(rolls: Roll[], formula: string, modifier?: number | number[
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-
   if (!checkUserRole(interaction, Roles.BOT_DEV)) {
     // Admin-specific logic
     interaction.reply({

@@ -148,8 +148,4 @@ function getCategoryEmoji(category: IngredientCategory): string {
   return emojiMap[category];
 }
 
-export {
-  data,
-  execute,
-  commandData,
-};
+export { data, execute, commandData };

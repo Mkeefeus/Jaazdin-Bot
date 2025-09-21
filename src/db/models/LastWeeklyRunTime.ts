@@ -22,18 +22,18 @@ LastWeeklyRunTime.init(
 );
 
 export async function seed() {
-    // Get the most recent scheduled Monday 12:01am occurrence
-    const now = new Date();
-    const cronExpression = cronParser.parse('1 0 * * 1', {
-      tz: TIMEZONE,
-      currentDate: now,
-    });
-    const lastMondayRunTime = cronExpression.prev().toDate();
+  // Get the most recent scheduled Monday 12:01am occurrence
+  const now = new Date();
+  const cronExpression = cronParser.parse('1 0 * * 1', {
+    tz: TIMEZONE,
+    currentDate: now,
+  });
+  const lastMondayRunTime = cronExpression.prev().toDate();
 
-    await LastWeeklyRunTime.create({
-      value: lastMondayRunTime,
-    });
-    console.log('LastWeeklyRunTime seeded!');
+  await LastWeeklyRunTime.create({
+    value: lastMondayRunTime,
+  });
+  console.log('LastWeeklyRunTime seeded!');
 }
 
 LastWeeklyRunTime.sync();

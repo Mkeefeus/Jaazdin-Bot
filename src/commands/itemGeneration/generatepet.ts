@@ -1,9 +1,11 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Pet } from '../../db/models/Pet';
 import { Op } from 'sequelize';
 import { createItemEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, creatureTypeChoices, rarityChoices, randomInt } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 
 // Rarity boundaries by CR
 const RARITY_BOUNDS = [
@@ -14,21 +16,31 @@ const RARITY_BOUNDS = [
   { name: 'Legendary', min: 12, max: 13 },
 ];
 
-export const data = new SlashCommandBuilder()
-  .setName('generatepet')
-  .setDescription('Generate a random pet by rarity and creature type')
-  .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the pet').setRequired(true).setChoices(rarityChoices)
-  )
-  .addStringOption((option) =>
-    option
-      .setName('creaturetype')
-      .setDescription('Creature type of the pet')
-      .setRequired(true)
-      .setChoices(creatureTypeChoices)
-  );
+const commandData: CommandData = {
+  name: 'generatepet',
+  description: 'Generate a random pet by rarity and creature type',
+  category: 'items',
+  options: [
+    {
+      name: 'rarity',
+      type: 'string',
+      description: 'Rarity of the pet',
+      required: true,
+      choices: rarityChoices,
+    },
+    {
+      name: 'creaturetype',
+      type: 'string',
+      description: 'Creature type of the pet',
+      required: true,
+      choices: creatureTypeChoices,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -66,7 +78,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 
 // Utility function for use in other scripts
-export async function getRandomPetByRarityAndType(rarity: string, creatureType: string) {
+async function getRandomPetByRarityAndType(rarity: string, creatureType: string) {
   const bounds = RARITY_BOUNDS.find((r) => r.name.toLowerCase() === rarity.toLowerCase());
   if (!bounds) return null;
 
@@ -81,9 +93,4 @@ export async function getRandomPetByRarityAndType(rarity: string, creatureType: 
   return validPets[Math.floor(Math.random() * validPets.length)];
 }
 
-export const help = {
-  name: 'generatepet',
-  description: 'Generate a random pet by rarity and creature type',
-  requiredRole: [Roles.GM, Roles.DM],
-  category: 'items',
-};
+export { data, execute, commandData, getRandomPetByRarityAndType };

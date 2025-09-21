@@ -9,21 +9,21 @@ const commandData: CommandData = {
   description: "Adds an ingredient to Kreider's kitchen",
   category: 'fun',
   options: [
-    { 
-      name: 'name', 
-      type: 'string', 
-      description: 'The name of the ingredient. You can add multiple separated by commas.', 
-      required: true 
+    {
+      name: 'name',
+      type: 'string',
+      description: 'The name of the ingredient. You can add multiple separated by commas.',
+      required: true,
     },
-    { 
-      name: 'category', 
-      type: 'string', 
-      description: 'The type of ingredient', 
+    {
+      name: 'category',
+      type: 'string',
+      description: 'The type of ingredient',
       required: true,
       choices: Object.values(IngredientCategory).map((category) => ({
         name: category.charAt(0).toUpperCase() + category.slice(1),
         value: category,
-      }))
+      })),
     },
   ],
 };
@@ -89,8 +89,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export {
-  data,
-  execute,
-  commandData,
-};
+export { data, execute, commandData };

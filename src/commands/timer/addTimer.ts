@@ -16,7 +16,12 @@ export const data = new SlashCommandBuilder()
     option.setName('name').setDescription('The name of the timer.').setRequired(true).setMaxLength(NAME_MAX_LENGTH)
   )
   .addIntegerOption((option) =>
-    option.setName('weeks').setDescription('The amount of weeks before the timer ends (max 1 year)').setRequired(true).setMinValue(1).setMaxValue(TIMER_MAX_LENGTH)
+    option
+      .setName('weeks')
+      .setDescription('The amount of weeks before the timer ends (max 1 year)')
+      .setRequired(true)
+      .setMinValue(1)
+      .setMaxValue(TIMER_MAX_LENGTH)
   )
   .addStringOption((option) =>
     option
@@ -41,7 +46,10 @@ export const data = new SlashCommandBuilder()
     option.setName('repeatable').setDescription('Whether the timer is repeatable').setRequired(false)
   )
   .addUserOption((option) =>
-    option.setName('player').setDescription('(GM ONLY) The discord id of the player, leave blank if yourself').setRequired(false)
+    option
+      .setName('player')
+      .setDescription('(GM ONLY) The discord id of the player, leave blank if yourself')
+      .setRequired(false)
   );
 
 const ICON_MAP: Record<string, string> = {

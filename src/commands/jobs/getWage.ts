@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction } from 'discord.js';
 import { buildCommand } from '~/functions/commandHelpers';
-import { CommandData} from '~/types';
+import { CommandData } from '~/types';
 
 const commandData: CommandData = {
   name: 'getwage',
@@ -97,8 +97,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export {
-  data,
-  execute,
-  commandData
-}
+export { data, execute, commandData };

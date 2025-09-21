@@ -1,7 +1,8 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Spell } from '~/db/models/Spell';
 import { createItemEmbed } from '~/functions/boatHelpers';
-import { HelpData } from '~/types';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types';
 
 const SPELL_SCHOOLS = [
   'Abjuration',
@@ -36,17 +37,31 @@ const SCHOOL_NAME_TO_LETTER: { [key: string]: string } = {
   Transmutation: 'T',
 };
 
-export const data = new SlashCommandBuilder()
-  .setName('randomspell')
-  .setDescription('Generate a random spell by level and optionally by school')
-  .addIntegerOption((opt) =>
-    opt.setName('level').setDescription('Spell level (0-9)').setRequired(true).setMinValue(0).setMaxValue(9)
-  )
-  .addStringOption((opt) =>
-    opt.setName('school').setDescription('Spell school (optional)').setRequired(false).setAutocomplete(true)
-  );
+const commandData: CommandData = {
+  name: 'randomspell',
+  description: 'Generate a random spell by level and optionally by school',
+  category: 'items',
+  options: [
+    {
+      name: 'level',
+      type: 'integer',
+      description: 'Spell level (0-9)',
+      required: true,
+      minValue: 0,
+      maxValue: 9,
+    },
+    {
+      name: 'school',
+      type: 'string',
+      description: 'Spell school (optional)',
+      autocomplete: true,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const level = interaction.options.getInteger('level', true);
   const school = interaction.options.getString('school');
 
@@ -95,7 +110,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 
 // Autocomplete for spell schools
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   const focused = interaction.options.getFocused().toLowerCase();
   const filtered = SPELL_SCHOOLS.filter((school) => school.toLowerCase().startsWith(focused))
     .slice(0, 25)
@@ -103,8 +118,4 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await interaction.respond(filtered);
 }
 
-export const help: HelpData = {
-  name: 'randomspell',
-  description: 'Generate a random spell by level and optionally by school',
-  category: 'items',
-};
+export { data, execute, commandData, autocomplete };

@@ -13,10 +13,8 @@ async function executeWeeklyTasks() {
     const currentFileName = new URL(import.meta.url).pathname.split('/').pop();
 
     // Get all TypeScript files in the current directory except this file
-    const weeklyFiles = await Array.fromAsync(
-      new Bun.Glob('*.ts').scan({ cwd: currentDir })
-    );
-    
+    const weeklyFiles = await Array.fromAsync(new Bun.Glob('*.ts').scan({ cwd: currentDir }));
+
     const filteredFiles = weeklyFiles.filter((file: string) => file !== currentFileName);
 
     if (filteredFiles.length === 0) {

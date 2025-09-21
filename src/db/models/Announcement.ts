@@ -13,7 +13,10 @@ interface AnnouncementAttributes {
 
 type AnnouncementCreationAttributes = Omit<AnnouncementAttributes, 'id' | 'createdAt' | 'updatedAt'>;
 
-export class Announcement extends Model<AnnouncementAttributes, AnnouncementCreationAttributes> implements AnnouncementAttributes {
+export class Announcement
+  extends Model<AnnouncementAttributes, AnnouncementCreationAttributes>
+  implements AnnouncementAttributes
+{
   declare id?: number;
   declare name: string;
   declare message: string;

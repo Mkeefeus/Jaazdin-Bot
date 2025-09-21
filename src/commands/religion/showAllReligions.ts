@@ -16,7 +16,9 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
   const embeds: EmbedBuilder[] = [];
   if (religions.length === 0) {
     // 🪦 Tombstone emoji for no religions
-    embeds.push(new EmbedBuilder().setTitle('🪦 Gods are Dead').setDescription('No religions found.').setColor('#000000'));
+    embeds.push(
+      new EmbedBuilder().setTitle('🪦 Gods are Dead').setDescription('No religions found.').setColor('#000000')
+    );
   } else {
     // 👑 Crown emoji for dominant religion
     const dominantReligion = religions[0];
@@ -36,7 +38,9 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
       // Discord allows max 25 fields per embed
       for (let i = 0; i < fields.length; i += 25) {
         const listEmbed = new EmbedBuilder()
-          .setTitle(i === 0 ? '🙏 Other Religions' : `🙏 Other Religions (cont. ${i + 1}-${Math.min(i + 25, fields.length)})`)
+          .setTitle(
+            i === 0 ? '🙏 Other Religions' : `🙏 Other Religions (cont. ${i + 1}-${Math.min(i + 25, fields.length)})`
+          )
           .setColor('#00BFFF')
           .addFields(fields.slice(i, i + 25));
         embeds.push(listEmbed);
@@ -53,6 +57,3 @@ export const help: HelpData = {
   description: 'Display all religions and their information',
   category: 'religion',
 };
-
-
-

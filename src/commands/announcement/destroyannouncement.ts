@@ -5,97 +5,90 @@ import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
-	name: 'destroyannouncement',
-	description: 'Delete an announcement from the database',
-	category: 'announcement',
-	options: [
-		{
-			name: 'name',
-			type: 'string',
-			description: 'Name of the announcement to delete',
-			required: true,
-			autocomplete: true,
-		},
-	],
+  name: 'destroyannouncement',
+  description: 'Delete an announcement from the database',
+  category: 'announcement',
+  options: [
+    {
+      name: 'name',
+      type: 'string',
+      description: 'Name of the announcement to delete',
+      required: true,
+      autocomplete: true,
+    },
+  ],
 };
 
 const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
-	const name = interaction.options.getString('name') as string;
+  const name = interaction.options.getString('name') as string;
 
-	// Find announcement
-	const announcement = await Announcement.findOne({ where: { name } });
-	if (!announcement) {
-		await interaction.reply({
-			content: 'Could not find the specified announcement.',
-			flags: MessageFlags.Ephemeral,
-		});
-		return;
-	}
+  // Find announcement
+  const announcement = await Announcement.findOne({ where: { name } });
+  if (!announcement) {
+    await interaction.reply({
+      content: 'Could not find the specified announcement.',
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
 
-	if (!checkUserRole(interaction, Roles.GM)) {
-		await interaction.reply({
-			content: 'You do not have permission to use this command.',
-			flags: MessageFlags.Ephemeral,
-		});
-		return;
-	}
+  if (!checkUserRole(interaction, Roles.GM)) {
+    await interaction.reply({
+      content: 'You do not have permission to use this command.',
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
 
-	const confirm = await confirmAction({
-		interaction,
-		title: 'Destroy Announcement',
-		description: `Are you sure you want to destroy ${formatNames(announcement.name)}?`,
-		confirmButtonText: 'Destroy',
-		cancelButtonText: 'Cancel',
-		fields: [
-			{
-				name: 'Announcement Name',
-				value: formatNames(announcement.name),
-				inline: true,
-			},
-			{
-				name: 'Weeks Remaining',
-				value: `${announcement.weeks}`,
-				inline: true,
-			},
-			{
-				name: 'Message',
-				value: announcement.message,
-				inline: false,
-			},
-		],
-		confirmEmbed: [
-			{
-				title: '✅ Announcement Destroyed',
-				description: `The announcement ${formatNames(announcement.name)} has been destroyed.`,
-				color: 0x4caf50, // Green
-				timestamp: new Date().toISOString(),
-			},
-		],
-	});
+  const confirm = await confirmAction({
+    interaction,
+    title: 'Destroy Announcement',
+    description: `Are you sure you want to destroy ${formatNames(announcement.name)}?`,
+    confirmButtonText: 'Destroy',
+    cancelButtonText: 'Cancel',
+    fields: [
+      {
+        name: 'Announcement Name',
+        value: formatNames(announcement.name),
+        inline: true,
+      },
+      {
+        name: 'Weeks Remaining',
+        value: `${announcement.weeks}`,
+        inline: true,
+      },
+      {
+        name: 'Message',
+        value: announcement.message,
+        inline: false,
+      },
+    ],
+    confirmEmbed: [
+      {
+        title: '✅ Announcement Destroyed',
+        description: `The announcement ${formatNames(announcement.name)} has been destroyed.`,
+        color: 0x4caf50, // Green
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  });
 
-	if (!confirm) {
-		return;
-	}
+  if (!confirm) {
+    return;
+  }
 
-	// Proceed with destruction
-	await announcement.destroy();
+  // Proceed with destruction
+  await announcement.destroy();
 }
 
 async function autocomplete(interaction: AutocompleteInteraction) {
-	const focusedValue = interaction.options.getFocused();
-	const announcements = await Announcement.findAll();
-	const choices = announcements.map(a => a.name);
-	const filtered = choices.filter(choice => choice.toLowerCase().includes(focusedValue.toLowerCase()));
-	await interaction.respond(
-		filtered.map(name => ({ name, value: name })).slice(0, 25)
-	);
+  const focusedValue = interaction.options.getFocused();
+  const announcements = await Announcement.findAll();
+  const choices = announcements.map((a) => a.name);
+  const filtered = choices.filter((choice) => choice.toLowerCase().includes(focusedValue.toLowerCase()));
+  await interaction.respond(filtered.map((name) => ({ name, value: name })).slice(0, 25));
 }
 
-export {
-	data,
-	execute,
-	commandData,
-	autocomplete,
-};
+export { data, execute, commandData, autocomplete };

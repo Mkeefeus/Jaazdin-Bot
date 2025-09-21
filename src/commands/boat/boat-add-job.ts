@@ -78,9 +78,4 @@ async function execute(interaction: ChatInputCommandInteraction): Promise<void> 
   await interaction.reply({ embeds: [embed] });
 }
 
-export {
-  data,
-  execute,
-  commandData,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

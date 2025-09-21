@@ -110,9 +110,4 @@ async function handleModalSubmit(interaction: Interaction) {
   }
 }
 
-export {
-  data,
-  execute,
-  commandData,
-  handleModalSubmit as handleAnnouncementModal
-};
+export { data, execute, commandData, handleModalSubmit as handleAnnouncementModal };

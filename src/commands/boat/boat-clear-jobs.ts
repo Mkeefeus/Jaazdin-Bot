@@ -16,9 +16,7 @@ const commandData: CommandData = {
   name: 'boat-clear-jobs',
   description: 'Remove all jobs from a boat',
   category: 'boats',
-  options: [
-    { name: 'boat', type: 'string', description: 'Boat name', required: true, autocomplete: true },
-  ],
+  options: [{ name: 'boat', type: 'string', description: 'Boat name', required: true, autocomplete: true }],
 };
 
 const data = buildCommand(commandData);
@@ -124,9 +122,4 @@ async function execute(interaction: ChatInputCommandInteraction): Promise<void> 
   }
 }
 
-export {
-  data,
-  execute,
-  commandData,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

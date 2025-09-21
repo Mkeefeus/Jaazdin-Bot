@@ -42,7 +42,7 @@ async function execute(interaction: ChatInputCommandInteraction) {
       itemName,
       price,
       quantity,
-      type: itemType
+      type: itemType,
     });
 
     // Update the boat's Discord embed if it exists
@@ -70,9 +70,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await boatNameAutocomplete(interaction, { runningOnly: true, inTown: true }); // Only running boats
 }
 
-export {
-  data,
-  execute,
-  commandData,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

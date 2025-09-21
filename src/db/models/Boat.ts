@@ -107,30 +107,32 @@ async function seed() {
   const boats: Boat[] = [];
   try {
     for (const boat of boatsData) {
-      boats.push(await Boat.create({
-        boatName: boat.boatName,
-        city: boat.city,
-        country: boat.country,
-        waitTime: boat.waitTime,
-        timeInTown: boat.timeInTown,
-        jobsAffected: boat.jobsAffected,
-        tier2Ability: boat.tier2Ability,
-        tableToGenerate: boat.tableToGenerate,
-        isRunning: boat.isRunning,
-        isTier2: boat.isTier2,
-        weeksLeft: boat.weeksLeft,
-        isInTown: boat.isInTown,
-      }));
+      boats.push(
+        await Boat.create({
+          boatName: boat.boatName,
+          city: boat.city,
+          country: boat.country,
+          waitTime: boat.waitTime,
+          timeInTown: boat.timeInTown,
+          jobsAffected: boat.jobsAffected,
+          tier2Ability: boat.tier2Ability,
+          tableToGenerate: boat.tableToGenerate,
+          isRunning: boat.isRunning,
+          isTier2: boat.isTier2,
+          weeksLeft: boat.weeksLeft,
+          isInTown: boat.isInTown,
+        })
+      );
     }
     console.log('Boats seeded!');
 
     for (const shipment of shipmentsData) {
       await Shipment.create({
-        boatId: boats.find(boat => boat.boatName === shipment.boatName)?.id,
+        boatId: boats.find((boat) => boat.boatName === shipment.boatName)?.id,
         itemName: shipment.itemName,
         price: shipment.price,
         quantity: shipment.quantity,
-        type: shipment.type
+        type: shipment.type,
       });
     }
     console.log('Shipments seeded!');

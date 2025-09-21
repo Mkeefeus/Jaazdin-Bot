@@ -1,19 +1,30 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Weapon } from '../../db/models/Weapon';
 import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 import { getRandomMetalByRarity } from './generatemetal';
-import { HelpData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('generateweapon')
-  .setDescription('Generate a random weapon with a random valid metal by rarity')
-  .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the metal').setRequired(true).setChoices(rarityChoices)
-  );
+const commandData: CommandData = {
+  name: 'generateweapon',
+  description: 'Generate a random weapon with a random valid metal by rarity',
+  category: 'items',
+  options: [
+    {
+      name: 'rarity',
+      type: 'string',
+      description: 'Rarity of the metal',
+      required: true,
+      choices: rarityChoices,
+    },
+  ],
+};
 
-export async function generateRandomWeaponWithMetalByRarity(rarity: string) {
+const data = buildCommand(commandData);
+
+async function generateRandomWeaponWithMetalByRarity(rarity: string) {
   const metal = await getRandomMetalByRarity(rarity);
   if (!metal) return null;
   const allWeapons = await Weapon.findAll();
@@ -24,7 +35,7 @@ export async function generateRandomWeaponWithMetalByRarity(rarity: string) {
   return { weapon, metal };
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -60,9 +71,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
 
-export const help: HelpData = {
-  name: 'generateweapon',
-  description: 'Generate a random weapon with a random valid metal by rarity',
-  requiredRole: [Roles.DM, Roles.GM],
-  category: 'items',
-};
+export { data, execute, commandData, generateRandomWeaponWithMetalByRarity };

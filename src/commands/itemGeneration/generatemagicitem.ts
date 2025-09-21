@@ -1,17 +1,28 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { MagicItem } from '../../db/models/MagicItem';
 import { createItemEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, randomInt } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('generatemagicitem')
-  .setDescription('Generate a random magic item from a selected table')
-  .addStringOption((option) =>
-    option.setName('table').setDescription('Magic item table').setRequired(true).setAutocomplete(true)
-  );
+const commandData: CommandData = {
+  name: 'generatemagicitem',
+  description: 'Generate a random magic item from a selected table',
+  category: 'items',
+  options: [
+    {
+      name: 'table',
+      type: 'string',
+      description: 'Magic item table',
+      required: true,
+      autocomplete: true,
+    },
+  ],
+};
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+const data = buildCommand(commandData);
+
+async function autocomplete(interaction: AutocompleteInteraction) {
   const items = await MagicItem.findAll({
     group: ['table'],
   });
@@ -23,7 +34,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await interaction.respond(choices);
 }
 
-export async function getRandomMagicItemByTable(table: string): Promise<MagicItem | null> {
+async function getRandomMagicItemByTable(table: string): Promise<MagicItem | null> {
   const items = await MagicItem.findAll({
     where: { table },
   });
@@ -32,7 +43,7 @@ export async function getRandomMagicItemByTable(table: string): Promise<MagicIte
   return items[randomIndex].dataValues;
 }
 
-export async function getRandomMagicItemByRarity(rarity: string): Promise<MagicItem | null> {
+async function getRandomMagicItemByRarity(rarity: string): Promise<MagicItem | null> {
   const items = await MagicItem.findAll({
     where: { rarity },
   });
@@ -41,7 +52,7 @@ export async function getRandomMagicItemByRarity(rarity: string): Promise<MagicI
   return items[randomIndex].dataValues;
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -72,9 +83,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export const help = {
-  name: 'generatemagicitem',
-  description: 'Generate a random magic item by table type',
-  requiredRole: [Roles.GM, Roles.DM],
-  category: 'items',
-};
+export { data, execute, commandData, autocomplete, getRandomMagicItemByRarity, getRandomMagicItemByTable };

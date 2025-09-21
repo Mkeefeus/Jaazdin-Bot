@@ -70,16 +70,12 @@ async function execute(interaction: ChatInputCommandInteraction) {
 
     if (i === 0) {
       // First message uses reply
-      await interaction.reply({ embeds: embedChunk, flags: MessageFlags.Ephemeral});
+      await interaction.reply({ embeds: embedChunk, flags: MessageFlags.Ephemeral });
     } else {
       // Subsequent messages use followUp
-      await interaction.followUp({ embeds: embedChunk, flags: MessageFlags.Ephemeral});
+      await interaction.followUp({ embeds: embedChunk, flags: MessageFlags.Ephemeral });
     }
   }
 }
 
-export {
-  data,
-  execute,
-  commandData,
-};
+export { data, execute, commandData };

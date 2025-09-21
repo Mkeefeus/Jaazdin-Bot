@@ -23,11 +23,11 @@ const commandData: CommandData = {
     { name: 'waittime', type: 'integer', description: 'Weeks at sea' },
     { name: 'timeintown', type: 'integer', description: 'Weeks in town' },
     { name: 'tier2ability', type: 'string', description: 'Tier 2 ability description' },
-    { 
-      name: 'table', 
-      type: 'string', 
-      description: 'What type of loot the boat will generate', 
-      choices: tableToGenerateChoices
+    {
+      name: 'table',
+      type: 'string',
+      description: 'What type of loot the boat will generate',
+      choices: tableToGenerateChoices,
     },
     { name: 'istier2', type: 'boolean', description: 'Is this a tier 2 boat?' },
     { name: 'isrunning', type: 'boolean', description: 'Is this boat running?' },
@@ -206,9 +206,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export {
-  data,
-  execute,
-  commandData,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

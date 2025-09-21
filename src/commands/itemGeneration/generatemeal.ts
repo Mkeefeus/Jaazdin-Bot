@@ -1,22 +1,34 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Meal } from '../../db/models/Meal';
 import { createItemEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { rarityChoices, randomInt } from '~/functions/helpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('generatemeal')
-  .setDescription('Generate a random meal by rarity')
-  .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the meal').setRequired(true).setChoices(rarityChoices)
-  );
+const commandData: CommandData = {
+  name: 'generatemeal',
+  description: 'Generate a random meal by rarity',
+  category: 'items',
+  options: [
+    {
+      name: 'rarity',
+      type: 'string',
+      description: 'Rarity of the meal',
+      required: true,
+      choices: rarityChoices,
+    },
+  ],
+};
 
-export async function getRandomMealByRarity(rarity: string): Promise<Meal | null> {
+const data = buildCommand(commandData);
+
+async function getRandomMealByRarity(rarity: string): Promise<Meal | null> {
   const meals = await Meal.findAll({ where: { rarity } });
   if (!meals || meals.length === 0) return null;
   return meals[Math.floor(Math.random() * meals.length)];
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   const rarity = interaction.options.getString('rarity', true);
 
   const meal = await getRandomMealByRarity(rarity);
@@ -39,8 +51,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export const help = {
-  name: 'generatemeal',
-  description: 'Generate a random meal by rarity',
-  category: 'items',
-};
+export { data, execute, commandData, getRandomMealByRarity };

@@ -1,17 +1,29 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Seed } from '../../db/models/Seed';
 import { createItemEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('generateseeds')
-  .setDescription('Generate a random seed by rarity')
-  .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the seed').setRequired(true).setChoices(rarityChoices)
-  );
+const commandData: CommandData = {
+  name: 'generateseeds',
+  description: 'Generate a random seed by rarity',
+  category: 'items',
+  options: [
+    {
+      name: 'rarity',
+      type: 'string',
+      description: 'Rarity of the seed',
+      required: true,
+      choices: rarityChoices,
+    },
+  ],
+};
 
-export async function getRandomSeedByRarity(rarity: string): Promise<Seed | null> {
+const data = buildCommand(commandData);
+
+async function getRandomSeedByRarity(rarity: string): Promise<Seed | null> {
   const items = await Seed.findAll({
     where: { rarity },
   });
@@ -20,7 +32,7 @@ export async function getRandomSeedByRarity(rarity: string): Promise<Seed | null
   return items[randomIndex].dataValues;
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -52,9 +64,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export const help = {
-  name: 'generateseeds',
-  description: 'Generate a random seed by rarity',
-  requiredRole: [Roles.GM, Roles.DM],
-  category: 'items',
-};
+export { data, execute, commandData, getRandomSeedByRarity };

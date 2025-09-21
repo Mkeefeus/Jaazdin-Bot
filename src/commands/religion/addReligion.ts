@@ -13,7 +13,11 @@ export const data = new SlashCommandBuilder()
     option.setName('domain').setDescription('The domain of the religion').setRequired(true).setAutocomplete(true)
   )
   .addIntegerOption((option) =>
-    option.setName('follower_count').setDescription('The number of followers of the religion (default 0)').setRequired(false).setMinValue(0)
+    option
+      .setName('follower_count')
+      .setDescription('The number of followers of the religion (default 0)')
+      .setRequired(false)
+      .setMinValue(0)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {

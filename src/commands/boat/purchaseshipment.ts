@@ -86,9 +86,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export {
-  data,
-  execute,
-  commandData,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

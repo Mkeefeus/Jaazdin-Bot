@@ -35,8 +35,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export {
-  data,
-  execute,
-  commandData,
-};
+export { data, execute, commandData };

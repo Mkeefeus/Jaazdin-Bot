@@ -16,16 +16,20 @@ const commandData: CommandData = {
     { name: 'city', type: 'string', description: 'City of origin' },
     { name: 'country', type: 'string', description: 'Country of origin' },
     { name: 'tier2ability', type: 'string', description: 'Tier 2 ability description' },
-    { 
-      name: 'table', 
-      type: 'string', 
-      description: 'What type of loot the boat will generate', 
+    {
+      name: 'table',
+      type: 'string',
+      description: 'What type of loot the boat will generate',
       required: false,
-      choices: tableToGenerateChoices
+      choices: tableToGenerateChoices,
     },
     { name: 'istier2', type: 'boolean', description: 'Is this a tier 2 boat? (default false)' },
     { name: 'isrunning', type: 'boolean', description: 'Is this boat running? (default true)' },
-    { name: 'weeksleft', type: 'integer', description: 'Weeks left (default furthest from town or in town for longest time)' },
+    {
+      name: 'weeksleft',
+      type: 'integer',
+      description: 'Weeks left (default furthest from town or in town for longest time)',
+    },
     { name: 'isintown', type: 'boolean', description: 'Is the boat in town? (default false)' },
   ],
 };
@@ -128,8 +132,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export {
-  data,
-  execute,
-  commandData,
-};
+export { data, execute, commandData };

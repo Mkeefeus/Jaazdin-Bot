@@ -133,8 +133,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export {
-  data,
-  execute,
-  commandData,
-};
+export { data, execute, commandData };

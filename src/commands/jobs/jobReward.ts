@@ -1,9 +1,4 @@
-import {
-  SlashCommandBuilder,
-  ChatInputCommandInteraction,
-  EmbedBuilder,
-  AutocompleteInteraction
-} from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } from 'discord.js';
 import { Op } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
@@ -64,7 +59,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     where: {
       isInTown: true,
       isRunning: true,
-      jobsAffected: { [Op.contains]: [capitalizedJobName] }
+      jobsAffected: { [Op.contains]: [capitalizedJobName] },
     },
   });
   for (const boat of effectiveBoats) {

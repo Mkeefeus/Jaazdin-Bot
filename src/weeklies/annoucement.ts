@@ -33,7 +33,6 @@ async function post() {
     console.warn('Client is not ready yet. Delaying message send.');
     return;
   }
-  
 
   try {
     const channel = await client.channels.fetch(CHANNEL_ID);

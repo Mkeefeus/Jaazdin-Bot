@@ -82,7 +82,7 @@ async function seed() {
       await Timer.create({
         name: timer.name,
         weeks_remaining: timer.weeksRemaining,
-        type: (typeof timer.type === 'string' ? TimerType[timer.type as keyof typeof TimerType] : timer.type),
+        type: typeof timer.type === 'string' ? TimerType[timer.type as keyof typeof TimerType] : timer.type,
         user: timer.user,
         character: timer.character,
         repeatable: timer.repeatable,

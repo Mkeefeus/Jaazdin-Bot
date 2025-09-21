@@ -9,9 +9,7 @@ const commandData: CommandData = {
   name: 'destroyboat',
   description: 'Will remove a boat from the active boats',
   category: 'boats',
-  options: [
-    { name: 'name', type: 'string', description: 'The name of the boat', required: true, autocomplete: true },
-  ],
+  options: [{ name: 'name', type: 'string', description: 'The name of the boat', required: true, autocomplete: true }],
 };
 
 const data = buildCommand(commandData);
@@ -75,9 +73,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await boatNameAutocomplete(interaction);
 }
 
-export {
-  data,
-  execute,
-  commandData,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

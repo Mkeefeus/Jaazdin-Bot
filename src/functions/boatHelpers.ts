@@ -354,7 +354,8 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
       for (const rarity of rarities) {
         const type = types[randomInt(0, types.length - 1)];
         const reagent = await getRandomReagentByRarityAndType(rarity, type);
-        if (reagent) addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max), 'reagent');
+        if (reagent)
+          addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max), 'reagent');
       }
       return result;
     }
@@ -408,7 +409,8 @@ export async function generateShipmentItems(boat: Boat): Promise<ShipmentItem[]>
           if (poison) addOrIncrementItem(result, poison.name, randomInt(poison.price_min, poison.price_max), 'poison');
         } else if (typeRoll === 6) {
           const reagent = await getRandomReagentByRarity(rarity);
-          if (reagent) addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max), 'reagent');
+          if (reagent)
+            addOrIncrementItem(result, reagent.name, randomInt(reagent.price_min, reagent.price_max), 'reagent');
         } else if (typeRoll === 7) {
           const seed = await getRandomSeedByRarity(rarity);
           if (seed) addOrIncrementItem(result, seed.name, randomInt(seed.price_min, seed.price_max), 'seed');
@@ -432,8 +434,7 @@ export async function boatInTownEmbedBuilder(boat: Boat) {
 
   if (boat.jobsAffected && Array.isArray(boat.jobsAffected) && boat.jobsAffected.length > 0) {
     desc += `💰 **${boat.jobsAffected.join(', ')}** have their gp wage die amount +1.\n\n`;
-  }
-  else {
+  } else {
     desc += `💰 **No Jobs Bonuses from ${boat.boatName}**\n\n`;
   }
   if (boat.isTier2 && boat.tier2Ability) desc += `⭐ ${boat.tier2Ability}\n`;

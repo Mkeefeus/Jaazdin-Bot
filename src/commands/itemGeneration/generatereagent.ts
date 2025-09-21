@@ -1,24 +1,36 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Reagent } from '../../db/models/Reagent';
 import { createItemEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, rarityChoices, randomInt, creatureTypeChoices } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('generatereagent')
-  .setDescription('Generate a random reagent by rarity and creature type')
-  .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the reagent').setRequired(true).addChoices(rarityChoices)
-  )
-  .addStringOption((option) =>
-    option
-      .setName('creaturetype')
-      .setDescription('Creature type of the reagent')
-      .setRequired(true)
-      .setChoices(creatureTypeChoices)
-  );
+const commandData: CommandData = {
+  name: 'generatereagent',
+  description: 'Generate a random reagent by rarity and creature type',
+  category: 'items',
+  options: [
+    {
+      name: 'rarity',
+      type: 'string',
+      description: 'Rarity of the reagent',
+      required: true,
+      choices: rarityChoices,
+    },
+    {
+      name: 'creaturetype',
+      type: 'string',
+      description: 'Creature type of the reagent',
+      required: true,
+      choices: creatureTypeChoices,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -52,22 +64,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 
 // Utility function for use in other scripts
-export async function getRandomReagentByRarityAndType(rarity: string, creatureType: string) {
+async function getRandomReagentByRarityAndType(rarity: string, creatureType: string) {
   const validReagents = await Reagent.findAll({ where: { rarity, type: creatureType } });
   if (validReagents.length === 0) return null;
   return validReagents[Math.floor(Math.random() * validReagents.length)];
 }
 
 // New helper: get a random reagent by rarity, regardless of type
-export async function getRandomReagentByRarity(rarity: string) {
+async function getRandomReagentByRarity(rarity: string) {
   const validReagents = await Reagent.findAll({ where: { rarity } });
   if (validReagents.length === 0) return null;
   return validReagents[Math.floor(Math.random() * validReagents.length)];
 }
 
-export const help = {
-  name: 'generatereagent',
-  description: 'Generate a random reagent by rarity and creature type',
-  requiredRole: [Roles.GM, Roles.DM],
-  category: 'items',
-};
+export { data, execute, commandData, getRandomReagentByRarityAndType, getRandomReagentByRarity };

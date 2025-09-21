@@ -1,23 +1,35 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Poison } from '../../db/models/Poison';
 import { createItemEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, rarityChoices, randomInt } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('generatepoison')
-  .setDescription('Generate a random poison by rarity')
-  .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the poison').setRequired(true).setChoices(rarityChoices)
-  );
+const commandData: CommandData = {
+  name: 'generatepoison',
+  description: 'Generate a random poison by rarity',
+  category: 'items',
+  options: [
+    {
+      name: 'rarity',
+      type: 'string',
+      description: 'Rarity of the poison',
+      required: true,
+      choices: rarityChoices,
+    },
+  ],
+};
 
-export async function getRandomPoisonByRarity(rarity: string): Promise<Poison | null> {
+const data = buildCommand(commandData);
+
+async function getRandomPoisonByRarity(rarity: string): Promise<Poison | null> {
   const poisons = await Poison.findAll({ where: { rarity } });
   if (!poisons || poisons.length === 0) return null;
   return poisons[Math.floor(Math.random() * poisons.length)];
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -50,9 +62,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export const help = {
-  name: 'generatepoison',
-  description: 'Generate a random poison by rarity',
-  requiredRole: [Roles.GM, Roles.DM],
-  category: 'items',
-};
+export { data, execute, commandData, getRandomPoisonByRarity };

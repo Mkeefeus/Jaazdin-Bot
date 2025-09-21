@@ -53,18 +53,19 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     follower_count,
     selectedReligion.dataValues.follower_count,
     'follower count',
-    0, null,
+    0,
+    null,
     interaction
   );
   if (newFollowerCount === null) return;
 
-  // Cap the follower count at 0 if it's below. 
+  // Cap the follower count at 0 if it's below.
   if (newFollowerCount < 0) {
     await interaction.reply({
-        content: `Follower count is below 0 from this change. Please provide a valid follower count.`,
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
+      content: `Follower count is below 0 from this change. Please provide a valid follower count.`,
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
   }
 
   // Check to see if the new name to update doesn't already exist

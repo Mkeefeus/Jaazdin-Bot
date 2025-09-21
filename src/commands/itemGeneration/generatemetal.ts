@@ -1,23 +1,35 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Metal } from '../../db/models/Metal';
 import { Op } from 'sequelize';
 import { createItemEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { rarityChoices, randomInt } from '~/functions/helpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('generatemetal')
-  .setDescription('Generate a random metal by rarity')
-  .addStringOption((option) =>
-    option.setName('rarity').setDescription('Rarity of the metal').setRequired(true).addChoices(rarityChoices)
-  );
+const commandData: CommandData = {
+  name: 'generatemetal',
+  description: 'Generate a random metal by rarity',
+  category: 'items',
+  options: [
+    {
+      name: 'rarity',
+      type: 'string',
+      description: 'Rarity of the metal',
+      required: true,
+      choices: rarityChoices,
+    },
+  ],
+};
 
-export async function getRandomMetalByRarity(rarity: string): Promise<Metal | null> {
+const data = buildCommand(commandData);
+
+async function getRandomMetalByRarity(rarity: string): Promise<Metal | null> {
   const metals = await Metal.findAll({ where: { rarity } });
   if (!metals || metals.length === 0) return null;
   return metals[Math.floor(Math.random() * metals.length)];
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   // if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
   //   await interaction.reply({
   //     content: 'You do not have permission to use this command.',
@@ -57,7 +69,7 @@ export const help = {
 };
 
 // Utility function: get a random metal by rarity, excluding certain planes
-export async function getRandomMetalByRarityExcludingPlanes(rarity: string, excludedPlane: string) {
+async function getRandomMetalByRarityExcludingPlanes(rarity: string, excludedPlane: string) {
   // Assumes Metal model has a 'plane' property
   const validMetals = await Metal.findAll({
     where: {
@@ -68,3 +80,5 @@ export async function getRandomMetalByRarityExcludingPlanes(rarity: string, excl
   if (validMetals.length === 0) return null;
   return validMetals[Math.floor(Math.random() * validMetals.length)];
 }
+
+export { data, execute, commandData, getRandomMetalByRarity, getRandomMetalByRarityExcludingPlanes };

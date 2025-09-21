@@ -10,7 +10,12 @@ const commandData: CommandData = {
   description: 'Set all boats to running or not, with optional exceptions',
   category: 'boats',
   options: [
-    { name: 'running', type: 'boolean', description: 'Set boats to running (true) or not running (false)', required: true },
+    {
+      name: 'running',
+      type: 'boolean',
+      description: 'Set boats to running (true) or not running (false)',
+      required: true,
+    },
     { name: 'exceptions', type: 'string', description: 'Comma-separated boat names to leave unchanged (optional)' },
   ],
 };
@@ -51,8 +56,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export {
-  data,
-  execute,
-  commandData,
-};
+export { data, execute, commandData };

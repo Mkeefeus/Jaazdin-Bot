@@ -10,7 +10,6 @@ import { findReligionByName, religionCommandAutocomplete } from '~/functions/rel
 import { replyWithUserMention, formatNames } from '~/functions/helpers';
 import { HelpData } from '~/types';
 
-
 export const data = new SlashCommandBuilder()
   .setName('showreligion')
   .setDescription('Show all information about selected religion')
