@@ -1,10 +1,7 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Weapon } from '../../db/models/Weapon';
-import { createItemEmbed, calculateMetalItemPrice } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, randomInt, rarityChoices } from '~/functions/helpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { createItemEmbed, calculateMetalItemPrice, buildCommand, checkUserRole, randomInt, rarityChoices } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 import { getRandomMetalByRarity } from './generatemetal';
 
 const commandData: CommandData = {

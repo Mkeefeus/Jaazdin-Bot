@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { Religion } from '~/db/models/Religion';
-import { buildCommand } from '~/functions/commandHelpers';
-import { formatNames, replyWithUserMention } from '~/functions/helpers';
+import { buildCommand, formatNames, replyWithUserMention } from '~/helpers';
 import { showReligion } from './showReligion';
 import { CommandData } from '~/types';
 

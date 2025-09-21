@@ -1,8 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Meal } from '../../db/models/Meal';
-import { createItemEmbed } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { rarityChoices, randomInt } from '~/functions/helpers';
+import { buildCommand, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {

@@ -1,10 +1,9 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { readdirSync } from 'fs';
 import path from 'path';
-import { buildCommand } from '~/functions/commandHelpers';
+import { buildCommand } from '~/helpers';
 import { CommandData } from '~/types/command';
-import { WeeklyData } from '~/types';
-import { Roles } from '~/types';
+import { Roles, WeeklyData } from '~/types';
 
 const commandData: CommandData = {
   name: 'triggerweeklies',

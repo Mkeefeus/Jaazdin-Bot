@@ -2,8 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } fr
 import { Op } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
-import { buildCommand } from '~/functions/commandHelpers';
-import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/functions/helpers';
+import { buildCommand, formatNames, jobNameAutocomplete, replyWithUserMention } from '~/helpers';
 import { CommandData } from '~/types';
 
 // Helper function to convert job name from database format to boat format

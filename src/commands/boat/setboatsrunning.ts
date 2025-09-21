@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { buildCommand, checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 import { Op } from 'sequelize';
 

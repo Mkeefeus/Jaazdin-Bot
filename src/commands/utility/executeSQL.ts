@@ -1,9 +1,7 @@
 import { db } from '~/db/db';
 import { ChatInputCommandInteraction } from 'discord.js';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, checkUserRole } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
   name: 'sql',

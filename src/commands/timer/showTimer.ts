@@ -1,9 +1,7 @@
 import { EmbedBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
-import { buildCommand } from '~/functions/commandHelpers';
-import { formatNames } from '~/functions/helpers';
-import { SortedTimers, TimerType, typeColors, typeIcons } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, formatNames } from '~/helpers';
+import { CommandData, SortedTimers, TimerType, typeColors, typeIcons } from '~/types';
 
 const commandData: CommandData = {
   name: 'showtimers',

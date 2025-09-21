@@ -1,9 +1,7 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, checkUserRole, confirmAction, formatNames } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
   name: 'gmremovetimer',

@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
-import { buildCommand } from '~/functions/commandHelpers';
+import { buildCommand } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {

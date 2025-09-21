@@ -1,10 +1,7 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Poison } from '../../db/models/Poison';
-import { createItemEmbed } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, rarityChoices, randomInt } from '~/functions/helpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
   name: 'generatepoison',

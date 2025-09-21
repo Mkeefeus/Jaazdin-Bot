@@ -1,6 +1,5 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder, MessageFlags } from 'discord.js';
-import { loadCommandFiles, buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { loadCommandFiles, buildCommand, checkUserRole } from '~/helpers';
 import { Roles, CommandData } from '~/types';
 
 const commandData: CommandData = {

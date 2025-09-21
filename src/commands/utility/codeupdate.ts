@@ -1,8 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, checkUserRole } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 import { exec } from 'child_process';
 
 const commandData: CommandData = {

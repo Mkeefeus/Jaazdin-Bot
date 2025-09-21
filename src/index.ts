@@ -7,7 +7,7 @@ import fs from 'fs/promises';
 import { CommandFile } from './types';
 import setupWeeklyTasks from './weeklies/weekly';
 import { db } from './db/db'; // Import your Sequelize instance
-import { setupModalInteractionHandler } from './functions/modal';
+import { setupModalInteractionHandler } from './helpers';
 
 // Extend the Client type to include commands
 declare module 'discord.js' {

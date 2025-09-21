@@ -7,9 +7,10 @@ import {
   generateShipmentItems,
   boatAtSeaEmbedBuilder,
   tableToGenerateChoices,
-} from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, parseChangeString } from '~/functions/helpers';
+  buildCommand,
+  checkUserRole,
+  parseChangeString,
+} from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {

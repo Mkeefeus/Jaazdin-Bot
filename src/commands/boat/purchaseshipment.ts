@@ -1,8 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
-import { boatNameAutocomplete, itemNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { formatNames } from '~/functions/helpers';
+import { boatNameAutocomplete, buildCommand, formatNames, itemNameAutocomplete, updateBoatEmbed } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {

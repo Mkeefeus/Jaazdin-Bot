@@ -1,7 +1,7 @@
 import { db } from 'db/db';
 import { ChatInputCommandInteraction } from 'discord.js';
 import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
-import { buildCommand } from '~/functions/commandHelpers';
+import { buildCommand } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {

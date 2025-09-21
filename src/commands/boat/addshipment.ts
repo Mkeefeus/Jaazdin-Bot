@@ -1,8 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
-import { boatNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, formatNames } from '~/functions/helpers';
+import { boatNameAutocomplete, buildCommand, checkUserRole, formatNames, updateBoatEmbed } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 //TODO gm command only.

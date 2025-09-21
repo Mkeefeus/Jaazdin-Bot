@@ -9,9 +9,7 @@ import {
   MessageFlags,
 } from 'discord.js';
 import { Announcement } from '~/db/models/Announcement';
-import { showAnnouncement } from '~/functions/announcementHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { buildCommand, checkUserRole, showAnnouncement } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const CHANNEL_ID = process.env.BOT_CHANNEL_ID;

@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Spell } from '~/db/models/Spell';
-import { createItemEmbed } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
+import { buildCommand, createItemEmbed } from '~/helpers';
 import { CommandData } from '~/types';
 
 const SPELL_SCHOOLS = [

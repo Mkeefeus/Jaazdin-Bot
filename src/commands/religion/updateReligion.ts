@@ -1,7 +1,5 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { findReligionByName, checkReligionExists, religionCommandAutocomplete } from '~/functions/religionHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { replyWithUserMention, parseChangeString } from '~/functions/helpers';
+import { findReligionByName, checkReligionExists, religionCommandAutocomplete, buildCommand, parseChangeString, replyWithUserMention } from '~/helpers';
 import { showReligion } from './showReligion';
 import { Domain } from '~/db/models/Religion';
 import { CommandData } from '~/types';

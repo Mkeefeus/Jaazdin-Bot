@@ -1,7 +1,5 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
-import { findBoatByName, createBoatStatusDescription, boatNameAutocomplete } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, jobNameAutocomplete } from '~/functions/helpers';
+import { findBoatByName, createBoatStatusDescription, boatNameAutocomplete, buildCommand, checkUserRole, jobNameAutocomplete } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {

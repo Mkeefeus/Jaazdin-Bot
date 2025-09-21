@@ -1,10 +1,7 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Domain } from '~/db/models/Religion';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
-import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, checkUserRole, confirmAction, findReligionByName, formatNames, religionCommandAutocomplete } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
   name: 'destroyreligion',

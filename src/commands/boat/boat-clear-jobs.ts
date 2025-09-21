@@ -7,9 +7,7 @@ import {
   ActionRowBuilder,
   MessageFlags,
 } from 'discord.js';
-import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole } from '~/functions/helpers';
+import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription, buildCommand, checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {

@@ -1,8 +1,7 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { TIMER_MAX_LENGTH } from '~/constants';
 import { Timer } from '~/db/models/Timer';
-import { buildCommand } from '~/functions/commandHelpers';
-import { formatNames, parseChangeString } from '~/functions/helpers';
+import { buildCommand, formatNames, parseChangeString } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {

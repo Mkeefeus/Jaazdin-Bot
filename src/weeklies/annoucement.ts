@@ -1,4 +1,4 @@
-import { showAnnouncement } from '~/functions/announcementHelpers';
+import { showAnnouncement } from '~/helpers';
 import { Announcement } from '../db/models/Announcement';
 import { client } from '~/index';
 import { TextChannel } from 'discord.js';

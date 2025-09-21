@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Announcement } from '~/db/models/Announcement';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
+import { checkUserRole, confirmAction, formatNames, buildCommand } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {

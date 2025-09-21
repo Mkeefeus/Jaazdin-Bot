@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction } from 'discord.js';
 import { Ingredient } from '~/db/models/Ingredient';
 import { writeFile } from 'fs/promises';
 import { resolve } from 'path';
-import { buildCommand } from '~/functions/commandHelpers';
+import { buildCommand } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {

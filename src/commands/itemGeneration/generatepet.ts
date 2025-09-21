@@ -1,11 +1,8 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Pet } from '../../db/models/Pet';
 import { Op } from 'sequelize';
-import { createItemEmbed } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, creatureTypeChoices, rarityChoices, randomInt } from '~/functions/helpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, checkUserRole, createItemEmbed, creatureTypeChoices, randomInt, rarityChoices } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 
 // Rarity boundaries by CR
 const RARITY_BOUNDS = [

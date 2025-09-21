@@ -3,7 +3,7 @@ import { Boat, Shipment } from '../db/models/Boat';
 import { EmbedBuilder, TextChannel } from 'discord.js';
 import { client } from '~/index';
 // Import helper functions from boatHelpers
-import { generateShipmentItems } from '../functions/boatHelpers';
+import { generateShipmentItems } from '../helpers/boatHelpers';
 import { createBoatEmbed } from '~/commands/boat/showboats';
 
 async function update() {

@@ -1,8 +1,6 @@
 import { randomInt } from 'crypto';
-import { ChatInputCommandInteraction, MessageFlags, userMention } from 'discord.js';
-import { EmbedBuilder } from 'discord.js';
-import { checkUserRole } from '~/functions/helpers';
-import { buildCommand } from '~/functions/commandHelpers';
+import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags, userMention } from 'discord.js';
+import { buildCommand, checkUserRole } from '~/helpers';
 import { Roles, CommandData } from '~/types';
 
 type RollFormula = {

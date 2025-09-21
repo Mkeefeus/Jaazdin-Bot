@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
-import { boatInTownEmbedBuilder } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
+import { boatInTownEmbedBuilder, buildCommand } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {

@@ -1,10 +1,7 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Reagent } from '../../db/models/Reagent';
-import { createItemEmbed } from '~/functions/boatHelpers';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, rarityChoices, randomInt, creatureTypeChoices } from '~/functions/helpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, checkUserRole, createItemEmbed, creatureTypeChoices, randomInt, rarityChoices } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
   name: 'generatereagent',

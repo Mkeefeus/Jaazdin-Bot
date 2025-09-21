@@ -1,10 +1,8 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { TIMER_MAX_LENGTH } from '~/constants';
 import { Timer } from '~/db/models/Timer';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole, formatNames, parseChangeString } from '~/functions/helpers';
-import { Roles } from '~/types';
-import { CommandData } from '~/types';
+import { buildCommand, checkUserRole, formatNames, parseChangeString } from '~/helpers';
+import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
   name: 'gmupdatetimer',

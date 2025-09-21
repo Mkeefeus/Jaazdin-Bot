@@ -1,11 +1,7 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
-import { Shipment } from '~/db/models/Boat';
-import { buildCommand } from '~/functions/commandHelpers';
-import { checkUserRole } from '~/functions/helpers';
-import { parseChangeString } from '~/functions/helpers';
+import { Boat, Shipment } from '~/db/models/Boat';
+import { buildCommand, checkUserRole, parseChangeString, updateBoatEmbed } from '~/helpers';
 import { CommandData, Roles } from '~/types';
-import { Boat } from '~/db/models/Boat';
-import { updateBoatEmbed } from '~/functions/boatHelpers';
 
 const commandData: CommandData = {
   name: 'updateshipment',

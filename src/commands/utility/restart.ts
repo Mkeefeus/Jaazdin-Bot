@@ -1,6 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { checkUserRole } from '~/functions/helpers';
-import { buildCommand } from '~/functions/commandHelpers';
+import { buildCommand, checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
