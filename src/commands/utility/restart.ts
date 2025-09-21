@@ -1,8 +1,7 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
 import { buildCommand } from '~/functions/commandHelpers';
-import { CommandData } from '~/types/command';
-import { HelpData, Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
   name: 'restart',
@@ -28,7 +27,7 @@ async function execute(interaction: ChatInputCommandInteraction) {
   process.exit(0);
 }
 
-const help: HelpData = {
+const help: CommandData = {
   name: 'restart',
   description: 'Restarts the bot process',
   requiredRole: Roles.BOT_DEV,

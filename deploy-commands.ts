@@ -13,7 +13,7 @@ async function deployCommands() {
   if (!guildId) throw new Error('Missing GUILD_ID in environment variables');
   if (!token) throw new Error('Missing DISCORD_TOKEN in environment variables');
 
-  const { commands } = await loadCommandFiles();
+  const commands = await loadCommandFiles('commands');
   const rest = new REST().setToken(token);
 
   console.log(`Started refreshing ${commands.length} application (/) commands.`);

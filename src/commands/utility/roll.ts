@@ -3,9 +3,7 @@ import { ChatInputCommandInteraction, MessageFlags, userMention } from 'discord.
 import { EmbedBuilder } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
 import { buildCommand } from '~/functions/commandHelpers';
-import { CommandData } from '~/types/command';
-import { HelpData } from '~/types';
-import { Roles } from '~/types';
+import { Roles, CommandData } from '~/types';
 
 type RollFormula = {
   limiter?: number;
@@ -448,11 +446,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.editReply({ content: userMention(interaction.user.id), embeds: [embed] });
 }
 
-const help: HelpData = {
-  name: 'roll',
-  description: 'Roll dice with advanced modifiers and options',
-  requiredRole: Roles.BOT_DEV,
-  category: 'utility',
-};
-
-export { commandData, data, execute, help };
+export { commandData, data, execute };

@@ -1,8 +1,7 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder, MessageFlags } from 'discord.js';
 import { loadCommandFiles, buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles, HelpData } from '~/types';
-import { CommandData } from '~/types';
+import { Roles, CommandData } from '~/types';
 
 const commandData: CommandData = {
   name: 'help',
@@ -20,7 +19,7 @@ const commandData: CommandData = {
 
 const data = buildCommand(commandData);
 
-const commands: HelpData[] = [];
+const commands: CommandData[] = [];
 
 const categoryEmojis: { [key: string]: string } = {
   boats: '🚢',
@@ -45,7 +44,7 @@ function getUserRoles(interaction: ChatInputCommandInteraction | AutocompleteInt
   return userRoles;
 }
 
-function canUseCommand(command: HelpData, userRoles: Roles[]): boolean {
+function canUseCommand(command: CommandData, userRoles: Roles[]): boolean {
   if (Array.isArray(command.requiredRole)) {
     return command.requiredRole.some((role) => userRoles.includes(role));
   }
@@ -57,7 +56,7 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused();
   if (commands.length == 0) {
     // await loadCommands();
-    const { commandsData } = await loadCommandFiles();
+    const commandsData = await loadCommandFiles('commandsData');
     commands.push(...commandsData);
   }
   const userRoles = getUserRoles(interaction);
@@ -101,7 +100,7 @@ async function executeSubhelp(interaction: ChatInputCommandInteraction, command:
 async function execute(interaction: ChatInputCommandInteraction) {
   if (commands.length == 0) {
     // await loadCommands();
-    const { commandsData } = await loadCommandFiles();
+    const commandsData = await loadCommandFiles('commandsData');
     commands.push(...commandsData);
   }
   const command = interaction.options.getString('command');
@@ -120,7 +119,7 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   // Group commands by category
-  const commandsByCategory: { [key: string]: HelpData[] } = {};
+  const commandsByCategory: { [key: string]: CommandData[] } = {};
   userCommands.forEach((cmd) => {
     if (!commandsByCategory[cmd.category]) {
       commandsByCategory[cmd.category] = [];
