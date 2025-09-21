@@ -91,9 +91,47 @@ async function executeSubhelp(interaction: ChatInputCommandInteraction, command:
   const embed = new EmbedBuilder()
     .setTitle(`🤖 Help: /${commandData.name}`)
     .setColor(Colors.Gold)
-    .setDescription(commandData.description)
-    .addFields({ name: 'Options', value: optionsString });
-  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+    .setDescription(commandData.description);
+
+  // Handle options that might exceed field limit
+  if (optionsString.length > 1024) {
+    const options = commandData.options || [];
+    let currentField = '';
+    let fieldCount = 1;
+    const embeds = [embed];
+
+    for (const option of options) {
+      const optionLine = `\`${option.name}\` (${option.type})${option.required ? ' [required]' : ''}${option.description ? ` - ${option.description}` : ''}\n`;
+      
+      if (currentField.length + optionLine.length > 1024) {
+        // Add current field to current embed
+        embeds[embeds.length - 1].addFields({ name: `Options ${fieldCount > 1 ? `(${fieldCount})` : ''}`, value: currentField });
+        
+        // Create new embed if we have more options
+        if (options.indexOf(option) < options.length - 1) {
+          const newEmbed = new EmbedBuilder()
+            .setTitle(`🤖 Help: /${commandData.name} (continued)`)
+            .setColor(Colors.Gold);
+          embeds.push(newEmbed);
+        }
+        
+        currentField = optionLine;
+        fieldCount++;
+      } else {
+        currentField += optionLine;
+      }
+    }
+
+    // Add the last field
+    if (currentField.trim()) {
+      embeds[embeds.length - 1].addFields({ name: `Options ${fieldCount > 1 ? `(continued)` : ''}`, value: currentField });
+    }
+
+    await interaction.reply({ embeds: embeds, flags: MessageFlags.Ephemeral });
+  } else {
+    embed.addFields({ name: 'Options', value: optionsString });
+    await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+  }
 }
 
 async function execute(interaction: ChatInputCommandInteraction) {
@@ -126,30 +164,87 @@ async function execute(interaction: ChatInputCommandInteraction) {
     commandsByCategory[cmd.category].push(cmd);
   });
 
-  // Create embed fields for each category that has commands
-  const fields = Object.entries(commandsByCategory).map(([category, cmds]) => {
+  const embeds: EmbedBuilder[] = [];
+  let currentEmbed = new EmbedBuilder()
+    .setTitle('🤖 Jaazdin Bot Commands')
+    .setColor(Colors.Gold)
+    .setDescription(`Here are all **${userCommands.length}** commands you can use:`);
+
+  // Process each category
+  for (const [category, cmds] of Object.entries(commandsByCategory)) {
     const commandList = cmds
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((cmd) => `\`/${cmd.name}\` - ${cmd.description}`)
       .join('\n');
 
-    return {
-      name: `${categoryEmojis[category]} ${category.charAt(0).toUpperCase() + category.slice(1)} (${cmds.length})`,
-      value: commandList,
-      inline: false,
-    };
+    const fieldName = `${categoryEmojis[category]} ${category.charAt(0).toUpperCase() + category.slice(1)} (${cmds.length})`;
+
+    // Check if adding this field would exceed limits
+    const currentFields = currentEmbed.data.fields || [];
+    if (currentFields.length >= 25 || commandList.length > 1024) {
+      // Start a new embed
+      embeds.push(currentEmbed);
+      currentEmbed = new EmbedBuilder()
+        .setTitle('🤖 Jaazdin Bot Commands (continued)')
+        .setColor(Colors.Gold);
+    }
+
+    // If a single category exceeds field limit, split it
+    if (commandList.length > 1024) {
+      let currentFieldValue = '';
+      let partNumber = 1;
+
+      for (const cmd of cmds.sort((a, b) => a.name.localeCompare(b.name))) {
+        const cmdLine = `\`/${cmd.name}\` - ${cmd.description}\n`;
+        
+        if (currentFieldValue.length + cmdLine.length > 1024) {
+          currentEmbed.addFields({
+            name: `${fieldName} ${partNumber > 1 ? `(Part ${partNumber})` : ''}`,
+            value: currentFieldValue,
+            inline: false,
+          });
+          
+          if (cmds.indexOf(cmd) < cmds.length - 1) {
+            embeds.push(currentEmbed);
+            currentEmbed = new EmbedBuilder()
+              .setTitle('🤖 Jaazdin Bot Commands (continued)')
+              .setColor(Colors.Gold);
+          }
+          
+          currentFieldValue = cmdLine;
+          partNumber++;
+        } else {
+          currentFieldValue += cmdLine;
+        }
+      }
+
+      if (currentFieldValue.trim()) {
+        currentEmbed.addFields({
+          name: `${fieldName} ${partNumber > 1 ? `(Part ${partNumber})` : ''}`,
+          value: currentFieldValue,
+          inline: false,
+        });
+      }
+    } else {
+      currentEmbed.addFields({
+        name: fieldName,
+        value: commandList,
+        inline: false,
+      });
+    }
+  }
+
+  // Add the last embed if it has content
+  if ((currentEmbed.data.fields && currentEmbed.data.fields.length > 0) || embeds.length === 0) {
+    embeds.push(currentEmbed);
+  }
+
+  // Add footer to the last embed
+  embeds[embeds.length - 1].setFooter({
+    text: `Total commands available: ${userCommands.length}`,
   });
 
-  const embed = new EmbedBuilder()
-    .setTitle('🤖 Jaazdin Bot Commands')
-    .setColor(Colors.Gold)
-    .setDescription(`Here are all **${userCommands.length}** commands you can use:`)
-    .addFields(fields)
-    .setFooter({
-      text: `Total commands available: ${userCommands.length}`,
-    });
-
-  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+  await interaction.reply({ embeds: embeds, flags: MessageFlags.Ephemeral });
 }
 
 export { data, execute, commandData, autocomplete };

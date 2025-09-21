@@ -3,8 +3,6 @@ import { Shipment } from '~/db/models/Boat';
 import { boatNameAutocomplete, buildCommand, checkUserRole, formatNames, updateBoatEmbed } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
-//TODO gm command only.
-
 const commandData: CommandData = {
   name: 'addshipment',
   description: 'Add a new shipment item to a boat',

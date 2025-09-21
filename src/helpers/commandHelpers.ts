@@ -1,31 +1,36 @@
 import { RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CommandFile, CommandOption } from '~/types';
 
-function validateCommandOptions(options: CommandOption[], commandName: string) {
-  let firstOptionalFound = false;
-
-  for (const option of options) {
-    if (!option.required) {
-      firstOptionalFound = true;
-    } else if (firstOptionalFound && option.required) {
-      throw new Error(
-        `Invalid command options in ${commandName}: Required option "${option.name}" cannot follow an optional option.`
-      );
-    }
+function sanitizeDescription(description: string, commandName: string, optionName?: string): string {
+  if (description.length < 1) {
+    throw new Error(`Invalid command description in ${commandName}: Must be at least 1 character.`);
   }
+  if (description.length > 100) {
+    console.log(
+      `Warning: Command description${optionName ? ` for option "${optionName}"` : ''} in ${commandName} exceeded 100 characters. It has been truncated to fit the limit.`
+    );
+    return `Use /help ${commandName} for details.`;
+  }
+  return description;
 }
 
 /**
- * Builds a Discord.js slash command from a Command object
- * @param commandData - The Command object containing command details
+ * Builds a Discord.js slash command from a CommandData object
+ * @param commandData - The CommandData object containing command details
  * @returns A SlashCommandBuilder instance
  */
 export function buildCommand(commandData: CommandData): SlashCommandBuilder {
-  if (commandData.options) {
-    validateCommandOptions(commandData.options, commandData.name);
+  if (commandData.name.length < 1 || commandData.name.length > 32) {
+    throw new Error(`Command name "${commandData.name}" must be between 1 and 32 characters.`);
   }
 
-  const builder = new SlashCommandBuilder().setName(commandData.name).setDescription(commandData.description);
+  if (commandData.description.length < 1) {
+    throw new Error(`Command description for "${commandData.name}" must be at least 1 character.`);
+  }
+
+  const sanitizedDescription = sanitizeDescription(commandData.description, commandData.name);
+
+  const builder = new SlashCommandBuilder().setName(commandData.name).setDescription(sanitizedDescription);
 
   if (commandData.options) {
     buildCommandOptions(builder, commandData.options);
@@ -41,11 +46,26 @@ export function buildCommand(commandData: CommandData): SlashCommandBuilder {
  * @returns The modified SlashCommandBuilder
  */
 export function buildCommandOptions(builder: SlashCommandBuilder, options: CommandOption[]): SlashCommandBuilder {
+  const commandName = builder.name;
+  let firstOptionalFound = false;
   for (const option of options) {
+    const sanitizedDescription = sanitizeDescription(option.description, commandName, option.name);
+    if (option.name.length < 1 || option.name.length > 32) {
+      throw new Error(
+        `Invalid command option name "${option.name}" in ${commandName}: Must be between 1 and 32 characters.`
+      );
+    }
+    if (!option.required) {
+      firstOptionalFound = true;
+    } else if (firstOptionalFound && option.required) {
+      throw new Error(
+        `Invalid command options in ${commandName}: Required option "${option.name}" cannot follow an optional option.`
+      );
+    }
     switch (option.type) {
       case 'string':
         builder.addStringOption((stringOption) => {
-          stringOption.setName(option.name).setDescription(option.description);
+          stringOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             stringOption.setRequired(true);
@@ -81,7 +101,7 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'integer':
         builder.addIntegerOption((integerOption) => {
-          integerOption.setName(option.name).setDescription(option.description);
+          integerOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             integerOption.setRequired(true);
@@ -117,7 +137,7 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'boolean':
         builder.addBooleanOption((booleanOption) => {
-          booleanOption.setName(option.name).setDescription(option.description);
+          booleanOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             booleanOption.setRequired(true);
@@ -137,7 +157,7 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'number':
         builder.addNumberOption((numberOption) => {
-          numberOption.setName(option.name).setDescription(option.description);
+          numberOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             numberOption.setRequired(true);
@@ -173,7 +193,7 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'user':
         builder.addUserOption((userOption) => {
-          userOption.setName(option.name).setDescription(option.description);
+          userOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             userOption.setRequired(true);
@@ -193,7 +213,7 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'channel':
         builder.addChannelOption((channelOption) => {
-          channelOption.setName(option.name).setDescription(option.description);
+          channelOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             channelOption.setRequired(true);
@@ -217,7 +237,7 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'role':
         builder.addRoleOption((roleOption) => {
-          roleOption.setName(option.name).setDescription(option.description);
+          roleOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             roleOption.setRequired(true);
@@ -237,7 +257,7 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'mentionable':
         builder.addMentionableOption((mentionableOption) => {
-          mentionableOption.setName(option.name).setDescription(option.description);
+          mentionableOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             mentionableOption.setRequired(true);
@@ -257,7 +277,7 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'attachment':
         builder.addAttachmentOption((attachmentOption) => {
-          attachmentOption.setName(option.name).setDescription(option.description);
+          attachmentOption.setName(option.name).setDescription(sanitizedDescription);
 
           if (option.required) {
             attachmentOption.setRequired(true);

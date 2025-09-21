@@ -7,7 +7,7 @@ const commandData: CommandData = {
   description: '',
   category: '',
   options: [
-    // Define command options here
+    // Define command options here. If none, remove options property.
   ],
 };
 
@@ -17,8 +17,10 @@ async function execute(interaction: ChatInputCommandInteraction) {
   // Command execution logic here
 }
 
+// Remove if not needed
 async function autocomplete(interaction: AutocompleteInteraction) {
   // Autocomplete logic here
 }
 
+// Other exports can be exported here rather then inline
 export { data, execute, autocomplete, commandData };
