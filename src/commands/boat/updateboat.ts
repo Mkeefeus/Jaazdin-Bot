@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { TIMER_MAX_LENGTH } from '~/constants';
 import { Boat, Shipment } from '~/db/models/Boat';
 import {
@@ -8,31 +8,36 @@ import {
   boatAtSeaEmbedBuilder,
   tableToGenerateChoices,
 } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, parseChangeString } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('updateboat')
-  .setDescription('Update properties of an existing boat')
-  .addStringOption((opt) =>
-    opt.setName('name').setDescription('Boat name (required)').setRequired(true).setAutocomplete(true)
-  )
-  .addStringOption((opt) => opt.setName('city').setDescription('City of origin').setRequired(false))
-  .addStringOption((opt) => opt.setName('country').setDescription('Country of origin').setRequired(false))
-  .addIntegerOption((opt) => opt.setName('waittime').setDescription('Weeks at sea').setRequired(false))
-  .addIntegerOption((opt) => opt.setName('timeintown').setDescription('Weeks in town').setRequired(false))
-  .addStringOption((opt) => opt.setName('tier2ability').setDescription('Tier 2 ability description').setRequired(false))
-  .addStringOption((option) =>
-    option
-      .setName('table')
-      .setDescription('What type of loot the boat will generate')
-      .setRequired(false)
-      .setChoices(tableToGenerateChoices)
-  )
-  .addBooleanOption((opt) => opt.setName('istier2').setDescription('Is this a tier 2 boat?').setRequired(false))
-  .addBooleanOption((opt) => opt.setName('isrunning').setDescription('Is this boat running?').setRequired(false))
-  .addStringOption((opt) => opt.setName('weeksleft').setDescription('Weeks left (use +x, -x, =x)').setRequired(false))
-  .addBooleanOption((opt) => opt.setName('isintown').setDescription('Is the boat in town?').setRequired(false));
+const commandData: CommandData = {
+  name: 'updateboat',
+  description: 'Update properties of an existing boat',
+  category: 'boats',
+  options: [
+    { name: 'name', type: 'string', description: 'Boat name (required)', required: true, autocomplete: true },
+    { name: 'city', type: 'string', description: 'City of origin', required: false },
+    { name: 'country', type: 'string', description: 'Country of origin', required: false },
+    { name: 'waittime', type: 'integer', description: 'Weeks at sea', required: false },
+    { name: 'timeintown', type: 'integer', description: 'Weeks in town', required: false },
+    { name: 'tier2ability', type: 'string', description: 'Tier 2 ability description', required: false },
+    { 
+      name: 'table', 
+      type: 'string', 
+      description: 'What type of loot the boat will generate', 
+      required: false,
+      choices: tableToGenerateChoices
+    },
+    { name: 'istier2', type: 'boolean', description: 'Is this a tier 2 boat?', required: false },
+    { name: 'isrunning', type: 'boolean', description: 'Is this boat running?', required: false },
+    { name: 'weeksleft', type: 'string', description: 'Weeks left (use +x, -x, =x)', required: false },
+    { name: 'isintown', type: 'boolean', description: 'Is the boat in town?', required: false },
+  ],
+};
+
+const data = buildCommand(commandData);
 
 function buildBoatUpdatesFromOptions(
   interaction: ChatInputCommandInteraction,
@@ -136,7 +141,7 @@ async function handleShipmentUpdate(boat: Boat, updates: Partial<Boat>): Promise
   }
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -194,7 +199,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 
 // Autocomplete for boat name and table options
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
 
   if (focusedOption.name === 'name') {
@@ -202,9 +207,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export const help = {
-  name: 'updateboat',
-  description: 'Update boat properties such as status, location, and settings',
-  requiredRole: Roles.GM,
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
+  autocomplete,
 };

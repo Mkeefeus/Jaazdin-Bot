@@ -1,21 +1,28 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
 import { boatNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, formatNames } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
 //TODO gm command only.
 
-export const data = new SlashCommandBuilder()
-  .setName('addshipment')
-  .setDescription('Add a new shipment item to a boat')
-  .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
-  .addStringOption((opt) => opt.setName('item').setDescription('Item name').setRequired(true))
-  .addStringOption((opt) => opt.setName('type').setDescription('Item type').setRequired(true))
-  .addIntegerOption((opt) => opt.setName('price').setDescription('Item price (gp)').setRequired(true))
-  .addIntegerOption((opt) => opt.setName('quantity').setDescription('Quantity').setRequired(true).setMinValue(1));
+const commandData: CommandData = {
+  name: 'addshipment',
+  description: 'Add a new shipment item to a boat',
+  category: 'boats',
+  options: [
+    { name: 'boat', type: 'string', description: 'Boat name', required: true, autocomplete: true },
+    { name: 'item', type: 'string', description: 'Item name', required: true },
+    { name: 'type', type: 'string', description: 'Item type', required: true },
+    { name: 'price', type: 'integer', description: 'Item price (gp)', required: true },
+    { name: 'quantity', type: 'integer', description: 'Quantity', required: true, minValue: 1 },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -59,13 +66,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 
 // Autocomplete for boat name
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   await boatNameAutocomplete(interaction, { runningOnly: true, inTown: true }); // Only running boats
 }
 
-export const help = {
-  name: 'addshipment',
-  description: 'Add a new shipment item to a boat',
-  requiredRole: Roles.GM,
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
+  autocomplete,
 };

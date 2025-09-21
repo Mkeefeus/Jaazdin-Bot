@@ -1,12 +1,30 @@
 import { RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CommandFile, CommandOption } from '~/types';
 
+function validateCommandOptions(options: CommandOption[], commandName: string) {
+  let firstOptionalFound = false;
+
+  for (const option of options) {
+    if (!option.required) {
+      firstOptionalFound = true;
+    } else if (firstOptionalFound && option.required) {
+      throw new Error(
+        `Invalid command options in ${commandName}: Required option "${option.name}" cannot follow an optional option.`
+      );
+    }
+  }
+}
+
 /**
  * Builds a Discord.js slash command from a Command object
  * @param commandData - The Command object containing command details
  * @returns A SlashCommandBuilder instance
  */
 export function buildCommand(commandData: CommandData): SlashCommandBuilder {
+  if (commandData.options) {
+    validateCommandOptions(commandData.options, commandData.name);
+  }
+
   const builder = new SlashCommandBuilder().setName(commandData.name).setDescription(commandData.description);
 
   if (commandData.options) {
@@ -27,10 +45,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
     switch (option.type) {
       case 'string':
         builder.addStringOption((stringOption) => {
-          stringOption.setName(option.name).setRequired(option.required);
+          stringOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            stringOption.setDescription(option.description);
+          if (option.required) {
+            stringOption.setRequired(true);
           }
 
           if (option.choices) {
@@ -63,10 +81,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'integer':
         builder.addIntegerOption((integerOption) => {
-          integerOption.setName(option.name).setRequired(option.required);
+          integerOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            integerOption.setDescription(option.description);
+          if (option.required) {
+            integerOption.setRequired(true);
           }
 
           if (option.choices) {
@@ -99,10 +117,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'boolean':
         builder.addBooleanOption((booleanOption) => {
-          booleanOption.setName(option.name).setRequired(option.required);
+          booleanOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            booleanOption.setDescription(option.description);
+          if (option.required) {
+            booleanOption.setRequired(true);
           }
 
           if (option.name_localizations) {
@@ -119,10 +137,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'number':
         builder.addNumberOption((numberOption) => {
-          numberOption.setName(option.name).setRequired(option.required);
+          numberOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            numberOption.setDescription(option.description);
+          if (option.required) {
+            numberOption.setRequired(true);
           }
 
           if (option.choices) {
@@ -155,10 +173,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'user':
         builder.addUserOption((userOption) => {
-          userOption.setName(option.name).setRequired(option.required);
+          userOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            userOption.setDescription(option.description);
+          if (option.required) {
+            userOption.setRequired(true);
           }
 
           if (option.name_localizations) {
@@ -175,10 +193,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'channel':
         builder.addChannelOption((channelOption) => {
-          channelOption.setName(option.name).setRequired(option.required);
+          channelOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            channelOption.setDescription(option.description);
+          if (option.required) {
+            channelOption.setRequired(true);
           }
 
           if (option.channelTypes) {
@@ -199,10 +217,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'role':
         builder.addRoleOption((roleOption) => {
-          roleOption.setName(option.name).setRequired(option.required);
+          roleOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            roleOption.setDescription(option.description);
+          if (option.required) {
+            roleOption.setRequired(true);
           }
 
           if (option.name_localizations) {
@@ -219,10 +237,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'mentionable':
         builder.addMentionableOption((mentionableOption) => {
-          mentionableOption.setName(option.name).setRequired(option.required);
+          mentionableOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            mentionableOption.setDescription(option.description);
+          if (option.required) {
+            mentionableOption.setRequired(true);
           }
 
           if (option.name_localizations) {
@@ -239,10 +257,10 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 
       case 'attachment':
         builder.addAttachmentOption((attachmentOption) => {
-          attachmentOption.setName(option.name).setRequired(option.required);
+          attachmentOption.setName(option.name).setDescription(option.description);
 
-          if (option.description) {
-            attachmentOption.setDescription(option.description);
+          if (option.required) {
+            attachmentOption.setRequired(true);
           }
 
           if (option.name_localizations) {
@@ -271,24 +289,20 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
 export async function loadCommandFiles() {
   const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
   const commandsData: CommandData[] = [];
-  
+
   // Use Bun's built-in path resolution
   const commandsPath = new URL('../commands', import.meta.url).pathname;
-  
+
   try {
     // Use Bun's native file system APIs
-    const commandFolders = await Array.fromAsync(
-      new Bun.Glob('*').scan({ cwd: commandsPath, onlyFiles: false })
-    );
+    const commandFolders = await Array.fromAsync(new Bun.Glob('*').scan({ cwd: commandsPath, onlyFiles: false }));
 
     for (const folder of commandFolders) {
       const folderPath = `${commandsPath}/${folder}`;
-      
+
       // Check if it's actually a directory by trying to scan it directly
       try {
-        const commandFiles = await Array.fromAsync(
-          new Bun.Glob('*.{ts,js}').scan({ cwd: folderPath })
-        );
+        const commandFiles = await Array.fromAsync(new Bun.Glob('*.{ts,js}').scan({ cwd: folderPath }));
 
         for (const file of commandFiles) {
           const filePath = `${folderPath}/${file}`;
@@ -304,8 +318,7 @@ export async function loadCommandFiles() {
             }
             if (command.commandData) {
               commandsData.push(command.commandData);
-            }
-            else {
+            } else {
               console.log(`[WARNING] The command at ${filePath} is missing a required "commandData" property.`);
             }
           } catch (error) {
@@ -321,6 +334,6 @@ export async function loadCommandFiles() {
   } catch (error) {
     console.error('Error loading command files:', error);
   }
-  
-  return {commands, commandsData};
+
+  return { commands, commandsData };
 }

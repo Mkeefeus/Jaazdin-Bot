@@ -1,17 +1,22 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { findBoatByName, createBoatStatusDescription, boatNameAutocomplete } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, jobNameAutocomplete } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('boat-add-job')
-  .setDescription('Add a single job to a boat')
-  .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
-  .addStringOption((opt) =>
-    opt.setName('job').setDescription('Job name to add').setRequired(true).setAutocomplete(true)
-  );
+const commandData: CommandData = {
+  name: 'boat-add-job',
+  description: 'Add a single job to a boat',
+  category: 'boats',
+  options: [
+    { name: 'boat', type: 'string', description: 'Boat name', required: true, autocomplete: true },
+    { name: 'job', type: 'string', description: 'Job name to add', required: true, autocomplete: true },
+  ],
+};
 
-export async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
+const data = buildCommand(commandData);
+
+async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
   const focusedOption = interaction.options.getFocused(true);
 
   if (focusedOption.name === 'boat') {
@@ -21,7 +26,7 @@ export async function autocomplete(interaction: AutocompleteInteraction): Promis
   }
 }
 
-export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -73,9 +78,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   await interaction.reply({ embeds: [embed] });
 }
 
-export const help = {
-  name: 'boat-add-job',
-  description: 'Add a job to a boat',
-  requiredRole: Roles.GM,
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
+  autocomplete,
 };

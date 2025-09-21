@@ -1,10 +1,17 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
 import { boatInTownEmbedBuilder } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('showboats')
-  .setDescription('Show all boats and their current status');
+const commandData: CommandData = {
+  name: 'showboats',
+  description: 'Show all boats and their current status',
+  category: 'boats',
+  options: [],
+};
+
+const data = buildCommand(commandData);
 
 export async function createBoatEmbed(boats: Boat[]) {
   const embeds: EmbedBuilder[] = [];
@@ -33,7 +40,7 @@ export async function createBoatEmbed(boats: Boat[]) {
   return embeds;
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   // Boats not in town
   // const boatsNotInTown = await Boat.findAll({
   //   where: { isRunning: true, isInTown: false },
@@ -72,8 +79,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export const help = {
-  name: 'showboats',
-  description: 'Display all boats and their current status',
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
 };

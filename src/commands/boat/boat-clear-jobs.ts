@@ -1,5 +1,4 @@
 import {
-  SlashCommandBuilder,
   ChatInputCommandInteraction,
   AutocompleteInteraction,
   EmbedBuilder,
@@ -9,19 +8,26 @@ import {
   MessageFlags,
 } from 'discord.js';
 import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('boat-clear-jobs')
-  .setDescription('Remove all jobs from a boat')
-  .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true));
+const commandData: CommandData = {
+  name: 'boat-clear-jobs',
+  description: 'Remove all jobs from a boat',
+  category: 'boats',
+  options: [
+    { name: 'boat', type: 'string', description: 'Boat name', required: true, autocomplete: true },
+  ],
+};
 
-export async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
+const data = buildCommand(commandData);
+
+async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
   await boatNameAutocomplete(interaction);
 }
 
-export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
+async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -118,9 +124,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   }
 }
 
-export const help = {
-  name: 'boat-clear-jobs',
-  description: 'Clear all jobs from a boat',
-  requiredRole: Roles.GM,
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
+  autocomplete,
 };

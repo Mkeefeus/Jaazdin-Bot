@@ -1,24 +1,24 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 import { Op } from 'sequelize';
 
-export const data = new SlashCommandBuilder()
-  .setName('setboatsrunning')
-  .setDescription('Set all boats to running or not, with optional exceptions')
-  .addBooleanOption((opt) =>
-    opt.setName('running').setDescription('Set boats to running (true) or not running (false)').setRequired(true)
-  )
-  .addStringOption((opt) =>
-    opt
-      .setName('exceptions')
-      .setDescription('Comma-separated boat names to leave unchanged (optional)')
-      .setRequired(false)
-  );
+const commandData: CommandData = {
+  name: 'setboatsrunning',
+  description: 'Set all boats to running or not, with optional exceptions',
+  category: 'boats',
+  options: [
+    { name: 'running', type: 'boolean', description: 'Set boats to running (true) or not running (false)', required: true },
+    { name: 'exceptions', type: 'string', description: 'Comma-separated boat names to leave unchanged (optional)', required: false },
+  ],
+};
+
+const data = buildCommand(commandData);
 //TODO: for boats names use autocomplete to suggest existing boat names
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -51,9 +51,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export const help = {
-  name: 'setboatsrunning',
-  description: 'Set all boats to running or not running status',
-  requiredRole: Roles.GM,
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
 };

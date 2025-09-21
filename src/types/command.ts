@@ -11,8 +11,8 @@ import { Roles } from './roles';
 // Base properties shared by all command options
 interface BaseCommandOption {
   name: string;
-  description?: string;
-  required: boolean;
+  description: string;
+  required?: boolean;
 }
 
 // String option with string-specific properties

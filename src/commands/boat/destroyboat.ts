@@ -1,17 +1,22 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
 import { findBoatByName, boatNameAutocomplete } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('destroyboat')
-  .setDescription('Will remove a boat from the active boats')
-  .addStringOption((option) =>
-    option.setName('name').setDescription('The name of the boat').setRequired(true).setAutocomplete(true)
-  );
+const commandData: CommandData = {
+  name: 'destroyboat',
+  description: 'Will remove a boat from the active boats',
+  category: 'boats',
+  options: [
+    { name: 'name', type: 'string', description: 'The name of the boat', required: true, autocomplete: true },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name') as string;
 
   if (!checkUserRole(interaction, Roles.GM)) {
@@ -66,19 +71,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   boat.destroy();
 }
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   await boatNameAutocomplete(interaction);
 }
 
-export const help = {
-  name: 'destroyboat',
-  description: 'Remove a boat from the database',
-  requiredRole: Roles.GM,
-  category: 'boats',
-};
-
-export default {
+export {
   data,
   execute,
+  commandData,
   autocomplete,
 };

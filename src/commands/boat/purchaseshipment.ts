@@ -1,15 +1,23 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
 import { boatNameAutocomplete, itemNameAutocomplete, updateBoatEmbed } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { formatNames } from '~/functions/helpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('purchaseshipment')
-  .setDescription('Purchase a shipment item from a boat (subtracts 1 from quantity, deletes if zero)')
-  .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
-  .addStringOption((opt) => opt.setName('item').setDescription('Item name').setRequired(true).setAutocomplete(true));
+const commandData: CommandData = {
+  name: 'purchaseshipment',
+  description: 'Purchase a shipment item from a boat (subtracts 1 from quantity, deletes if zero)',
+  category: 'boats',
+  options: [
+    { name: 'boat', type: 'string', description: 'Boat name', required: true, autocomplete: true },
+    { name: 'item', type: 'string', description: 'Item name', required: true, autocomplete: true },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   // if (!checkUserRole(interaction, Roles.GM)) {
   //   await interaction.reply({
   //     content: 'You do not have permission to use this command.',
@@ -69,7 +77,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 
 // Autocomplete for boat name and item name
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
   if (focusedOption.name === 'boat') {
     await boatNameAutocomplete(interaction, { runningOnly: true, inTown: true }); // Only running boats
@@ -78,8 +86,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export const help = {
-  name: 'purchaseshipment',
-  description: 'Purchase a shipment item from a boat (subtracts 1 from quantity, deletes if zero)',
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
+  autocomplete,
 };

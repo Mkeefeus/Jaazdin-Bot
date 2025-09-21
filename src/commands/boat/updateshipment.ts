@@ -1,21 +1,28 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
 import { parseChangeString } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 import { Boat } from '~/db/models/Boat';
 import { updateBoatEmbed } from '~/functions/boatHelpers';
 
-export const data = new SlashCommandBuilder()
-  .setName('updateshipment')
-  .setDescription('Update a shipment item for a boat (by boat and item name)')
-  .addStringOption((opt) => opt.setName('boat').setDescription('Boat name').setRequired(true).setAutocomplete(true))
-  .addStringOption((opt) => opt.setName('item').setDescription('Item name').setRequired(true).setAutocomplete(true))
-  .addStringOption((opt) => opt.setName('type').setDescription('Item type').setRequired(true).setAutocomplete(true))
-  .addIntegerOption((opt) => opt.setName('price').setDescription('New item price (gp)').setRequired(false))
-  .addStringOption((opt) => opt.setName('quantity').setDescription('New quantity (+x, -x, =x').setRequired(false));
+const commandData: CommandData = {
+  name: 'updateshipment',
+  description: 'Update a shipment item for a boat (by boat and item name)',
+  category: 'boats',
+  options: [
+    { name: 'boat', type: 'string', description: 'Boat name', required: true, autocomplete: true },
+    { name: 'item', type: 'string', description: 'Item name', required: true, autocomplete: true },
+    { name: 'type', type: 'string', description: 'Item type', required: true, autocomplete: true },
+    { name: 'price', type: 'integer', description: 'New item price (gp)', required: false },
+    { name: 'quantity', type: 'string', description: 'New quantity (+x, -x, =x', required: false },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -87,7 +94,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 
 // Autocomplete for boat name and item name
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
 
   if (focusedOption.name === 'boat') {
@@ -123,9 +130,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export const help = {
-  name: 'updateshipment',
-  description: 'Update the price or quantity of a shipment item',
-  requiredRole: Roles.GM,
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
+  autocomplete,
 };
