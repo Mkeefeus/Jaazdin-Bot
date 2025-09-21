@@ -5,11 +5,11 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "start": "bun run src/index.ts",
-    "start:prd": "NODE_ENV=production bun run src/index.ts",
+    "dev": "bun run pretty && bun --watch src/index.ts",
+    "start": "bun run pretty && bun run src/index.ts",
+    "start:prd": "bun run pretty && NODE_ENV=production bun run src/index.ts",
     "build": "tsc",
-    "deploy": "bun run deploy-commands.ts",
+    "deploy": "bun run pretty && bun run deploy-commands.ts",
     "pretty": "prettier --write .",
     "lint": "eslint ."
   },
