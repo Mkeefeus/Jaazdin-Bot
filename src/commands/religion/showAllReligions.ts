@@ -1,12 +1,19 @@
-import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { Religion } from '~/db/models/Religion';
+import { buildCommand } from '~/functions/commandHelpers';
 import { formatNames, replyWithUserMention } from '~/functions/helpers';
-import showReligion from './showReligion';
-import { HelpData } from '~/types';
+import { showReligion } from './showReligion';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder().setName('showallreligions').setDescription('Shows all active religions');
+const commandData: CommandData = {
+  name: 'showallreligions',
+  description: 'Shows all active religions',
+  category: 'religion',
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const allMessages = await showAllReligions();
   await replyWithUserMention(interaction, allMessages, true);
 }
@@ -22,7 +29,7 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
   } else {
     // 👑 Crown emoji for dominant religion
     const dominantReligion = religions[0];
-    const dominantEmbed = await showReligion.showReligion(dominantReligion);
+    const dominantEmbed = await showReligion(dominantReligion);
     dominantEmbed.setTitle(`👑 ${dominantEmbed.data.title || ''}`);
     embeds.push(dominantEmbed);
 
@@ -50,10 +57,4 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
   return embeds;
 }
 
-export { showAllReligions };
-
-export const help: HelpData = {
-  name: 'showallreligions',
-  description: 'Display all religions and their information',
-  category: 'religion',
-};
+export { data, execute, commandData, showAllReligions };

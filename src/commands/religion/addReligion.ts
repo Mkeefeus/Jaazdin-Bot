@@ -1,26 +1,41 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkReligionExists, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { replyWithUserMention } from '~/functions/helpers';
-import showReligion from './showReligion';
-import { HelpData } from '~/types';
+import { showReligion } from './showReligion';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('addreligion')
-  .setDescription('Will add a religion from the active religions')
-  .addStringOption((option) => option.setName('name').setDescription('The name of the religion.').setRequired(true))
-  .addStringOption((option) =>
-    option.setName('domain').setDescription('The domain of the religion').setRequired(true).setAutocomplete(true)
-  )
-  .addIntegerOption((option) =>
-    option
-      .setName('follower_count')
-      .setDescription('The number of followers of the religion (default 0)')
-      .setRequired(false)
-      .setMinValue(0)
-  );
+const commandData: CommandData = {
+  name: 'addreligion',
+  description: 'Will add a religion from the active religions',
+  category: 'religion',
+  options: [
+    {
+      name: 'name',
+      type: 'string',
+      description: 'The name of the religion.',
+      required: true,
+    },
+    {
+      name: 'domain',
+      type: 'string',
+      description: 'The domain of the religion',
+      required: true,
+      autocomplete: true,
+    },
+    {
+      name: 'follower_count',
+      type: 'integer',
+      description: 'The number of followers of the religion (default 0)',
+      minValue: 0,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
   const domain = interaction.options.getString('domain')?.toLowerCase() as string;
   const followers = interaction.options.getInteger('follower_count') ?? 0;
@@ -45,23 +60,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     follower_count: followers,
   });
 
-  const message = await showReligion.showReligion(selectedReligion);
+  const message = await showReligion(selectedReligion);
 
   await replyWithUserMention(interaction, [message]);
 }
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
-export const help: HelpData = {
-  name: 'addreligion',
-  description: 'Add a new religion with specified name, domain and followers',
-  category: 'religion',
-};
-
-export default {
-  data,
-  execute,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

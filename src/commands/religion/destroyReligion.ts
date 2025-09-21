@@ -1,17 +1,29 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Domain } from '~/db/models/Religion';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('destroyreligion')
-  .setDescription('Will remove a religion from the active religions')
-  .addStringOption((option) =>
-    option.setName('name').setDescription('The name of the religion').setRequired(true).setAutocomplete(true)
-  );
+const commandData: CommandData = {
+  name: 'destroyreligion',
+  description: 'Will remove a religion from the active religions',
+  category: 'religion',
+  options: [
+    {
+      name: 'name',
+      type: 'string',
+      description: 'The name of the religion',
+      required: true,
+      autocomplete: true,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
 
   // Use helper to find religion with error handling
@@ -83,19 +95,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   religion.destroy();
 }
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
-export const help = {
-  name: 'destroyreligion',
-  description: 'GM specific - Remove a religion from the database',
-  requiredRole: Roles.GM,
-  category: 'religion',
-};
-
-export default {
-  data,
-  execute,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

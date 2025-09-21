@@ -1,23 +1,28 @@
-import {
-  AutocompleteInteraction,
-  ChatInputCommandInteraction,
-  Colors,
-  EmbedBuilder,
-  SlashCommandBuilder,
-} from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
+import { buildCommand } from '~/functions/commandHelpers';
 import { findReligionByName, religionCommandAutocomplete } from '~/functions/religionHelpers';
 import { replyWithUserMention, formatNames } from '~/functions/helpers';
-import { HelpData } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('showreligion')
-  .setDescription('Show all information about selected religion')
-  .addStringOption((option) =>
-    option.setName('name').setDescription('The name of the religion').setRequired(true).setAutocomplete(true)
-  );
+const commandData: CommandData = {
+  name: 'showreligion',
+  description: 'Show all information about selected religion',
+  category: 'religion',
+  options: [
+    {
+      name: 'name',
+      type: 'string',
+      description: 'The name of the religion',
+      required: true,
+      autocomplete: true,
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
 
   // Use helper to find religion with error handling
@@ -48,19 +53,8 @@ async function showReligion(religion: Religion | null): Promise<EmbedBuilder> {
   return new EmbedBuilder().setTitle(title).setDescription(message).setColor(Colors.Yellow);
 }
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
-export const help: HelpData = {
-  name: 'showreligion',
-  description: 'Display detailed information about a specific religion',
-  category: 'religion',
-};
-
-export default {
-  data,
-  execute,
-  autocomplete,
-  showReligion,
-};
+export { data, execute, commandData, autocomplete, showReligion };
