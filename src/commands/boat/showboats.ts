@@ -8,7 +8,6 @@ const commandData: CommandData = {
   name: 'showboats',
   description: 'Show all boats and their current status',
   category: 'boats',
-  options: [],
 };
 
 const data = buildCommand(commandData);

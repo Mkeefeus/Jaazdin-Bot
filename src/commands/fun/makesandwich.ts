@@ -1,6 +1,7 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { IngredientCategory, Ingredient } from '../../db/models/Ingredient.js';
-import { HelpData } from '~/types.js';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types';
 
 // Fun rating messages
 const TASTE_RATINGS = [
@@ -38,7 +39,13 @@ const EMOJI_MAP: { [key in IngredientCategory]?: string } = {
   extra: '✨',
 };
 
-export const data = new SlashCommandBuilder().setName('makesandwich').setDescription('Make Kreider a sandwich!');
+const commandData: CommandData = {
+  name: 'makesandwich',
+  description: 'Make Kreider a sandwich!',
+  category: 'fun',
+};
+
+const data = buildCommand(commandData);
 
 function getRandomRating(ratings: string[]): string {
   return ratings[Math.floor(Math.random() * ratings.length)];
@@ -49,7 +56,7 @@ function generateSandwichScore(): number {
   return Math.floor(Math.random() * 16) + 85;
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   const ingredients: Ingredient[] = (await Ingredient.findAll()).map((ingredient) => ingredient.toJSON());
 
   if (ingredients.length === 0) {
@@ -126,13 +133,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export const help: HelpData = {
-  name: 'makesandwich',
-  description: 'Generate a random sandwich using ingredients from the kitchen',
-  category: 'fun',
-};
-
-export default {
+export {
   data,
   execute,
+  commandData,
 };

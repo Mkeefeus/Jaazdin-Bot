@@ -1,14 +1,19 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { Ingredient } from '~/db/models/Ingredient';
 import { writeFile } from 'fs/promises';
 import { resolve } from 'path';
-import { HelpData } from '~/types';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('exportkitchen')
-  .setDescription('Save the kitchen to a JSON file');
+const commandData: CommandData = {
+  name: 'exportkitchen',
+  description: 'Save the kitchen to a JSON file',
+  category: 'fun',
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   try {
     await interaction.deferReply();
 
@@ -30,8 +35,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export const help: HelpData = {
-  name: 'exportkitchen',
-  description: 'Save the kitchen to a JSON file',
-  category: 'fun',
+export {
+  data,
+  execute,
+  commandData,
 };

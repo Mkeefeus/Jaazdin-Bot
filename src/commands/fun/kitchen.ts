@@ -1,12 +1,17 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
-import { HelpData } from '~/types';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('kitchen')
-  .setDescription('Shows all available ingredients in the kitchen');
+const commandData: CommandData = {
+  name: 'kitchen',
+  description: 'Shows all available ingredients in the kitchen',
+  category: 'fun',
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   try {
     await interaction.deferReply();
 
@@ -143,13 +148,8 @@ function getCategoryEmoji(category: IngredientCategory): string {
   return emojiMap[category];
 }
 
-export const help: HelpData = {
-  name: 'kitchen',
-  description: "Display all ingredients in Kreider's kitchen organized by category",
-  category: 'fun',
-};
-
-export default {
+export {
   data,
   execute,
+  commandData,
 };

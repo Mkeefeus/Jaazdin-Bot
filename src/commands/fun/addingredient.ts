@@ -1,31 +1,36 @@
 import { db } from 'db/db';
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
-import { HelpData } from '~/types';
+import { buildCommand } from '~/functions/commandHelpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('addingredient')
-  .setDescription("Adds an ingredient to Kreider's kitchen")
-  .addStringOption((option) =>
-    option
-      .setName('name')
-      .setDescription('The name of the ingredient. You can add multiple separated by commas.')
-      .setRequired(true)
-  )
-  .addStringOption((option) =>
-    option
-      .setName('category')
-      .setDescription('The type of ingredient')
-      .setRequired(true)
-      .addChoices(
-        ...Object.values(IngredientCategory).map((category) => ({
-          name: category.charAt(0).toUpperCase() + category.slice(1),
-          value: category,
-        }))
-      )
-  );
+const commandData: CommandData = {
+  name: 'addingredient',
+  description: "Adds an ingredient to Kreider's kitchen",
+  category: 'fun',
+  options: [
+    { 
+      name: 'name', 
+      type: 'string', 
+      description: 'The name of the ingredient. You can add multiple separated by commas.', 
+      required: true 
+    },
+    { 
+      name: 'category', 
+      type: 'string', 
+      description: 'The type of ingredient', 
+      required: true,
+      choices: Object.values(IngredientCategory).map((category) => ({
+        name: category.charAt(0).toUpperCase() + category.slice(1),
+        value: category,
+      }))
+    },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
   const category = interaction.options.getString('category')?.toLowerCase() as string;
 
@@ -84,13 +89,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export const help: HelpData = {
-  name: 'addingredient',
-  description: "Adds an ingredient to Kreider's kitchen",
-  category: 'fun',
-};
-
-export default {
+export {
   data,
   execute,
+  commandData,
 };
