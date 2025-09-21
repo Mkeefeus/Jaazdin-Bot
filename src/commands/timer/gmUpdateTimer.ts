@@ -1,29 +1,41 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { TIMER_MAX_LENGTH } from '~/constants';
 import { Timer } from '~/db/models/Timer';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, formatNames, parseChangeString } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('gmupdatetimer')
-  .setDescription('Updates the remaining weeks on a timer')
-  .addUserOption((option) =>
-    option
-      .setName('player')
-      .setDescription('The discord user who owns the timer, leave blank if yourself')
-      .setRequired(true)
-  )
-  .addStringOption((option) =>
-    option.setName('timer').setDescription('The name of the timer to update.').setRequired(true).setAutocomplete(true)
-  )
-  .addStringOption((option) =>
-    option
-      .setName('change')
-      .setDescription('Number of weeks to add, subtract, or set equal to (+x, -x, =x)')
-      .setRequired(true)
-  );
+const commandData: CommandData = {
+  name: 'gmupdatetimer',
+  description: 'Updates the remaining weeks on a timer',
+  category: 'timer',
+  options: [
+    {
+      name: 'player',
+      type: 'user',
+      description: 'The discord user who owns the timer, leave blank if yourself',
+      required: true,
+    },
+    {
+      name: 'timer',
+      type: 'string',
+      description: 'The name of the timer to update.',
+      required: true,
+      autocomplete: true,
+    },
+    {
+      name: 'change',
+      type: 'string',
+      description: 'Number of weeks to add, subtract, or set equal to (+x, -x, =x)',
+      required: true,
+    },
+  ],
+};
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+const data = buildCommand(commandData);
+
+async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
   const player = (interaction.options.get('player')?.value as string) || interaction.user.id;
   console.log(player);
@@ -53,7 +65,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   const timerIdString = interaction.options.getString('timer');
   const change = interaction.options.getString('change');
   const discordId = (interaction.options.getUser('player') || interaction.user).id;
@@ -109,15 +121,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export const help = {
-  name: 'gmupdatetimer',
-  description: "GM command to update any user's timer duration using +x, -x, or =x format",
-  requiredRole: Roles.GM,
-  category: 'timers',
-};
-
-export default {
-  data,
-  execute,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

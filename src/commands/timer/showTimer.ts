@@ -1,16 +1,26 @@
-import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { EmbedBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
+import { buildCommand } from '~/functions/commandHelpers';
 import { formatNames } from '~/functions/helpers';
 import { SortedTimers, TimerType, typeColors, typeIcons } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('showtimers')
-  .setDescription('Display active timers')
-  .addBooleanOption((option) =>
-    option.setName('all').setDescription('Show all timers or just your own').setRequired(false)
-  );
+const commandData: CommandData = {
+  name: 'showtimers',
+  description: 'Display active timers',
+  category: 'timer',
+  options: [
+    {
+      name: 'all',
+      type: 'boolean',
+      description: 'Show all timers or just your own',
+    },
+  ],
+};
 
-export function sortTimersByTypeAndUser(timers: Timer[]): SortedTimers {
+const data = buildCommand(commandData);
+
+function sortTimersByTypeAndUser(timers: Timer[]): SortedTimers {
   const sorted: SortedTimers = {
     plant: {},
     building: {},
@@ -123,7 +133,7 @@ export function createTimerEmbed(sortedTimers: SortedTimers, showComplete: boole
   return allEmbeds;
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   const showAll = interaction.options.getBoolean('all') ?? false;
   const userId = interaction.user.id;
 
@@ -142,8 +152,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds, flags: MessageFlags.Ephemeral });
 }
 
-export const help = {
-  name: 'showTimer',
-  description: 'Displays the active and completed timers for a user.',
-  category: 'timers',
-};
+export { data, execute, commandData, sortTimersByTypeAndUser };

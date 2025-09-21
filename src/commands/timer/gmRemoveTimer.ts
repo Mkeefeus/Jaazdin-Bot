@@ -1,19 +1,34 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
 import { Roles } from '~/types';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('gmremovetimer')
-  .setDescription('Removes an existing timer')
-  .addUserOption((option) =>
-    option.setName('player').setDescription('The discord id of the player, leave blank if yourself').setRequired(true)
-  )
-  .addStringOption((option) =>
-    option.setName('timer').setDescription('The name of the timer to remove.').setRequired(true).setAutocomplete(true)
-  );
+const commandData: CommandData = {
+  name: 'gmremovetimer',
+  description: 'Removes an existing timer',
+  category: 'timer',
+  options: [
+    {
+      name: 'player',
+      type: 'user',
+      description: 'The discord id of the player, leave blank if yourself',
+      required: true,
+    },
+    {
+      name: 'timer',
+      type: 'string',
+      description: 'The name of the timer to remove.',
+      required: true,
+      autocomplete: true,
+    },
+  ],
+};
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+const data = buildCommand(commandData);
+
+async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
   const player = (interaction.options.get('player')?.value as string) || interaction.user.id;
   console.log(player);
@@ -37,7 +52,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   const timerId = interaction.options.getString('timer')?.toLowerCase();
   const discordId = (interaction.options.getUser('player') || interaction.user).id;
 
@@ -95,15 +110,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await timer.destroy();
 }
 
-export const help = {
-  name: 'gmremovetimer',
-  description: "GM command to remove any user's timer",
-  requiredRole: Roles.GM,
-  category: 'timers',
-};
-
-export default {
-  data,
-  execute,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };

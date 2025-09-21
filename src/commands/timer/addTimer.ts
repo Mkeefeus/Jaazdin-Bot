@@ -1,7 +1,8 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, formatNames } from '~/functions/helpers';
-import { HelpData } from '~/types';
+import { CommandData } from '~/types';
 import { Roles } from '~/types';
 import { TimerType } from '~/types';
 import { TIMER_MAX_LENGTH } from '~/constants';
@@ -9,48 +10,59 @@ import { TIMER_MAX_LENGTH } from '~/constants';
 const NAME_MAX_LENGTH = 100;
 const CHAR_MAX_LENGTH = 15;
 
-export const data = new SlashCommandBuilder()
-  .setName('addtimer')
-  .setDescription('will create a new timer')
-  .addStringOption((option) =>
-    option.setName('name').setDescription('The name of the timer.').setRequired(true).setMaxLength(NAME_MAX_LENGTH)
-  )
-  .addIntegerOption((option) =>
-    option
-      .setName('weeks')
-      .setDescription('The amount of weeks before the timer ends (max 1 year)')
-      .setRequired(true)
-      .setMinValue(1)
-      .setMaxValue(TIMER_MAX_LENGTH)
-  )
-  .addStringOption((option) =>
-    option
-      .setName('type')
-      .setDescription('The type of the timer.')
-      .setRequired(true)
-      .addChoices(
+const commandData: CommandData = {
+  name: 'addtimer',
+  description: 'will create a new timer',
+  category: 'timer',
+  options: [
+    {
+      name: 'name',
+      type: 'string',
+      description: 'The name of the timer.',
+      required: true,
+      maxLength: NAME_MAX_LENGTH,
+    },
+    {
+      name: 'weeks',
+      type: 'integer',
+      description: 'The amount of weeks before the timer ends (max 1 year)',
+      required: true,
+      minValue: 1,
+      maxValue: TIMER_MAX_LENGTH,
+    },
+    {
+      name: 'type',
+      type: 'string',
+      description: 'The type of the timer.',
+      required: true,
+      choices: [
         { name: 'Building', value: 'building' },
         { name: 'Plant', value: 'plant' },
         { name: 'Item', value: 'item' },
-        { name: 'Other', value: 'other' }
-      )
-  )
-  .addStringOption((option) =>
-    option
-      .setName('character')
-      .setDescription('The character associated with the timer')
-      .setRequired(true)
-      .setMaxLength(CHAR_MAX_LENGTH)
-  )
-  .addBooleanOption((option) =>
-    option.setName('repeatable').setDescription('Whether the timer is repeatable').setRequired(false)
-  )
-  .addUserOption((option) =>
-    option
-      .setName('player')
-      .setDescription('(GM ONLY) The discord id of the player, leave blank if yourself')
-      .setRequired(false)
-  );
+        { name: 'Other', value: 'other' },
+      ],
+    },
+    {
+      name: 'character',
+      type: 'string',
+      description: 'The character associated with the timer',
+      required: true,
+      maxLength: CHAR_MAX_LENGTH,
+    },
+    {
+      name: 'repeatable',
+      type: 'boolean',
+      description: 'Whether the timer is repeatable',
+    },
+    {
+      name: 'player',
+      type: 'user',
+      description: '(GM ONLY) The discord id of the player, leave blank if yourself',
+    },
+  ],
+};
+
+const data = buildCommand(commandData);
 
 const ICON_MAP: Record<string, string> = {
   building: '🏗️',
@@ -59,7 +71,7 @@ const ICON_MAP: Record<string, string> = {
   other: '🔧',
 };
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase();
   const weeks = interaction.options.getInteger('weeks');
   const type = interaction.options.getString('type')?.toLowerCase();
@@ -126,13 +138,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export const help: HelpData = {
-  name: 'addtimer',
-  description: 'Add a new timer for yourself or another user',
-  category: 'timers',
-};
-
-export default {
-  data,
-  execute,
-};
+export { data, execute, commandData };

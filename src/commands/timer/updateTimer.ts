@@ -1,22 +1,34 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { TIMER_MAX_LENGTH } from '~/constants';
 import { Timer } from '~/db/models/Timer';
+import { buildCommand } from '~/functions/commandHelpers';
 import { formatNames, parseChangeString } from '~/functions/helpers';
+import { CommandData } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('updatetimer')
-  .setDescription('Updates the remaining weeks on a timer')
-  .addStringOption((option) =>
-    option.setName('timer').setDescription('The name of the timer to update.').setRequired(true).setAutocomplete(true)
-  )
-  .addStringOption((option) =>
-    option
-      .setName('change')
-      .setDescription('Number of weeks to add, subtract, or set equal to (+x, -x, =x)')
-      .setRequired(true)
-  );
+const commandData: CommandData = {
+  name: 'updatetimer',
+  description: 'Updates the remaining weeks on a timer',
+  category: 'timer',
+  options: [
+    {
+      name: 'timer',
+      type: 'string',
+      description: 'The name of the timer to update.',
+      required: true,
+      autocomplete: true,
+    },
+    {
+      name: 'change',
+      type: 'string',
+      description: 'Number of weeks to add, subtract, or set equal to (+x, -x, =x)',
+      required: true,
+    },
+  ],
+};
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+const data = buildCommand(commandData);
+
+async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
   const player = interaction.user.id;
 
@@ -47,7 +59,7 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
   await interaction.respond(choices);
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   const timerIdString = interaction.options.getString('timer');
   const change = interaction.options.getString('change');
   const discordId = interaction.user.id;
@@ -97,14 +109,4 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export const help = {
-  name: 'updatetimer',
-  description: 'Update the duration of one of your timers using +x, -x, or =x format',
-  category: 'timers',
-};
-
-export default {
-  data,
-  execute,
-  autocomplete,
-};
+export { data, execute, commandData, autocomplete };
