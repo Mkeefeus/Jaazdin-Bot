@@ -40,9 +40,7 @@ const commandData: CommandData = {
   ],
 };
 
-export { commandData as help };
-
-export const data = buildCommand(commandData);
+const data = buildCommand(commandData);
 
 function generateMultipliedBonusString(
   skillBonusString: string,
@@ -58,7 +56,7 @@ function generateMultipliedBonusString(
   return `+ ${skillItemTierString} `;
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+async function execute(interaction: ChatInputCommandInteraction) {
   const tier = interaction.options.getInteger('tier', true);
   const die = interaction.options.getString('die', true);
   const skillBonus = interaction.options.getInteger('skill_bonus') || 0;
@@ -99,4 +97,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       },
     ],
   });
+}
+
+export {
+  data,
+  execute,
+  commandData
 }

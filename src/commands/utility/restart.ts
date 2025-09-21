@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { checkUserRole } from '~/functions/helpers';
-import { HelpData } from '~/types';
-import { Roles } from '~/types';
+import { HelpData, Roles } from '~/types';
 
 export const data = new SlashCommandBuilder().
     setName('restart').

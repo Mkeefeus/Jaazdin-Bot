@@ -6,11 +6,9 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from 'discord.js';
-import fs from 'fs';
-import path from 'path';
+import { loadCommandFiles } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
-import { CommandFile, HelpData } from '~/types';
-import { Roles } from '~/types';
+import { Roles, HelpData } from '~/types';
 
 export const data = new SlashCommandBuilder()
   .setName('help')
@@ -52,42 +50,12 @@ function canUseCommand(command: HelpData, userRoles: Roles[]): boolean {
   return command.requiredRole ? userRoles.includes(command.requiredRole) : true;
 }
 
-async function loadCommands() {
-  const foldersPath = path.join(__dirname, '../');
-
-  const commandFolders = fs.readdirSync(foldersPath);
-
-  for (const folder of commandFolders) {
-    const commandsPath = path.join(foldersPath, folder);
-    const commandFiles = fs
-      .readdirSync(commandsPath)
-      .filter((file) => file.endsWith('.ts') && file !== path.basename(__filename));
-
-    for (const file of commandFiles) {
-      const filePath = path.join(commandsPath, file);
-      const fileUrl = new URL(`file://${filePath}`).href;
-
-      try {
-        const command = (await import(fileUrl)) as CommandFile;
-
-        if (command.help) {
-          commands.push(command.help);
-        } else if (command.commandData) {
-          commands.push(command.commandData);
-        } else {
-          console.warn(`[WARNING] The command at ${filePath} is missing a required "help" property.`);
-        }
-      } catch (error) {
-        console.error(`Error loading help data for command from ${filePath}:`, error);
-      }
-    }
-  }
-}
-
 export async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedValue = interaction.options.getFocused();
   if (commands.length == 0) {
-    await loadCommands();
+    // await loadCommands();
+    const { commandsData } = await loadCommandFiles();
+    commands.push(...commandsData);
   }
   const userRoles = getUserRoles(interaction);
   const userCommands = commands.filter((cmd) => canUseCommand(cmd, userRoles) /*&& cmd.args*/);
@@ -129,7 +97,9 @@ async function executeSubhelp(interaction: ChatInputCommandInteraction, command:
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   if (commands.length == 0) {
-    await loadCommands();
+    // await loadCommands();
+    const { commandsData } = await loadCommandFiles();
+    commands.push(...commandsData);
   }
   const command = interaction.options.getString('command');
   if (command) {

@@ -1,31 +1,38 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
 import { createBoatStatusDescription, tableToGenerateChoices, generateShipmentItems } from '~/functions/boatHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
-export const data = new SlashCommandBuilder()
-  .setName('addboat')
-  .setDescription('Add a new boat to the database')
-  .addStringOption((opt) => opt.setName('name').setDescription('Boat name').setRequired(true))
-  .addIntegerOption((opt) => opt.setName('waittime').setDescription('Weeks at sea').setRequired(true))
-  .addIntegerOption((opt) => opt.setName('timeintown').setDescription('Weeks in town').setRequired(true))
-  .addStringOption((opt) => opt.setName('city').setDescription('City of origin').setRequired(false))
-  .addStringOption((opt) => opt.setName('country').setDescription('Country of origin').setRequired(false))
-  .addStringOption((opt) => opt.setName('tier2ability').setDescription('Tier 2 ability description').setRequired(false))
-  .addStringOption((option) =>
-    option
-      .setName('table')
-      .setDescription('What type of loot the boat will generate')
-      .setRequired(false)
-      .setChoices(tableToGenerateChoices)
-  )
-  .addBooleanOption((opt) => opt.setName('istier2').setDescription('Is this a tier 2 boat? (default false)').setRequired(false))
-  .addBooleanOption((opt) => opt.setName('isrunning').setDescription('Is this boat running? (default true)').setRequired(false))
-  .addIntegerOption((opt) => opt.setName('weeksleft').setDescription('Weeks left (default furthest from town or in town for longest time)').setRequired(false))
-  .addBooleanOption((opt) => opt.setName('isintown').setDescription('Is the boat in town? (default false)').setRequired(false));
+const commandData: CommandData = {
+  name: 'addboat',
+  description: 'Add a new boat to the database',
+  category: 'boats',
+  options: [
+    { name: 'name', type: 'string', description: 'Boat name', required: true },
+    { name: 'waittime', type: 'integer', description: 'Weeks at sea', required: true },
+    { name: 'timeintown', type: 'integer', description: 'Weeks in town', required: true },
+    { name: 'city', type: 'string', description: 'City of origin', required: false },
+    { name: 'country', type: 'string', description: 'Country of origin', required: false },
+    { name: 'tier2ability', type: 'string', description: 'Tier 2 ability description', required: false },
+    { 
+      name: 'table', 
+      type: 'string', 
+      description: 'What type of loot the boat will generate', 
+      required: false,
+      choices: tableToGenerateChoices
+    },
+    { name: 'istier2', type: 'boolean', description: 'Is this a tier 2 boat? (default false)', required: false },
+    { name: 'isrunning', type: 'boolean', description: 'Is this boat running? (default true)', required: false },
+    { name: 'weeksleft', type: 'integer', description: 'Weeks left (default furthest from town or in town for longest time)', required: false },
+    { name: 'isintown', type: 'boolean', description: 'Is the boat in town? (default false)', required: false },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
       content: 'You do not have permission to use this command.',
@@ -121,9 +128,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export const help = {
-  name: 'addboat',
-  description: 'Add a new boat to the database',
-  requiredRole: Roles.GM,
-  category: 'boats',
+export {
+  data,
+  execute,
+  commandData,
 };

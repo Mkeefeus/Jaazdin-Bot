@@ -1,5 +1,3 @@
-import { readdirSync } from 'fs';
-import path from 'path';
 import { LastWeeklyRunTime } from '~/db/models/LastWeeklyRunTime';
 import { WeeklyData } from '~/types';
 import { CronJob } from 'cron';
@@ -10,20 +8,28 @@ async function executeWeeklyTasks() {
   try {
     console.log('Starting weekly tasks execution...');
 
-    // Get all TypeScript files in the current directory except this file
-    const weeklyFiles = readdirSync(__dirname)
-      .filter((file) => file.endsWith('.ts') && file !== path.basename(__filename));
+    // Get current directory path using import.meta.url
+    const currentDir = new URL('.', import.meta.url).pathname;
+    const currentFileName = new URL(import.meta.url).pathname.split('/').pop();
 
-    if (weeklyFiles.length === 0) {
+    // Get all TypeScript files in the current directory except this file
+    const weeklyFiles = await Array.fromAsync(
+      new Bun.Glob('*.ts').scan({ cwd: currentDir })
+    );
+    
+    const filteredFiles = weeklyFiles.filter((file: string) => file !== currentFileName);
+
+    if (filteredFiles.length === 0) {
       console.log('No weekly task files found.');
       return;
     }
 
     // Load and collect all tasks
     const tasks: WeeklyData[] = [];
-    for (const file of weeklyFiles) {
+    for (const file of filteredFiles) {
       try {
-        const module = await import(path.join(__dirname, file));
+        const filePath = `${currentDir}/${file}`;
+        const module = await import(filePath);
         const { update, post, order } = module as WeeklyData;
 
         if (typeof update !== 'function' || typeof post !== 'function') {

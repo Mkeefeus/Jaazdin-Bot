@@ -1,16 +1,27 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Announcement } from '~/db/models/Announcement';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole, confirmAction, formatNames } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
-export const data = new SlashCommandBuilder()
-	.setName('destroyannouncement')
-	.setDescription('Delete an announcement from the database')
-	.addStringOption(option =>
-		option.setName('name').setDescription('Name of the announcement to delete').setRequired(true).setAutocomplete(true)
-	);
+const commandData: CommandData = {
+	name: 'destroyannouncement',
+	description: 'Delete an announcement from the database',
+	category: 'announcement',
+	options: [
+		{
+			name: 'name',
+			type: 'string',
+			description: 'Name of the announcement to delete',
+			required: true,
+			autocomplete: true,
+		},
+	],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
 	const name = interaction.options.getString('name') as string;
 
 	// Find announcement
@@ -72,7 +83,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 	await announcement.destroy();
 }
 
-export async function autocomplete(interaction: AutocompleteInteraction) {
+async function autocomplete(interaction: AutocompleteInteraction) {
 	const focusedValue = interaction.options.getFocused();
 	const announcements = await Announcement.findAll();
 	const choices = announcements.map(a => a.name);
@@ -82,16 +93,9 @@ export async function autocomplete(interaction: AutocompleteInteraction) {
 	);
 }
 
-export const help = {
-	name: 'destroyannouncement',
-	description: 'Delete an announcement from the database',
-	requiredRole: Roles.GM,
-	category: 'announcement',
-};
-
-export default {
+export {
 	data,
 	execute,
+	commandData,
 	autocomplete,
-	help,
 };

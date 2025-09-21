@@ -1,5 +1,4 @@
 import {
-  SlashCommandBuilder,
   ChatInputCommandInteraction,
   ModalBuilder,
   TextInputBuilder,
@@ -11,22 +10,25 @@ import {
 } from 'discord.js';
 import { Announcement } from '~/db/models/Announcement';
 import { showAnnouncement } from '~/functions/announcementHelpers';
+import { buildCommand } from '~/functions/commandHelpers';
 import { checkUserRole } from '~/functions/helpers';
-import { Roles } from '~/types';
+import { CommandData, Roles } from '~/types';
 
 const CHANNEL_ID = process.env.BOT_CHANNEL_ID;
 
-export const data = new SlashCommandBuilder()
-  .setName('addannouncement')
-  .setDescription('Make a new announcement')
-  .addIntegerOption((option) =>
-    option.setName('weeks').setDescription('Weeks remaining (min 1)').setRequired(true).setMinValue(1)
-  )
-  .addBooleanOption((option) =>
-    option.setName('post_now').setDescription('Post announcement immediately').setRequired(false)
-  );
+const commandData: CommandData = {
+  name: 'addannouncement',
+  description: 'Make a new announcement',
+  category: 'announcement',
+  options: [
+    { name: 'weeks', type: 'integer', description: 'Weeks remaining (min 1)', required: true, minValue: 1 },
+    { name: 'post_now', type: 'boolean', description: 'Post announcement immediately', required: false },
+  ],
+};
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+const data = buildCommand(commandData);
+
+async function execute(interaction: ChatInputCommandInteraction) {
   // Only allow GMs to use this command
   if (!checkUserRole(interaction, Roles.GM)) {
     await interaction.reply({
@@ -66,7 +68,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 
 // Modal submit handler
-export async function handleModalSubmit(interaction: Interaction) {
+async function handleModalSubmit(interaction: Interaction) {
   if (!interaction.isModalSubmit() || !interaction.customId.startsWith('addannouncement-modal|')) return;
 
   const name = interaction.fields.getTextInputValue('announcement-name');
@@ -108,15 +110,9 @@ export async function handleModalSubmit(interaction: Interaction) {
   }
 }
 
-export const help = {
-  name: 'addannouncement',
-  description: 'Make a new announcement',
-  requiredRole: Roles.GM,
-  category: 'announcement',
-};
-
-export default {
+export {
   data,
   execute,
-  handleModalSubmit
+  commandData,
+  handleModalSubmit as handleAnnouncementModal
 };

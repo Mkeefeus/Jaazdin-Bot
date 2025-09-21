@@ -6,8 +6,8 @@ import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import { CommandFile } from './types';
 import setupWeeklyTasks from './weeklies/weekly';
-import { handleModalSubmit } from './commands/announcement/addannouncement';
 import { db } from './db/db'; // Import your Sequelize instance
+import { setupModalInteractionHandler } from './functions/modal';
 
 // Extend the Client type to include commands
 declare module 'discord.js' {
@@ -28,7 +28,7 @@ const __dirname = path.dirname(__filename);
 export const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
 // Initialize commands collection
-client.commands = new Collection();
+client.commands = new Collection<string, CommandFile>();
 // Load commands at startup
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = await fs.readdir(foldersPath);
@@ -51,11 +51,6 @@ for (const folder of commandFolders) {
 }
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  // Handle modal submit for addannouncement
-  if (interaction.isModalSubmit() && interaction.customId.startsWith('addannouncement-modal|')) {
-    await handleModalSubmit(interaction);
-    return;
-  }
   if (interaction.isAutocomplete()) {
     const command = client.commands.get(interaction.commandName);
     if (!command || !command.autocomplete) {
@@ -116,5 +111,7 @@ async function startBot() {
     process.exit(1); // Exit if DB connection fails
   }
 }
+
+setupModalInteractionHandler(client);
 
 startBot();
