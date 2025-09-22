@@ -35,7 +35,7 @@ async function autocomplete(interaction: AutocompleteInteraction) {
 
 async function getRandomMagicItemByTable(table: string): Promise<MagicItem | null> {
   const items = await MagicItem.findAll({
-    where: { table },
+    where: { item_table: table },
   });
   if (items.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * items.length);
