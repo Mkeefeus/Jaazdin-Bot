@@ -27,8 +27,9 @@ const categoryEmojis: { [key: string]: string } = {
   farming: '🌱',
   fun: '🎭',
   jobs: '💰',
-  timers: '⏰',
+  timer: '⏰',
   utility: '🛠️',
+  announcement: '📢',
 };
 
 function getUserRoles(interaction: ChatInputCommandInteraction | AutocompleteInteraction): Roles[] {
@@ -52,11 +53,15 @@ function canUseCommand(command: CommandData, userRoles: Roles[]): boolean {
 }
 
 async function autocomplete(interaction: AutocompleteInteraction) {
-  const focusedValue = interaction.options.getFocused();
+  let focusedValue = interaction.options.getFocused();
   if (commands.length == 0) {
     // await loadCommands();
     const commandsData = await loadCommandFiles('commandsData');
     commands.push(...commandsData);
+  }
+  if (focusedValue.startsWith('/')) {
+    // Remove leading slash for matching
+    focusedValue = focusedValue.slice(1);
   }
   const userRoles = getUserRoles(interaction);
   const userCommands = commands.filter((cmd) => canUseCommand(cmd, userRoles) /*&& cmd.args*/);
