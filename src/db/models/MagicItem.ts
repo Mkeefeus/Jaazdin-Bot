@@ -5,7 +5,7 @@ import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 export class MagicItem extends Model {
   declare id: number;
   declare name: string;
-  declare table: string;
+  declare item_table: string;
   declare roll_min: number;
   declare roll_max: number;
   declare price_min: number;
@@ -25,7 +25,7 @@ MagicItem.init(
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    table: {
+    item_table: {
       type: DataTypes.STRING(2),
       allowNull: false,
     },

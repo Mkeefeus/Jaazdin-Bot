@@ -22,9 +22,10 @@ const data = buildCommand(commandData);
 
 async function autocomplete(interaction: AutocompleteInteraction) {
   const items = await MagicItem.findAll({
-    group: ['table'],
+    attributes: ['item_table'],
+    group: ['item_table'],
   });
-  const tables = items.map((item) => item.table).filter((value, index, self) => self.indexOf(value) === index);
+  const tables = items.map((item) => item.item_table).filter((value, index, self) => self.indexOf(value) === index);
   const choices = tables.map((table) => ({
     name: `Table ${table.toUpperCase()}`,
     value: table,
