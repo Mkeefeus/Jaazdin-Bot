@@ -29,6 +29,7 @@ const commandData: CommandData = {
   name: 'roll',
   description: 'Rolls a dice formula',
   category: 'utility',
+  requiredRole: [Roles.BOT_DEV, Roles.DM, Roles.GM],
   options: [
     {
       name: 'formula',
@@ -649,7 +650,7 @@ function evaluateExpression(expression: string): number {
 }
 
 async function execute(interaction: ChatInputCommandInteraction) {
-  if (!checkUserRole(interaction, Roles.BOT_DEV)) {
+  if (!checkUserRole(interaction, [Roles.BOT_DEV, Roles.DM, Roles.GM])) {
     await interaction.reply({
       content: 'This command is WIP, check back later',
       flags: MessageFlags.Ephemeral,
