@@ -35,7 +35,7 @@
     }
   },
   {
-    "bonus": "Make use of one built faculty's tier 3 ability, or make an Arcana check and gain gold equal to your check plus your job Tier.",
+    "bonus": "Gain training points at the university equal to your Job Tier, or make an Arcana check and gain gold equal to your check plus your job Tier.",
     "roll": {
       "min": 86,
       "max": 95
@@ -70,7 +70,7 @@
     }
   },
   {
-    "bonus": "Make use of two built faculty's tier 3 abilities, or make an Arcana check and gain gold equal to twice your check plus your job Tier.",
+    "bonus": "Gain training points at the university equal to twice your Job Tier, or make an Arcana check and gain gold equal to twice your check plus your job Tier.",
     "roll": {
       "min": 136,
       "max": 300
