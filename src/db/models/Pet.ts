@@ -47,8 +47,8 @@ Pet.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const petsData = (await import('~/../Inventories/pets.json')).pets;
+  // Use await import with ~/seeds/ for portability
+  const petsData = (await import('~/seeds/pets.json')).pets;
   try {
     for (const pet of petsData) {
       await Pet.create({

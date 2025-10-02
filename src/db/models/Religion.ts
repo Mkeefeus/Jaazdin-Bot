@@ -80,8 +80,8 @@ Domain.hasMany(Religion, {
 
 async function seed() {
   // parse through the religionInformation.json create each domain.
-  const domainData = (await import('~/../religionInformation.json')).default;
-  const religionsData = (await import('~/../religions.json')).default;
+  const domainData = (await import('~/seeds/religionInformation.json')).default;
+  const religionsData = (await import('~/seeds/religions.json')).default;
   try {
     // Seed domains
     for (const domain of domainData) {

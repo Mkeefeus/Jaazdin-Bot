@@ -36,8 +36,8 @@ Armor.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const armorsData = (await import('~/../Inventories/armors.json')).armors;
+  // Use await import with ~/seeds/ for portability
+  const armorsData = (await import('~/seeds/armors.json')).armors;
   try {
     for (const armor of armorsData) {
       await Armor.create({

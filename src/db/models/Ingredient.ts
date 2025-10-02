@@ -49,7 +49,7 @@ Ingredient.init(
 );
 
 async function seed() {
-  const ingredientModule = await import('~/../ingredients.json');
+  const ingredientModule = await import('~/seeds/ingredients.json');
   const ingredientData: IngredientData[] = ingredientModule.default.map(
     (ingredient: { name: string; category: string }) => ({
       name: ingredient.name,

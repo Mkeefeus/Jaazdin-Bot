@@ -76,7 +76,7 @@ Timer.init(
 
 async function seed() {
   //await Timer.sync({ force: true });
-  const timersData = (await import('~/../timers.json')).default;
+  const timersData = (await import('~/seeds/timers.json')).default;
   try {
     for (const timer of timersData) {
       await Timer.create({

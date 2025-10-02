@@ -53,7 +53,7 @@ Announcement.init(
 
 async function seed() {
   //await Timer.sync({ force: true });
-  const announcementsData = (await import('~/../announcements.json')).default;
+  const announcementsData = (await import('~/seeds/announcements.json')).default;
   try {
     for (const announcement of announcementsData) {
       await Announcement.create({

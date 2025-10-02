@@ -42,8 +42,8 @@ Weapon.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const weaponsData = (await import('~/../Inventories/weapons.json')).weapons;
+  // Use await import with ~/seeds/ for portability
+  const weaponsData = (await import('~/seeds/weapons.json')).weapons;
   try {
     for (const weapon of weaponsData) {
       await Weapon.create({

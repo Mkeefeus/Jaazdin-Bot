@@ -42,8 +42,8 @@ Poison.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const poisonsData = (await import('~/../Inventories/poisons.json')).poisons;
+  // Use await import with ~/seeds/ for portability
+  const poisonsData = (await import('~/seeds/poisons.json')).poisons;
   try {
     for (const poison of poisonsData) {
       await Poison.create({

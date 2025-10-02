@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import { loadCommandFiles } from './src/helpers';
+import { loadCommandFiles } from './commandHelpers';
 import dotenv from 'dotenv';
 
 dotenv.config();

@@ -39,8 +39,8 @@ Meal.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const mealsData = (await import('~/../Inventories/meals.json')).meals;
+  // Use await import with ~/seeds/ for portability
+  const mealsData = (await import('~/seeds/meals.json')).meals;
   try {
     for (const meal of mealsData) {
       await Meal.create({

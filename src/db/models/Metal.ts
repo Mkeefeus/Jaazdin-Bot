@@ -52,8 +52,8 @@ Metal.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const metalsData = (await import('~/../Inventories/metals.json')).metals;
+  // Use await import with ~/seeds/ for portability
+  const metalsData = (await import('~/seeds/metals.json')).metals;
   try {
     for (const metal of metalsData) {
       await Metal.create({

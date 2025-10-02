@@ -42,8 +42,8 @@ Potion.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const potionsData = (await import('~/../Inventories/potions.json')).potions;
+  // Use await import with ~/seeds/ for portability
+  const potionsData = (await import('~/seeds/potions.json')).potions;
   try {
     for (const potion of potionsData) {
       await Potion.create({

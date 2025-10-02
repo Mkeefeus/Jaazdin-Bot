@@ -1,7 +1,6 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
 import { formatNames, randomInt } from './helpers';
-import path from 'path';
 
 // Import additional models for shipment generation
 import { generateRandomWeaponWithMetalByRarity } from '~/commands/itemGeneration/generateweapon';
@@ -14,8 +13,6 @@ import { getRandomPotionByRarity } from '~/commands/itemGeneration/generatepotio
 import { getRandomPoisonByRarity } from '~/commands/itemGeneration/generatepoison';
 import { getRandomSeedByRarity } from '~/commands/itemGeneration/generateseeds';
 import { getRandomMagicItemByTable } from '~/commands/itemGeneration/generatemagicitem';
-
-const D100TABLES_PATH = path.join(__dirname, '../../d100tables');
 
 /**
  * Find a boat by name, with error handling
