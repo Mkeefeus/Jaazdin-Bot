@@ -1,0 +1,348 @@
+{
+  "seeds": [
+    {
+      "name": "Jadded Craigroot",
+      "rarity": "Common",
+      "price": {
+        "min": 25,
+        "max": 30
+      }
+    },
+    {
+      "name": "Mist Creeper",
+      "rarity": "Common",
+      "price": {
+        "min": 20,
+        "max": 30
+      }
+    },
+    {
+      "name": "Noctumcap",
+      "rarity": "Common",
+      "price": {
+        "min": 20,
+        "max": 30
+      }
+    },
+    {
+      "name": "Remedial Herbs",
+      "rarity": "Common",
+      "price": {
+        "min": 20,
+        "max": 30
+      }
+    },
+    {
+      "name": "Shaded Milkweed",
+      "rarity": "Common",
+      "price": {
+        "min": 20,
+        "max": 30
+      }
+    },
+    {
+      "name": "St. Clem's Candle",
+      "rarity": "Common",
+      "price": {
+        "min": 25,
+        "max": 35
+      }
+    },
+    {
+      "name": "Trailvine",
+      "rarity": "Common",
+      "price": {
+        "min": 15,
+        "max": 25
+      }
+    },
+    {
+      "name": "Wireweed",
+      "rarity": "Common",
+      "price": {
+        "min": 25,
+        "max": 35
+      }
+    },
+    {
+      "name": "Blistercoil",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
+      "name": "Bubblepod",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 65,
+        "max": 80
+      }
+    },
+    {
+      "name": "Devil's Cactus",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 80,
+        "max": 90
+      }
+    },
+    {
+      "name": "Drow's Wine Glass",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 70,
+        "max": 80
+      }
+    },
+    {
+      "name": "Foggy Leaf",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 65,
+        "max": 80
+      }
+    },
+    {
+      "name": "Hiker's Bounty",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 65,
+        "max": 80
+      }
+    },
+    {
+      "name": "Red Winterberry",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 65,
+        "max": 75
+      }
+    },
+    {
+      "name": "Rusty Sprigg",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 80,
+        "max": 90
+      }
+    },
+    {
+      "name": "Sinister Sister Cap",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 75,
+        "max": 85
+      }
+    },
+    {
+      "name": "Aquatic Companion",
+      "rarity": "Rare",
+      "price": {
+        "min": 125,
+        "max": 175
+      }
+    },
+    {
+      "name": "Deathrose",
+      "rarity": "Rare",
+      "price": {
+        "min": 160,
+        "max": 225
+      }
+    },
+    {
+      "name": "Draconic Ivy",
+      "rarity": "Rare",
+      "price": {
+        "min": 150,
+        "max": 200
+      }
+    },
+    {
+      "name": "False Clover",
+      "rarity": "Rare",
+      "price": {
+        "min": 150,
+        "max": 200
+      }
+    },
+    {
+      "name": "Harmony Cap",
+      "rarity": "Rare",
+      "price": {
+        "min": 140,
+        "max": 160
+      }
+    },
+    {
+      "name": "Mystic Mage's Elm",
+      "rarity": "Rare",
+      "price": {
+        "min": 300,
+        "max": 400
+      }
+    },
+    {
+      "name": "Ocean's Lily",
+      "rarity": "Rare",
+      "price": {
+        "min": 140,
+        "max": 180
+      }
+    },
+    {
+      "name": "Shaishen Herb",
+      "rarity": "Rare",
+      "price": {
+        "min": 150,
+        "max": 200
+      }
+    },
+    {
+      "name": "Rock Gum Root",
+      "rarity": "Rare",
+      "price": {
+        "min": 140,
+        "max": 190
+      }
+    },
+    {
+      "name": "Ferrbiscus",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 250,
+        "max": 300
+      }
+    },
+    {
+      "name": "Flaming Lily",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 225,
+        "max": 275
+      }
+    },
+    {
+      "name": "Gem Root",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 225,
+        "max": 275
+      }
+    },
+    {
+      "name": "Siren's Cap",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 225,
+        "max": 275
+      }
+    },
+    {
+      "name": "Solar Harpflower",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 260,
+        "max": 310
+      }
+    },
+    {
+      "name": "Tornado Tulips",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 225,
+        "max": 275
+      }
+    },
+    {
+      "name": "Ghostheart Tree",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 600,
+        "max": 800
+      }
+    },
+    {
+      "name": "Momento Bean",
+      "rarity": "Legendary",
+      "price": {
+        "min": 450,
+        "max": 500
+      }
+    },
+    {
+      "name": "Ironoak Sapling",
+      "rarity": "Legendary",
+      "price": {
+        "min": 800,
+        "max": 1000
+      }
+    },
+    {
+      "name": "Noble Willow",
+      "rarity": "Legendary",
+      "price": {
+        "min": 800,
+        "max": 1000
+      }
+    },
+    {
+      "name": "Golden Clover",
+      "rarity": "Legendary",
+      "price": {
+        "min": 1000,
+        "max": 2000
+      }
+    },
+    {
+      "name": "Dragon's Rose (Red)",
+      "rarity": "Legendary",
+      "price": {
+        "min": 400,
+        "max": 500
+      }
+    },
+    {
+      "name": "Dragon's Rose (White)",
+      "rarity": "Legendary",
+      "price": {
+        "min": 400,
+        "max": 500
+      }
+    },
+    {
+      "name": "Dragon's Rose (Blue)",
+      "rarity": "Legendary",
+      "price": {
+        "min": 400,
+        "max": 500
+      }
+    },
+    {
+      "name": "Dragon's Rose (Green)",
+      "rarity": "Legendary",
+      "price": {
+        "min": 400,
+        "max": 500
+      }
+    },
+    {
+      "name": "Dragon's Rose (Black)",
+      "rarity": "Legendary",
+      "price": {
+        "min": 400,
+        "max": 500
+      }
+    },
+    {
+      "name": "Sage's Cap",
+      "rarity": "Legendary",
+      "price": {
+        "min": 425,
+        "max": 475
+      }
+    }
+  ]
+}

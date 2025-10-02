@@ -1,0 +1,79 @@
+[
+  {
+    "bonus": "GP Die +1 & 10gp.",
+    "roll": {
+      "min": 1,
+      "max": 20
+    }
+  },
+  {
+    "bonus": "Gain a 1st level spell scroll (Random)",
+    "roll": {
+      "min": 21,
+      "max": 40
+    }
+  },
+  {
+    "bonus": "Increase the progress of one magic item being crafted by 20 or combined by 1 week. If you do not have the required spell slot for progressing that item, this value is halved.",
+    "roll": {
+      "min": 41,
+      "max": 55
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +1.",
+    "roll": {
+      "min": 56,
+      "max": 70
+    }
+  },
+  {
+    "bonus": "Gain a 2nd level spell scroll (Random)",
+    "roll": {
+      "min": 71,
+      "max": 85
+    }
+  },
+  {
+    "bonus": "Gain training points at the university equal to your Job Tier, or make an Arcana check and gain gold equal to your check plus your job Tier.",
+    "roll": {
+      "min": 86,
+      "max": 95
+    }
+  },
+  {
+    "bonus": "Increase the progress of one magic item being crafted by 40 or combined by 2 weeks. If you do not have the required spell slot for progressing that item, this value is halved.",
+    "roll": {
+      "min": 96,
+      "max": 105
+    }
+  },
+  {
+    "bonus": "GP Die +3 and +30gp.",
+    "roll": {
+      "min": 106,
+      "max": 115
+    }
+  },
+  {
+    "bonus": "Gain a 3rd level spell scroll (Random)",
+    "roll": {
+      "min": 116,
+      "max": 125
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +2.",
+    "roll": {
+      "min": 126,
+      "max": 135
+    }
+  },
+  {
+    "bonus": "Gain training points at the university equal to twice your Job Tier, or make an Arcana check and gain gold equal to twice your check plus your job Tier.",
+    "roll": {
+      "min": 136,
+      "max": 300
+    }
+  }
+]

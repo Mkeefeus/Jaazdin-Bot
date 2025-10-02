@@ -1,0 +1,378 @@
+[
+  {
+    "name": "salami",
+    "category": "protein"
+  },
+  {
+    "name": "green pepper",
+    "category": "vegetable"
+  },
+  {
+    "name": "buffalo wild wings garlic parmesan",
+    "category": "condiment"
+  },
+  {
+    "name": "gouda",
+    "category": "cheese"
+  },
+  {
+    "name": "pumpernickel",
+    "category": "bread"
+  },
+  {
+    "name": "everything bagel seasoning",
+    "category": "extra"
+  },
+  {
+    "name": "bacon",
+    "category": "protein"
+  },
+  {
+    "name": "turkey",
+    "category": "protein"
+  },
+  {
+    "name": "roast beef",
+    "category": "protein"
+  },
+  {
+    "name": "motradella",
+    "category": "protein"
+  },
+  {
+    "name": "ham",
+    "category": "protein"
+  },
+  {
+    "name": "lamb",
+    "category": "protein"
+  },
+  {
+    "name": "chicken",
+    "category": "protein"
+  },
+  {
+    "name": "peanut butter",
+    "category": "protein"
+  },
+  {
+    "name": "chorizo",
+    "category": "protein"
+  },
+  {
+    "name": "lettuce",
+    "category": "roughage"
+  },
+  {
+    "name": "spinach",
+    "category": "roughage"
+  },
+  {
+    "name": "pickled red onion",
+    "category": "roughage"
+  },
+  {
+    "name": "onion",
+    "category": "roughage"
+  },
+  {
+    "name": "pickles",
+    "category": "roughage"
+  },
+  {
+    "name": "kale",
+    "category": "roughage"
+  },
+  {
+    "name": "apple",
+    "category": "roughage"
+  },
+  {
+    "name": "buffalo wild wings garlic parmesan",
+    "category": "sauce"
+  },
+  {
+    "name": "ketchup",
+    "category": "sauce"
+  },
+  {
+    "name": "mustard",
+    "category": "sauce"
+  },
+  {
+    "name": "relish",
+    "category": "sauce"
+  },
+  {
+    "name": "dijon mustard",
+    "category": "sauce"
+  },
+  {
+    "name": "bbq sauce",
+    "category": "sauce"
+  },
+  {
+    "name": "franks red hot",
+    "category": "sauce"
+  },
+  {
+    "name": "pesto",
+    "category": "sauce"
+  },
+  {
+    "name": "marinara",
+    "category": "sauce"
+  },
+  {
+    "name": "alfredo",
+    "category": "sauce"
+  },
+  {
+    "name": "white",
+    "category": "bread"
+  },
+  {
+    "name": "wheat",
+    "category": "bread"
+  },
+  {
+    "name": "honey oat",
+    "category": "bread"
+  },
+  {
+    "name": "rye",
+    "category": "bread"
+  },
+  {
+    "name": "sourdough",
+    "category": "bread"
+  },
+  {
+    "name": "baguette",
+    "category": "bread"
+  },
+  {
+    "name": "flatbread",
+    "category": "bread"
+  },
+  {
+    "name": "naan",
+    "category": "bread"
+  },
+  {
+    "name": "bun",
+    "category": "bread"
+  },
+  {
+    "name": "bulike roll",
+    "category": "bread"
+  },
+  {
+    "name": "potato roll",
+    "category": "bread"
+  },
+  {
+    "name": "hoagie",
+    "category": "bread"
+  },
+  {
+    "name": "kaiser roll",
+    "category": "bread"
+  },
+  {
+    "name": "pretzel bun",
+    "category": "bread"
+  },
+  {
+    "name": "potato chips",
+    "category": "extra"
+  },
+  {
+    "name": "takis",
+    "category": "extra"
+  },
+  {
+    "name": "oreos",
+    "category": "extra"
+  },
+  {
+    "name": "the weird fuzzy thing in the back of the fridge",
+    "category": "extra"
+  },
+  {
+    "name": "fried onions",
+    "category": "extra"
+  },
+  {
+    "name": "doritos",
+    "category": "extra"
+  },
+  {
+    "name": "ranch powder",
+    "category": "extra"
+  },
+  {
+    "name": "mozzarella sticks",
+    "category": "extra"
+  },
+  {
+    "name": "american",
+    "category": "cheese"
+  },
+  {
+    "name": "swiss",
+    "category": "cheese"
+  },
+  {
+    "name": "provolone",
+    "category": "cheese"
+  },
+  {
+    "name": "cheddar",
+    "category": "cheese"
+  },
+  {
+    "name": "muenster",
+    "category": "cheese"
+  },
+  {
+    "name": "mozzarella",
+    "category": "cheese"
+  },
+  {
+    "name": "pepper jack",
+    "category": "cheese"
+  },
+  {
+    "name": "havarti",
+    "category": "cheese"
+  },
+  {
+    "name": "brie",
+    "category": "cheese"
+  },
+  {
+    "name": "camembert",
+    "category": "cheese"
+  },
+  {
+    "name": "feta",
+    "category": "cheese"
+  },
+  {
+    "name": "gruyere",
+    "category": "cheese"
+  },
+  {
+    "name": "asiago",
+    "category": "cheese"
+  },
+  {
+    "name": "gorgonzola",
+    "category": "cheese"
+  },
+  {
+    "name": "blue cheese",
+    "category": "cheese"
+  },
+  {
+    "name": "manchego",
+    "category": "cheese"
+  },
+  {
+    "name": "burrata",
+    "category": "cheese"
+  },
+  {
+    "name": "smoked gouda",
+    "category": "cheese"
+  },
+  {
+    "name": "fontina",
+    "category": "cheese"
+  },
+  {
+    "name": "monterey jack",
+    "category": "cheese"
+  },
+  {
+    "name": "pecorino romano",
+    "category": "cheese"
+  },
+  {
+    "name": "ricotta",
+    "category": "cheese"
+  },
+  {
+    "name": "fresh mozzarella",
+    "category": "cheese"
+  },
+  {
+    "name": "halloumi",
+    "category": "cheese"
+  },
+  {
+    "name": "cream cheese",
+    "category": "cheese"
+  },
+  {
+    "name": "herb & garlic cream cheese",
+    "category": "cheese"
+  },
+  {
+    "name": "pimento cheese",
+    "category": "cheese"
+  },
+  {
+    "name": "port wine cheese spread",
+    "category": "cheese"
+  },
+  {
+    "name": "sharp cheddar",
+    "category": "cheese"
+  },
+  {
+    "name": "mild cheddar",
+    "category": "cheese"
+  },
+  {
+    "name": "aged cheddar",
+    "category": "cheese"
+  },
+  {
+    "name": "smoked cheddar",
+    "category": "cheese"
+  },
+  {
+    "name": "ghost pepper cheddar",
+    "category": "cheese"
+  },
+  {
+    "name": "chipotle cheddar",
+    "category": "cheese"
+  },
+  {
+    "name": "jalapeno jack",
+    "category": "cheese"
+  },
+  {
+    "name": "dill havarti",
+    "category": "cheese"
+  },
+  {
+    "name": "aged gouda",
+    "category": "cheese"
+  },
+  {
+    "name": "colby jack",
+    "category": "cheese"
+  },
+  {
+    "name": "string cheese",
+    "category": "cheese"
+  },
+  {
+    "name": "chili crisp",
+    "category": "sauce"
+  }
+]

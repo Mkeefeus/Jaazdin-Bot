@@ -1,0 +1,79 @@
+[
+  {
+    "bonus": "GP Die +1 & 10gp.",
+    "roll": {
+      "min": 1,
+      "max": 20
+    }
+  },
+  {
+    "bonus": "Grant Allies adv on poison saves next quest",
+    "roll": {
+      "min": 21,
+      "max": 40
+    }
+  },
+  {
+    "bonus": "Grant an ally Prof Bonus Xd6 temp hp next quest.",
+    "roll": {
+      "min": 41,
+      "max": 55
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +1.",
+    "roll": {
+      "min": 56,
+      "max": 70
+    }
+  },
+  {
+    "bonus": "Grant two allies Prof Bonus Xd6 temp hp next quest.",
+    "roll": {
+      "min": 71,
+      "max": 85
+    }
+  },
+  {
+    "bonus": "Roll to create an Antitoxin with a bonus equal to your Job Tier.",
+    "roll": {
+      "min": 86,
+      "max": 95
+    }
+  },
+  {
+    "bonus": "Grant all allies Prof Bonus Xd6 temp hp next quest",
+    "roll": {
+      "min": 96,
+      "max": 105
+    }
+  },
+  {
+    "bonus": "GP Die +3 and +30gp.",
+    "roll": {
+      "min": 106,
+      "max": 115
+    }
+  },
+  {
+    "bonus": "Create a Medical Pouch.",
+    "roll": {
+      "min": 116,
+      "max": 125
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +2.",
+    "roll": {
+      "min": 126,
+      "max": 135
+    }
+  },
+  {
+    "bonus": "Grant Allies ADV on death saves on their next quest.",
+    "roll": {
+      "min": 136,
+      "max": 300
+    }
+  }
+]

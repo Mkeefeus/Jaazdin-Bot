@@ -1,8 +1,16 @@
 FROM oven/bun:latest
 
-WORKDIR /app
+RUN mkdir -p /home/bun/app/node_modules && chown -R bun:bun /home/bun/app
 
-COPY package*.json ./
+WORKDIR /home/bun/app
+
+COPY package.json ./
 COPY bun.lockb ./
-COPY src ./src
-COPY Inventories ./Inventories
+
+USER bun
+
+RUN bun install
+
+COPY --chown=bun:bun . .
+
+CMD ["bun", "run", "start"]

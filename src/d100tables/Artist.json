@@ -1,0 +1,79 @@
+[
+  {
+    "bonus": "GP Die +1 & 10gp.",
+    "roll": {
+      "min": 1,
+      "max": 20
+    }
+  },
+  {
+    "bonus": "An art dealer buys one of your pieces of art, roll Calligrapher’s or Painter's check plus your job Tier, you gain that much GP.",
+    "roll": {
+      "min": 21,
+      "max": 40
+    }
+  },
+  {
+    "bonus": "Gain a 1st level spell scroll (Random)",
+    "roll": {
+      "min": 41,
+      "max": 55
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +1.",
+    "roll": {
+      "min": 56,
+      "max": 70
+    }
+  },
+  {
+    "bonus": "A rich noble buys one of your pieces of art, roll Calligrapher’s or Painter's check plus your job Tier, you gain twice that much GP.",
+    "roll": {
+      "min": 71,
+      "max": 85
+    }
+  },
+  {
+    "bonus": "Gain a Common Spell Wrought Tattoo (Random 1st level)",
+    "roll": {
+      "min": 86,
+      "max": 95
+    }
+  },
+  {
+    "bonus": "Gain a 2nd level spell scroll (Random)",
+    "roll": {
+      "min": 96,
+      "max": 105
+    }
+  },
+  {
+    "bonus": "GP Die +3 and +30gp.",
+    "roll": {
+      "min": 106,
+      "max": 115
+    }
+  },
+  {
+    "bonus": "An acclaimed art dealer buys one of your pieces of art, roll Calligrapher’s or Painter's check plus your job Tier, you gain thrice times that much GP.",
+    "roll": {
+      "min": 116,
+      "max": 125
+    }
+  },
+  {
+    "bonus": "Increase your Wage progression by +2.",
+    "roll": {
+      "min": 126,
+      "max": 135
+    }
+  },
+  {
+    "bonus": "Gain an Uncommon Spell Wrought Tattoo (Roll d6 (1-4 2nd level, 4-5, 3rd level)",
+    "roll": {
+      "min": 136,
+      "max": 300
+    }
+  }
+]

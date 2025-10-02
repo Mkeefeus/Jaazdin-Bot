@@ -1,0 +1,526 @@
+{
+  "plants": [
+    {
+      "name": "Jadded Craigroot",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 5,
+          "harvestAmount": 1,
+          "harvestName": "Jadded Craigroot",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Mist Creeper",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 3,
+          "harvestAmount": 3,
+          "harvestName": "Mist Creeper",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Noctumcap",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 3,
+          "harvestAmount": 3,
+          "harvestName": "Noctumcap",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Remedial Herbs",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 2,
+          "harvestAmount": 2,
+          "harvestName": "Remedial Herbs",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Shaded Milkweed",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 1,
+          "harvestAmount": 2,
+          "harvestName": "Shaded Milkweed",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "St. Clem's Candle",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 3,
+          "harvestAmount": 2,
+          "harvestName": "St. Clem's Candle",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Trailvine",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 2,
+          "harvestAmount": 1,
+          "harvestName": "Trailvine",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Wireweed",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 2,
+          "harvestAmount": 3,
+          "harvestName": "Wireweed",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Blistercoil",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 8,
+          "harvestAmount": 1,
+          "harvestName": "Blistercoil Root",
+          "renewable": false
+        },
+        {
+          "harvestTime": 2,
+          "harvestAmount": 3,
+          "harvestName": "Blistercoil Berry",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Bubblepod",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 1,
+          "harvestAmount": 1,
+          "harvestName": "Bubblepod",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Devil's Cactus",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 5,
+          "harvestAmount": 5,
+          "harvestName": "Devil's Cactus",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Drow's Wine Glass",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 4,
+          "harvestAmount": 2,
+          "harvestName": "Drow's Wine Glass",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Foggy Leaf",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 2,
+          "harvestAmount": 1,
+          "harvestName": "Foggy Leaf",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Hiker's Bounty",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 2,
+          "harvestAmount": 4,
+          "harvestName": "Hiker's Bounty",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Red Winterberry",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 3,
+          "harvestAmount": 3,
+          "harvestName": "Red Winterberry",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Rusty Sprigg",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 4,
+          "harvestAmount": 1,
+          "harvestName": "Rusty Sprigg",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Sinister Sister Cap",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 3,
+          "harvestAmount": 1,
+          "harvestName": "Sinister Sister Cap",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Aquatic Companion",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 6,
+          "harvestAmount": 1,
+          "harvestName": "Aquatic Companion",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Deathrose",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 3,
+          "harvestAmount": 1,
+          "harvestName": "Deathrose",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Draconic Ivy",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 6,
+          "harvestAmount": 4,
+          "harvestName": "Draconic Ivy",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "False Clover",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 1,
+          "harvestAmount": 1,
+          "harvestName": "False Clover",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Harmony Cap",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 4,
+          "harvestAmount": 1,
+          "harvestName": "Harmony Cap",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Mystic Mage's Elm",
+      "maturityTime": 10,
+      "harvest": [
+        {
+          "harvestTime": 2,
+          "harvestAmount": 1,
+          "harvestName": "Mystic Mage's Elm",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Ocean's Lily",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 4,
+          "harvestAmount": 3,
+          "harvestName": "Ocean's Lily",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Rock Gum Root",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 5,
+          "harvestAmount": 2,
+          "harvestName": "Rock Gum Root",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Shaishen Herb",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 5,
+          "harvestAmount": 3,
+          "harvestName": "Shaishen Herb",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Ferrbiscus",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 2,
+          "harvestAmount": 5,
+          "harvestName": "Ferrbiscus",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Flaming Lily",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 5,
+          "harvestAmount": 2,
+          "harvestName": "Flaming Lily",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Gem Root",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 8,
+          "harvestAmount": 1,
+          "harvestName": "Gem Root",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Siren's Cap",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 4,
+          "harvestAmount": 3,
+          "harvestName": "Siren's Cap",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Solar Harpflower",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 5,
+          "harvestAmount": 1,
+          "harvestName": "Solar Harpflower",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Tornado Tulips",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 4,
+          "harvestAmount": 4,
+          "harvestName": "Tornado Tulips",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Red Dragon Rose",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 6,
+          "harvestAmount": 1,
+          "harvestName": "Red Dragon Rose",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "White Dragon Rose",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 6,
+          "harvestAmount": 1,
+          "harvestName": "White Dragon Rose",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Blue Dragon Rose",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 6,
+          "harvestAmount": 1,
+          "harvestName": "Blue Dragon Rose",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Green Dragon Rose",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 6,
+          "harvestAmount": 1,
+          "harvestName": "Green Dragon Rose",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Black Dragon Rose",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 6,
+          "harvestAmount": 1,
+          "harvestName": "Black Dragon Rose",
+          "renewable": false
+        }
+      ]
+    },
+    {
+      "name": "Golden Clover",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 1,
+          "harvestAmount": 1,
+          "harvestName": "Golden Clover",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Ironoak Sapling",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 6,
+          "harvestAmount": 1,
+          "harvestName": "Ironoak Bark",
+          "renewable": true
+        },
+        {
+          "harvestTime": 2,
+          "harvestAmount": 3,
+          "harvestName": "Ironoak Berries",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Memento Bean",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 4,
+          "harvestAmount": 6,
+          "harvestName": "Memento Bean",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Noble Willow",
+      "maturityTime": 8,
+      "harvest": [
+        {
+          "harvestTime": 2,
+          "harvestAmount": 1,
+          "harvestName": "Noble Willow Sap",
+          "renewable": true
+        },
+        {
+          "harvestTime": 2,
+          "harvestAmount": 8,
+          "harvestName": "Noble Willow Leaves",
+          "renewable": true
+        }
+      ]
+    },
+    {
+      "name": "Sage's Cap",
+      "maturityTime": 0,
+      "harvest": [
+        {
+          "harvestTime": 3,
+          "harvestAmount": 1,
+          "harvestName": "Sage's Cap",
+          "renewable": true
+        }
+      ]
+    }
+  ]
+}
