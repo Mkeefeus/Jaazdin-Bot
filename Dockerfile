@@ -6,11 +6,9 @@ WORKDIR /home/bun/app
 
 COPY package.json ./
 COPY bun.lockb ./
-
+COPY --chown=bun:bun src/ ./src/
+COPY --chown=bun:bun tsconfig.json .
 USER bun
-
 RUN bun install
-
-COPY --chown=bun:bun . .
 
 CMD ["bun", "run", "start"]
