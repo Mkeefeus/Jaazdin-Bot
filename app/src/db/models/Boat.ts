@@ -102,8 +102,8 @@ Shipment.belongsTo(Boat);
 
 async function seed() {
   // Use await import for portability
-  const boatsData = (await import('~/../boats.json')).default || (await import('~/../boats.json'));
-  const shipmentsData = (await import('~/../shipments.json')).default || (await import('~/../shipments.json'));
+  const boatsData = (await import('~/seeds/boats.json')).default || (await import('~/seeds/boats.json'));
+  const shipmentsData = (await import('~/seeds/shipments.json')).default || (await import('~/seeds/shipments.json'));
   const boats: Boat[] = [];
   try {
     for (const boat of boatsData) {

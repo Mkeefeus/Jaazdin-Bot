@@ -41,8 +41,8 @@ Reagent.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const reagentsData = (await import('~/../Inventories/reagents.json')).reagents;
+  // Use await import with ~/seeds/ for portability
+  const reagentsData = (await import('~/seeds/reagents.json')).reagents;
   try {
     for (const reagent of reagentsData) {
       await Reagent.create({

@@ -145,7 +145,6 @@ function compareValues(value: number, operator: string, threshold: number): bool
   }
 }
 
-// REFACTORED: Split evaluateModifiers into smaller, focused functions
 function processRerolls(
   rollsArray: RollResult[],
   rerollMods: RollModifier[],
@@ -774,9 +773,7 @@ async function execute(interaction: ChatInputCommandInteraction) {
       inline: true,
     });
 
-    embed.setTimestamp().setFooter({
-      text: 'Dice rolled successfully',
-    });
+    embed.setTimestamp();
 
     await interaction.reply({
       embeds: [embed],

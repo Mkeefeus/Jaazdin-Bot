@@ -2,18 +2,16 @@ import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
 import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
-export class Metal extends Model {
+export class Poison extends Model {
   declare name: string;
   declare rarity: string;
   declare price_min: number;
   declare price_max: number;
-  declare plane: string;
-  declare runesmithed: boolean;
   @CreatedAt declare createdAt: Date;
   @UpdatedAt declare updatedAt: Date;
 }
 
-Metal.init(
+Poison.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -37,14 +35,6 @@ Metal.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    plane: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    runesmithed: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
   },
   {
     sequelize: db,
@@ -52,25 +42,23 @@ Metal.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const metalsData = (await import('~/../Inventories/metals.json')).metals;
+  // Use await import with ~/seeds/ for portability
+  const poisonsData = (await import('~/seeds/poisons.json')).poisons;
   try {
-    for (const metal of metalsData) {
-      await Metal.create({
-        name: metal.name,
-        rarity: metal.rarity,
-        price_min: metal.price.min,
-        price_max: metal.price.max,
-        plane: metal.plane,
-        runesmithed: metal.runesmithed ?? false,
+    for (const poison of poisonsData) {
+      await Poison.create({
+        name: poison.name,
+        rarity: poison.rarity,
+        price_min: poison.price.min,
+        price_max: poison.price.max,
       });
     }
-    console.log('Metals seeded!');
+    console.log('Poisons seeded!');
   } catch (error) {
-    console.error('Could not seed metals:', error);
+    console.error('Could not seed poisons:', error);
   }
 }
 
 export { seed };
 
-Metal.sync();
+Poison.sync();

@@ -52,8 +52,8 @@ MagicItem.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const magicItemsData = (await import('~/../Inventories/magicItems.json')).magicItems;
+  // Use await import with ~/seeds/ for portability
+  const magicItemsData = (await import('~/seeds/magicItems.json')).magicItems;
   try {
     for (const item of magicItemsData) {
       await MagicItem.create({

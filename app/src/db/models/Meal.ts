@@ -1,17 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
-import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
-export class Potion extends Model {
+export class Meal extends Model {
   declare name: string;
   declare rarity: string;
   declare price_min: number;
   declare price_max: number;
-  @CreatedAt declare createdAt: Date;
-  @UpdatedAt declare updatedAt: Date;
 }
 
-Potion.init(
+Meal.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -42,23 +39,23 @@ Potion.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const potionsData = (await import('~/../Inventories/potions.json')).potions;
+  // Use await import with ~/seeds/ for portability
+  const mealsData = (await import('~/seeds/meals.json')).meals;
   try {
-    for (const potion of potionsData) {
-      await Potion.create({
-        name: potion.name,
-        rarity: potion.rarity,
-        price_min: potion.price.min,
-        price_max: potion.price.max,
+    for (const meal of mealsData) {
+      await Meal.create({
+        name: meal.name,
+        rarity: meal.rarity,
+        price_min: meal.price.min,
+        price_max: meal.price.max,
       });
     }
-    console.log('Potions seeded!');
+    console.log('Meals seeded!');
   } catch (error) {
-    console.error('Could not seed potions:', error);
+    console.error('Could not seed meals:', error);
   }
 }
 
 export { seed };
 
-Potion.sync();
+Meal.sync();

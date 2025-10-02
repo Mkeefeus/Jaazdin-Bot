@@ -2,17 +2,18 @@ import { DataTypes, Model } from 'sequelize';
 import { db } from '../db';
 import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
-export class Pet extends Model {
+export class Metal extends Model {
   declare name: string;
-  declare cr: number;
+  declare rarity: string;
   declare price_min: number;
   declare price_max: number;
-  declare type: string;
+  declare plane: string;
+  declare runesmithed: boolean;
   @CreatedAt declare createdAt: Date;
   @UpdatedAt declare updatedAt: Date;
 }
 
-Pet.init(
+Metal.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -24,8 +25,8 @@ Pet.init(
       allowNull: false,
       unique: true,
     },
-    cr: {
-      type: DataTypes.FLOAT,
+    rarity: {
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     price_min: {
@@ -36,8 +37,12 @@ Pet.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    type: {
+    plane: {
       type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    runesmithed: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
   },
@@ -47,24 +52,25 @@ Pet.init(
 );
 
 async function seed() {
-  // Use await import with ~/../ for portability
-  const petsData = (await import('~/../Inventories/pets.json')).pets;
+  // Use await import with ~/seeds/ for portability
+  const metalsData = (await import('~/seeds/metals.json')).metals;
   try {
-    for (const pet of petsData) {
-      await Pet.create({
-        name: pet.name,
-        cr: pet.cr,
-        price_min: pet.price.min,
-        price_max: pet.price.max,
-        type: pet.type,
+    for (const metal of metalsData) {
+      await Metal.create({
+        name: metal.name,
+        rarity: metal.rarity,
+        price_min: metal.price.min,
+        price_max: metal.price.max,
+        plane: metal.plane,
+        runesmithed: metal.runesmithed ?? false,
       });
     }
-    console.log('Pets seeded!');
+    console.log('Metals seeded!');
   } catch (error) {
-    console.error('Could not seed pets:', error);
+    console.error('Could not seed metals:', error);
   }
 }
 
 export { seed };
 
-Pet.sync();
+Metal.sync();

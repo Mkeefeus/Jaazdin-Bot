@@ -78,7 +78,7 @@ JobTier.belongsTo(Job);
 
 async function seed() {
   // Reading each file in d100tables and set them to create the objects.
-  const d100TablesDir = path.join(__dirname, '../../../d100tables');
+  const d100TablesDir = path.join(__dirname, '../../d100tables');
   try {
     const d100Jobs = await fs.readdir(d100TablesDir);
 
