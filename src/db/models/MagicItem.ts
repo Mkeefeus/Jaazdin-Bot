@@ -56,14 +56,18 @@ async function seed() {
   const magicItemsData = (await import('~/seeds/magicItems.json')).magicItems;
   try {
     for (const item of magicItemsData) {
-      await MagicItem.create({
-        name: item.name,
-        table: item.table,
-        roll_min: item.roll.min,
-        roll_max: item.roll.max,
-        price_min: item.price.min,
-        price_max: item.price.max,
-      });
+      try {
+        await MagicItem.create({
+          name: item.name,
+          item_table: item.table,
+          roll_min: item.roll.min,
+          roll_max: item.roll.max,
+          price_min: item.price.min,
+          price_max: item.price.max,
+        });
+      } catch (error) {
+        console.error(`Could not create magic item ${item.name}:`, error);
+      }
     }
     console.log('Magic items seeded!');
   } catch (error) {
