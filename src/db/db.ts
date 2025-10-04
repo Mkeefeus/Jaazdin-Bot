@@ -2,7 +2,7 @@ import { Options, Sequelize } from 'sequelize';
 
 let sequelize: Sequelize | null = null;
 
-const prdSettings: Partial<Options> = {
+const dbsettings: Partial<Options> = {
   database: process.env.DB_NAME,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
@@ -16,29 +16,6 @@ const prdSettings: Partial<Options> = {
     },
   },
 };
-
-const devSettings: Partial<Options> =
-  process.env.DEV_DB == 'postgres'
-    ? {
-        database: process.env.DB_NAME,
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        host: process.env.DB_HOST || 'localhost',
-        port: Number(process.env.DB_PORT) || 5432,
-        dialect: 'postgres',
-        dialectOptions: {
-          // ssl: {
-          //   require: true,
-          //   rejectUnauthorized: false,
-          // },
-        },
-      }
-    : {
-        dialect: 'sqlite',
-        storage: 'database.sqlite',
-      };
-
-const dbsettings: Partial<Options> = process.env.NODE_ENV === 'production' ? prdSettings : devSettings;
 
 export const db =
   sequelize ||
