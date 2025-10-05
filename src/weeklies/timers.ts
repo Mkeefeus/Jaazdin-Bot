@@ -62,7 +62,7 @@ async function post() {
     console.log('Target channel is not a text channel or not found.');
     return;
   }
-  const allEmbeds = createTimerEmbed(currTimers, true);
+  const allEmbedMessages = createTimerEmbed(currTimers, true);
   const usersWithCompletedTimers = new Set<string>(); // Track users with completed timers
 
   // Handle completed timers
@@ -83,21 +83,23 @@ async function post() {
   }
 
   // Send message with pings and embeds
-  if (allEmbeds.length > 0) {
-    for (let i = 0; i < allEmbeds.length; i += 10) {
-      const messageOptions: MessageCreateOptions = { embeds: allEmbeds.slice(i, i + 10) };
+  allEmbedMessages.forEach(async (embeds) => {
+    if (embeds.length > 0) {
+      for (let i = 0; i < embeds.length; i += 10) {
+        const messageOptions: MessageCreateOptions = { embeds: embeds.slice(i, i + 10) };
 
-      // Add the ping message to the first batch of embeds
-      if (i === 0 && messageContent) {
-        messageOptions.content = messageContent;
+        // Add the ping message to the first batch of embeds
+        if (i === 0 && messageContent) {
+          messageOptions.content = messageContent;
+        }
+
+        // await channel.send(messageOptions);
       }
-
-      await channel.send(messageOptions);
+    } else if (messageContent) {
+      // Send just the ping message if there are no embeds
+      await channel.send({ content: messageContent });
     }
-  } else if (messageContent) {
-    // Send just the ping message if there are no embeds
-    await channel.send({ content: messageContent });
-  }
+  });
 }
 
 const order = 1;
