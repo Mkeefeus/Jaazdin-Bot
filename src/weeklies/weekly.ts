@@ -4,7 +4,7 @@ import { CronJob } from 'cron';
 import cronParser from 'cron-parser';
 import { TIMEZONE } from '~/constants';
 
-async function executeWeeklyTasks() {
+export async function executeWeeklyTasks(skipUpdate: boolean = false) {
   try {
     console.log('Starting weekly tasks execution...');
 
@@ -55,7 +55,9 @@ async function executeWeeklyTasks() {
     for (const [index, task] of tasks.entries()) {
       try {
         console.log(`Executing task ${index + 1}/${tasks.length} (order: ${task.order})`);
-        await task.update();
+        if (!skipUpdate) {
+          await task.update();
+        }
         await task.post();
         console.log(`Task ${index + 1} completed successfully`);
       } catch (error) {
