@@ -1,19 +1,19 @@
 {
   "potions": [
     {
-      "name": "Potion of Watchful Rest",
+      "name": "Potion of Air Bubble",
       "rarity": "Common",
       "price": {
-        "min": 50,
+        "min": 45,
         "max": 55
       }
     },
     {
-      "name": "Potion of Foggy Escape",
+      "name": "Potion of Climbing",
       "rarity": "Common",
       "price": {
-        "min": 30,
-        "max": 35
+        "min": 20,
+        "max": 25
       }
     },
     {
@@ -25,11 +25,11 @@
       }
     },
     {
-      "name": "Potion of Air Bubble",
+      "name": "Potion of Foggy Escape",
       "rarity": "Common",
       "price": {
-        "min": 45,
-        "max": 55
+        "min": 30,
+        "max": 35
       }
     },
     {
@@ -37,6 +37,14 @@
       "rarity": "Common",
       "price": {
         "min": 45,
+        "max": 55
+      }
+    },
+    {
+      "name": "Potion of Watchful Rest",
+      "rarity": "Common",
+      "price": {
+        "min": 50,
         "max": 55
       }
     },
@@ -49,31 +57,7 @@
       }
     },
     {
-      "name": "Potion of Climbing",
-      "rarity": "Common",
-      "price": {
-        "min": 20,
-        "max": 25
-      }
-    },
-    {
-      "name": "Potion of Greater Healing",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 100,
-        "max": 110
-      }
-    },
-    {
       "name": "Bottled Breath",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 100,
-        "max": 110
-      }
-    },
-    {
-      "name": "Potion of Growth",
       "rarity": "Uncommon",
       "price": {
         "min": 100,
@@ -89,11 +73,11 @@
       }
     },
     {
-      "name": "Potion of Advantage",
+      "name": "Philter of Love",
       "rarity": "Uncommon",
       "price": {
-        "min": 150,
-        "max": 175
+        "min": 130,
+        "max": 140
       }
     },
     {
@@ -105,11 +89,35 @@
       }
     },
     {
+      "name": "Potion of Advantage",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Animal Friendship",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
       "name": "Potion of Cold Resistance",
       "rarity": "Uncommon",
       "price": {
         "min": 150,
         "max": 175
+      }
+    },
+    {
+      "name": "Potion of Fire Breath",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 140,
+        "max": 160
       }
     },
     {
@@ -121,7 +129,39 @@
       }
     },
     {
+      "name": "Potion of Flamewielding",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 400,
+        "max": 440
+      }
+    },
+    {
       "name": "Potion of Force Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Greater Healing",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
+      "name": "Potion of Growth",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
+      "name": "Potion of Hill Giant Strength",
       "rarity": "Uncommon",
       "price": {
         "min": 150,
@@ -145,11 +185,35 @@
       }
     },
     {
+      "name": "Potion of Poison",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
       "name": "Potion of Poison Resistance",
       "rarity": "Uncommon",
       "price": {
         "min": 150,
         "max": 175
+      }
+    },
+    {
+      "name": "Potion of Polychromy",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 130,
+        "max": 140
+      }
+    },
+    {
+      "name": "Potion of Psionic Fortitude",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 110,
+        "max": 120
       }
     },
     {
@@ -177,46 +241,6 @@
       }
     },
     {
-      "name": "Potion of Fire Breath",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 140,
-        "max": 160
-      }
-    },
-    {
-      "name": "Potion of Hill Giant Strength",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 150,
-        "max": 175
-      }
-    },
-    {
-      "name": "Philter of Love",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 130,
-        "max": 140
-      }
-    },
-    {
-      "name": "Potion of Poison",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 100,
-        "max": 110
-      }
-    },
-    {
-      "name": "Potion of Animal Friendship",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 100,
-        "max": 110
-      }
-    },
-    {
       "name": "Potion of Water Breathing",
       "rarity": "Uncommon",
       "price": {
@@ -225,63 +249,7 @@
       }
     },
     {
-      "name": "Potion of Polychromy",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 130,
-        "max": 140
-      }
-    },
-    {
-      "name": "Potion of Psionic Fortitude",
-      "rarity": "Uncommon",
-      "price": {
-        "min": 110,
-        "max": 120
-      }
-    },
-    {
-      "name": "Potion of Clairvoyance",
-      "rarity": "Rare",
-      "price": {
-        "min": 180,
-        "max": 200
-      }
-    },
-    {
-      "name": "Potion of Superior Healing",
-      "rarity": "Rare",
-      "price": {
-        "min": 250,
-        "max": 275
-      }
-    },
-    {
       "name": "Alchemic Claret",
-      "rarity": "Rare",
-      "price": {
-        "min": 250,
-        "max": 250
-      }
-    },
-    {
-      "name": "Elixir of Health",
-      "rarity": "Rare",
-      "price": {
-        "min": 170,
-        "max": 200
-      }
-    },
-    {
-      "name": "Potion of Aqueous Form",
-      "rarity": "Rare",
-      "price": {
-        "min": 170,
-        "max": 200
-      }
-    },
-    {
-      "name": "Potion of Mind Reading",
       "rarity": "Rare",
       "price": {
         "min": 250,
@@ -297,7 +265,135 @@
       }
     },
     {
-      "name": "Potion of Flamewielding",
+      "name": "Elixir of Health",
+      "rarity": "Rare",
+      "price": {
+        "min": 170,
+        "max": 200
+      }
+    },
+    {
+      "name": "Evercure Potion",
+      "rarity": "Rare",
+      "price": {
+        "min": 250,
+        "max": 275
+      }
+    },
+    {
+      "name": "Oil of Etherealness",
+      "rarity": "Rare",
+      "price": {
+        "min": 250,
+        "max": 275
+      }
+    },
+    {
+      "name": "Potion of Aqueous Form",
+      "rarity": "Rare",
+      "price": {
+        "min": 170,
+        "max": 200
+      }
+    },
+    {
+      "name": "Potion of Clairvoyance",
+      "rarity": "Rare",
+      "price": {
+        "min": 180,
+        "max": 200
+      }
+    },
+    {
+      "name": "Potion of Diminution",
+      "rarity": "Rare",
+      "price": {
+        "min": 170,
+        "max": 200
+      }
+    },
+    {
+      "name": "Potion of Fire Giant Strength",
+      "rarity": "Rare",
+      "price": {
+        "min": 250,
+        "max": 275
+      }
+    },
+    {
+      "name": "Potion of Frost Giant Strength",
+      "rarity": "Rare",
+      "price": {
+        "min": 220,
+        "max": 250
+      }
+    },
+    {
+      "name": "Potion of Gaseous Form",
+      "rarity": "Rare",
+      "price": {
+        "min": 170,
+        "max": 200
+      }
+    },
+    {
+      "name": "Potion of Heroism",
+      "rarity": "Rare",
+      "price": {
+        "min": 170,
+        "max": 200
+      }
+    },
+    {
+      "name": "Potion of Invulnerability",
+      "rarity": "Rare",
+      "price": {
+        "min": 220,
+        "max": 250
+      }
+    },
+    {
+      "name": "Potion of Mind Control (beast)",
+      "rarity": "Rare",
+      "price": {
+        "min": 250,
+        "max": 275
+      }
+    },
+    {
+      "name": "Potion of Mind Control (humanoid)",
+      "rarity": "Rare",
+      "price": {
+        "min": 250,
+        "max": 275
+      }
+    },
+    {
+      "name": "Potion of Mind Reading",
+      "rarity": "Rare",
+      "price": {
+        "min": 250,
+        "max": 275
+      }
+    },
+    {
+      "name": "Potion of Stone Giant Strength",
+      "rarity": "Rare",
+      "price": {
+        "min": 220,
+        "max": 250
+      }
+    },
+    {
+      "name": "Potion of Superior Healing",
+      "rarity": "Rare",
+      "price": {
+        "min": 250,
+        "max": 275
+      }
+    },
+    {
+      "name": "Oil of Sharpness",
       "rarity": "Very Rare",
       "price": {
         "min": 400,
@@ -305,7 +401,15 @@
       }
     },
     {
-      "name": "Potion of Supreme Healing",
+      "name": "Potion of Flying",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 400,
+        "max": 440
+      }
+    },
+    {
+      "name": "Potion of Invisibility",
       "rarity": "Very Rare",
       "price": {
         "min": 400,
@@ -321,6 +425,14 @@
       }
     },
     {
+      "name": "Potion of Mind Control (monster)",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 430,
+        "max": 480
+      }
+    },
+    {
       "name": "Potion of Nobility",
       "rarity": "Very Rare",
       "price": {
@@ -329,7 +441,47 @@
       }
     },
     {
+      "name": "Potion of Speed",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 400,
+        "max": 440
+      }
+    },
+    {
+      "name": "Potion of Supreme Healing",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 400,
+        "max": 440
+      }
+    },
+    {
+      "name": "Potion of Vitality",
+      "rarity": "Very Rare",
+      "price": {
+        "min": 500,
+        "max": 550
+      }
+    },
+    {
       "name": "Potion of Giant Size",
+      "rarity": "Legendary",
+      "price": {
+        "min": 1000,
+        "max": 1100
+      }
+    },
+    {
+      "name": "Potion of Dragon's Majesty",
+      "rarity": "Legendary",
+      "price": {
+        "min": 1000,
+        "max": 1100
+      }
+    },
+    {
+      "name": "Potion of Instant Enchantment",
       "rarity": "Legendary",
       "price": {
         "min": 1000,
@@ -345,19 +497,19 @@
       }
     },
     {
-      "name": "Potion of Instant Enchantment",
-      "rarity": "Legendary",
-      "price": {
-        "min": 1000,
-        "max": 1100
-      }
-    },
-    {
       "name": "Potion of Perfection",
       "rarity": "Legendary",
       "price": {
         "min": 1100,
         "max": 1300
+      }
+    },
+    {
+      "name": "Potion of Storm Giant Strength",
+      "rarity": "Legendary",
+      "price": {
+        "min": 1000,
+        "max": 1100
       }
     }
   ]
