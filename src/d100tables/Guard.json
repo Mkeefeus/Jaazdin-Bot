@@ -1,6 +1,6 @@
 [
   {
-    "bonus": "GGP Die +1 & 10gp.",
+    "bonus": "GP Die +1 & 10gp.",
     "roll": {
       "min": 1,
       "max": 20

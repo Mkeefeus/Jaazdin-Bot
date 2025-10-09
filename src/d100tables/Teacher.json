@@ -49,7 +49,7 @@
     }
   },
   {
-    "bonus": "GGP Die +3 and +30gp.",
+    "bonus": "GP Die +3 and +30gp.",
     "roll": {
       "min": 106,
       "max": 115

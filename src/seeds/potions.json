@@ -17,6 +17,22 @@
       }
     },
     {
+      "name": "Potion of Comprehension",
+      "rarity": "Common",
+      "price": {
+        "min": 35,
+        "max": 45
+      }
+    },
+    {
+      "name": "Potion of Air Bubble",
+      "rarity": "Common",
+      "price": {
+        "min": 45,
+        "max": 55
+      }
+    },
+    {
       "name": "Potion of Healing",
       "rarity": "Common",
       "price": {
@@ -49,7 +65,31 @@
       }
     },
     {
-      "name": "Potion of Resistance(1d12)",
+      "name": "Bottled Breath",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
+      "name": "Potion of Growth",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
+      "name": "Oil of Slipperiness",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
+      "name": "Potion of Advantage",
       "rarity": "Uncommon",
       "price": {
         "min": 150,
@@ -57,11 +97,99 @@
       }
     },
     {
-      "name": "Potion of Fire Breathing",
+      "name": "Potion of Acid Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Cold Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Fire Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Force Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Lightning Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Necrotic Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Poison Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Psychic Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Radiant Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Thunder Resistance",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
+      }
+    },
+    {
+      "name": "Potion of Fire Breath",
       "rarity": "Uncommon",
       "price": {
         "min": 140,
         "max": 160
+      }
+    },
+    {
+      "name": "Potion of Hill Giant Strength",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 150,
+        "max": 175
       }
     },
     {
@@ -73,6 +201,14 @@
       }
     },
     {
+      "name": "Potion of Poison",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 100,
+        "max": 110
+      }
+    },
+    {
       "name": "Potion of Animal Friendship",
       "rarity": "Uncommon",
       "price": {
@@ -81,7 +217,31 @@
       }
     },
     {
-      "name": "Potion of Clarivoyance",
+      "name": "Potion of Water Breathing",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 125,
+        "max": 150
+      }
+    },
+    {
+      "name": "Potion of Polychromy",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 130,
+        "max": 140
+      }
+    },
+    {
+      "name": "Potion of Psionic Fortitude",
+      "rarity": "Uncommon",
+      "price": {
+        "min": 110,
+        "max": 120
+      }
+    },
+    {
+      "name": "Potion of Clairvoyance",
       "rarity": "Rare",
       "price": {
         "min": 180,
@@ -94,6 +254,14 @@
       "price": {
         "min": 250,
         "max": 275
+      }
+    },
+    {
+      "name": "Alchemic Claret",
+      "rarity": "Rare",
+      "price": {
+        "min": 250,
+        "max": 250
       }
     },
     {
