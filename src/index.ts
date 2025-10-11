@@ -1,18 +1,31 @@
 // src/index.ts
-import { Client, Events, GatewayIntentBits, Collection, MessageFlags } from 'discord.js';
+import {
+  Client,
+  Events,
+  GatewayIntentBits,
+  Collection,
+  MessageFlags,
+  SlashCommandBuilder,
+  AutocompleteInteraction,
+  ChatInputCommandInteraction,
+} from 'discord.js';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs/promises';
 import { CommandFile } from './types';
 import setupWeeklyTasks from './weeklies/weekly';
 import { db } from './db/db'; // Import your Sequelize instance
-import { setupModalInteractionHandler } from './helpers';
+import { buildCommand, getCommandFiles, setupModalInteractionHandler } from './helpers';
 
 // Extend the Client type to include commands
+
+interface ClientCommandData {
+  execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
+  autocomplete: (interaction: AutocompleteInteraction) => Promise<void>;
+  data: SlashCommandBuilder;
+}
+
 declare module 'discord.js' {
   export interface Client {
-    commands: Collection<string, CommandFile>;
+    commands: Collection<string, ClientCommandData>;
   }
 }
 
@@ -20,35 +33,8 @@ declare module 'discord.js' {
 dotenv.config();
 const token = process.env.DISCORD_TOKEN;
 
-// ES Module URL to filepath conversion
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // New Client Instance
 export const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
-
-// Initialize commands collection
-client.commands = new Collection<string, CommandFile>();
-// Load commands at startup
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = await fs.readdir(foldersPath);
-
-for (const folder of commandFolders) {
-  const commandsPath = path.join(foldersPath, folder);
-  const commandFiles = (await fs.readdir(commandsPath)).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
-
-  for (const file of commandFiles) {
-    if (file.endsWith('-bak.ts')) continue; // Skip backup files
-
-    const filePath = path.join(commandsPath, file);
-    const fileUrl = new URL(`file://${filePath}`).href;
-
-    const command = (await import(fileUrl)) as CommandFile;
-    if ('data' in command && 'execute' in command) {
-      client.commands.set(command.data.name, command);
-    }
-  }
-}
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isAutocomplete()) {
@@ -100,11 +86,30 @@ client.once(Events.ClientReady, (readyClient) => {
   setupWeeklyTasks();
 });
 
+async function loadCommands() {
+  client.commands = new Collection<string, ClientCommandData>();
+  const commandFiles = await getCommandFiles();
+  for (const file of commandFiles) {
+    if (file.endsWith('-bak.ts')) continue; // Skip backup files
+    const fileUrl = new URL(`file://${file}`).href;
+    const { execute, autocomplete, commandData } = (await import(fileUrl)) as CommandFile;
+    if (!execute) {
+      console.log(`[WARNING] The command at ${file} is missing a required "execute" function.`);
+      continue;
+    }
+    const dataArray = buildCommand(commandData);
+    for (const data of dataArray) {
+      client.commands.set(data.name, { execute, autocomplete, data });
+    }
+  }
+}
+
 // Wrap startup in an async function
 async function startBot() {
   try {
     await db.authenticate(); // Wait for DB connection
     console.log('Database connection established successfully.');
+    await loadCommands();
     await client.login(token); // Only login after DB is ready
   } catch (error) {
     console.error('Unable to connect to the database:', error);

@@ -1,6 +1,5 @@
 import {
   ChatInputCommandInteraction,
-  SlashCommandBuilder,
   AutocompleteInteraction,
   LocalizationMap,
   ApplicationCommandOptionAllowedChannelTypes,
@@ -105,6 +104,7 @@ export type CommandOption =
 
 export type CommandData = {
   name: string;
+  alias?: string | string[];
   description: string;
   requiredRole?: Roles | Roles[];
   category: string;
@@ -112,7 +112,6 @@ export type CommandData = {
 };
 
 export interface CommandFile {
-  data: SlashCommandBuilder;
   execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
   autocomplete: (interaction: AutocompleteInteraction) => Promise<void>;
   commandData: CommandData;

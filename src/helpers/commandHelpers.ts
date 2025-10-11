@@ -1,5 +1,5 @@
-import { RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js';
-import { CommandData, CommandFile, CommandOption } from '~/types';
+import { SlashCommandBuilder } from 'discord.js';
+import { CommandData, CommandOption } from '~/types';
 
 function sanitizeDescription(description: string, commandName: string, optionName?: string): string {
   if (description.length < 1) {
@@ -19,7 +19,7 @@ function sanitizeDescription(description: string, commandName: string, optionNam
  * @param commandData - The CommandData object containing command details
  * @returns A SlashCommandBuilder instance
  */
-export function buildCommand(commandData: CommandData): SlashCommandBuilder {
+export function buildCommand(commandData: CommandData): SlashCommandBuilder[] {
   if (commandData.name.length < 1 || commandData.name.length > 32) {
     throw new Error(`Command name "${commandData.name}" must be between 1 and 32 characters.`);
   }
@@ -36,7 +36,21 @@ export function buildCommand(commandData: CommandData): SlashCommandBuilder {
     buildCommandOptions(builder, commandData.options);
   }
 
-  return builder;
+  const builderArray: SlashCommandBuilder[] = [builder];
+  if (commandData.alias) {
+    const aliases = Array.isArray(commandData.alias) ? commandData.alias : [commandData.alias];
+    for (const alias of aliases) {
+      const newCommand: CommandData = {
+        ...commandData,
+        name: alias,
+        alias: undefined, // Prevent infinite recursion
+      };
+      const aliasBuilder = buildCommand(newCommand);
+      builderArray.push(...aliasBuilder);
+    }
+  }
+
+  return builderArray;
 }
 
 /**
@@ -306,28 +320,9 @@ export function buildCommandOptions(builder: SlashCommandBuilder, options: Comma
   return builder;
 }
 
-// Function overloads for type-safe returns
-export async function loadCommandFiles(
-  returnType: 'commands'
-): Promise<RESTPostAPIChatInputApplicationCommandsJSONBody[]>;
-export async function loadCommandFiles(returnType: 'commandsData'): Promise<CommandData[]>;
-export async function loadCommandFiles(
-  returnType?: 'both'
-): Promise<{ commands: RESTPostAPIChatInputApplicationCommandsJSONBody[]; commandsData: CommandData[] }>;
-
-export async function loadCommandFiles(
-  returnType?: 'commands' | 'commandsData' | 'both'
-): Promise<
-  | RESTPostAPIChatInputApplicationCommandsJSONBody[]
-  | CommandData[]
-  | { commands: RESTPostAPIChatInputApplicationCommandsJSONBody[]; commandsData: CommandData[] }
-> {
-  const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
-  const commandsData: CommandData[] = [];
-
-  // Use Bun's built-in path resolution
+export async function getCommandFiles() {
   const commandsPath = new URL('../commands', import.meta.url).pathname;
-
+  const commandFiles: string[] = [];
   try {
     // Use Bun's native file system APIs
     const commandFolders = await Array.fromAsync(new Bun.Glob('*').scan({ cwd: commandsPath, onlyFiles: false }));
@@ -337,44 +332,9 @@ export async function loadCommandFiles(
 
       // Check if it's actually a directory by trying to scan it directly
       try {
-        const commandFiles = await Array.fromAsync(new Bun.Glob('*.{ts,js}').scan({ cwd: folderPath }));
-
-        for (const file of commandFiles) {
-          const filePath = `${folderPath}/${file}`;
-
-          try {
-            const command = (await import(filePath)) as CommandFile;
-
-            if (!command) {
-              console.log(`[WARNING] The command at ${filePath} does not export a valid command.`);
-              continue;
-            }
-            if (!command.data) {
-              console.log(`[WARNING] The command at ${filePath} is missing a required "data" property.`);
-              continue;
-            }
-            if (!command.execute) {
-              console.log(`[WARNING] The command at ${filePath} is missing a required "execute" function.`);
-              continue;
-            }
-            if (!command.commandData) {
-              console.log(`[WARNING] The command at ${filePath} is missing a required "commandData" property.`);
-              continue;
-            }
-
-            // Only process commands if we need them
-            if (returnType === 'commands' || returnType === 'both' || !returnType) {
-              commands.push(command.data.toJSON());
-              // console.log(`Loaded command: ${command.data.name}`);
-            }
-            // Only process commandsData if we need them
-            if (returnType === 'commandsData' || returnType === 'both' || !returnType) {
-              commandsData.push(command.commandData);
-            }
-          } catch (error) {
-            console.error(`Error loading command from ${filePath}:`, error);
-          }
-        }
+        // const commandFiles = await Array.fromAsync(new Bun.Glob('*.{ts,js}').scan({ cwd: folderPath }));
+        const folderFiles = await Array.fromAsync(new Bun.Glob('*.{ts,js}').scan({ cwd: folderPath }));
+        commandFiles.push(...folderFiles.map((file) => `${folderPath}/${file}`));
       } catch (_globError) {
         // If we can't scan the folder, it's likely a file, so skip it
         // console.log(`Skipping ${folder} - not a directory`);
@@ -385,14 +345,5 @@ export async function loadCommandFiles(
     console.error('Error loading command files:', error);
   }
 
-  // Return based on the specified type with proper type safety
-  switch (returnType) {
-    case 'commands':
-      return commands;
-    case 'commandsData':
-      return commandsData;
-    case 'both':
-    default:
-      return { commands, commandsData };
-  }
+  return commandFiles;
 }

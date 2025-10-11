@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
-import { buildCommand, checkUserRole } from '~/helpers';
+// import { buildCommand, checkUserRole } from '~/helpers';
+import { checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 type FormulaComponent = {
@@ -27,6 +28,7 @@ type RollModifier = {
 
 const commandData: CommandData = {
   name: 'roll',
+  alias: 'r',
   description: 'Rolls a dice formula',
   category: 'utility',
   requiredRole: [Roles.BOT_DEV, Roles.DM, Roles.GM],
@@ -40,7 +42,9 @@ const commandData: CommandData = {
   ],
 };
 
-const data = buildCommand(commandData);
+// const data = buildCommand(commandData);
+
+const data = undefined;
 
 const ModifierPriority = ['r', 'rr', 'k', 'kh', 'kl', 'd', 'dl', 'dh', 'x', 'xo', 'min', 'max'];
 

@@ -1,6 +1,6 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder, MessageFlags } from 'discord.js';
-import { loadCommandFiles, buildCommand, checkUserRole } from '~/helpers';
-import { Roles, CommandData } from '~/types';
+import { buildCommand, checkUserRole, getCommandFiles } from '~/helpers';
+import { Roles, CommandData, CommandFile } from '~/types';
 
 const commandData: CommandData = {
   name: 'help',
@@ -32,6 +32,31 @@ const categoryEmojis: { [key: string]: string } = {
   announcement: '📢',
 };
 
+async function getCommandData(): Promise<CommandData[]> {
+  const commandsData: CommandData[] = [];
+  const commandFiles = await getCommandFiles();
+
+  for (const filePath of commandFiles) {
+    try {
+      const command = (await import(filePath)) as CommandFile;
+
+      if (!command) {
+        console.log(`[WARNING] The command at ${filePath} does not export a valid command.`);
+        continue;
+      }
+      if (!command.commandData) {
+        console.log(`[WARNING] The command at ${filePath} is missing a required "commandData" property.`);
+        continue;
+      }
+
+      commandsData.push(command.commandData);
+    } catch (error) {
+      console.error(`Error loading command from ${filePath}:`, error);
+    }
+  }
+  return commandsData;
+}
+
 function getUserRoles(interaction: ChatInputCommandInteraction | AutocompleteInteraction): Roles[] {
   const userRoles: Roles[] = [];
 
@@ -56,7 +81,7 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   let focusedValue = interaction.options.getFocused();
   if (commands.length == 0) {
     // await loadCommands();
-    const commandsData = await loadCommandFiles('commandsData');
+    const commandsData = await getCommandData();
     commands.push(...commandsData);
   }
   if (focusedValue.startsWith('/')) {
@@ -148,7 +173,7 @@ async function executeSubhelp(interaction: ChatInputCommandInteraction, command:
 async function execute(interaction: ChatInputCommandInteraction) {
   if (commands.length == 0) {
     // await loadCommands();
-    const commandsData = await loadCommandFiles('commandsData');
+    const commandsData = await getCommandData();
     commands.push(...commandsData);
   }
   const command = interaction.options.getString('command');

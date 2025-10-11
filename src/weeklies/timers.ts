@@ -56,7 +56,7 @@ async function postMessages(messages: EmbedBuilder[][], usersWithCompletedTimers
   }
 
   messages.forEach(async (embeds, messageIndex) => {
-    if (embeds.length  == 0) {
+    if (embeds.length == 0) {
       return;
     }
     for (let i = 0; i < embeds.length; i += 10) {
