@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { Weapon } from '../../db/models/Weapon';
+import { Weapon } from '~/db/models/Weapon';
 import { createItemEmbed, calculateMetalItemPrice, checkUserRole, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 import { getRandomMetalByRarity } from './generatemetal';

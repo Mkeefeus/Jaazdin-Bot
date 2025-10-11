@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { Metal } from '../../db/models/Metal';
+import { Metal } from '~/db/models/Metal';
 import { Op } from 'sequelize';
 import { createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData } from '~/types';

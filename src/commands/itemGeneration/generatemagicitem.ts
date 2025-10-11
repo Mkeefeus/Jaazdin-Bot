@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
-import { MagicItem } from '../../db/models/MagicItem';
+import { MagicItem } from '~/db/models/MagicItem';
 import { checkUserRole, createItemEmbed, randomInt } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 

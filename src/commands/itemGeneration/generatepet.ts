@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { Pet } from '../../db/models/Pet';
+import { Pet } from '~/db/models/Pet';
 import { Op } from 'sequelize';
 import { checkUserRole, createItemEmbed, creatureTypeChoices, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';

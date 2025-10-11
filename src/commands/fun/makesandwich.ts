@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
-import { IngredientCategory, Ingredient } from '../../db/models/Ingredient.js';
+import { IngredientCategory, Ingredient } from '~/db/models/Ingredient.js';
 
 import { CommandData } from '~/types';
 

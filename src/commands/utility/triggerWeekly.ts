@@ -1,7 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-
-import { CommandData } from '~/types/command';
-import { Roles } from '~/types';
+import { Roles, CommandData } from '~/types';
 import { executeWeeklyTasks } from '~/weeklies/weekly';
 
 const commandData: CommandData = {

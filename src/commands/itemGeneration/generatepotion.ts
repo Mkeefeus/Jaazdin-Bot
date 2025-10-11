@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { Potion } from '../../db/models/Potion';
+import { Potion } from '~/db/models/Potion';
 import { checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 

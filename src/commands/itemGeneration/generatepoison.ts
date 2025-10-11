@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { Poison } from '../../db/models/Poison';
+import { Poison } from '~/db/models/Poison';
 import { checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 

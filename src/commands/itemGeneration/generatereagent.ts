@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { Reagent } from '../../db/models/Reagent';
+import { Reagent } from '~/db/models/Reagent';
 import { checkUserRole, createItemEmbed, creatureTypeChoices, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 

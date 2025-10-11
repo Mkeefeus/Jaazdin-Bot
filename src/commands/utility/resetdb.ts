@@ -1,10 +1,9 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { checkUserRole } from '~/helpers';
-import { CommandData } from '~/types/command';
+import { CommandData, Roles } from '~/types';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readdir } from 'fs/promises';
-import { Roles } from '~/types';
 
 const commandData: CommandData = {
   name: 'resetdb',
@@ -40,7 +39,7 @@ async function execute(interaction: ChatInputCommandInteraction) {
   const dropTables = interaction.options.getBoolean('drop');
   const seedTables = interaction.options.getBoolean('seed');
 
-  const modelsPath = path.join(__dirname, '../../db', 'models');
+  const modelsPath = path.join(__dirname, '~/db', 'models');
 
   const modelFiles = (await readdir(modelsPath)).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
 

@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { db } from '../db';
+import { db } from '~/db';
 import { CreatedAt, UpdatedAt } from 'sequelize-typescript';
 
 export class Poison extends Model {

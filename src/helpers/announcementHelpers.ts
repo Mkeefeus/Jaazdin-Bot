@@ -1,5 +1,5 @@
 import { EmbedBuilder, Colors } from 'discord.js';
-import { Announcement } from '../db/models/Announcement';
+import { Announcement } from '~/db/models/Announcement';
 
 /**
  * Create an embed for an announcement

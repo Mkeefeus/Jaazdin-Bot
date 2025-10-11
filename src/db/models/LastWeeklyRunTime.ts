@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { db } from '../db';
+import { db } from '~/db';
 import cronParser from 'cron-parser';
 import { TIMEZONE } from '~/constants';
 

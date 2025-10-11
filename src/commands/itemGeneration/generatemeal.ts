@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { Meal } from '../../db/models/Meal';
+import { Meal } from '~/db/models/Meal';
 import { createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData } from '~/types';
 
