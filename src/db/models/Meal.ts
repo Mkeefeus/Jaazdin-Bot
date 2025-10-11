@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { db } from '~/db';
+import { db } from '../db';
 
 export class Meal extends Model {
   declare name: string;
