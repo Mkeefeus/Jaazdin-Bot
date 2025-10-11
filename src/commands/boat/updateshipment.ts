@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
-import { buildCommand, checkUserRole, parseChangeString, updateBoatEmbed } from '~/helpers';
+import { checkUserRole, parseChangeString, updateBoatEmbed } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -15,8 +15,6 @@ const commandData: CommandData = {
     { name: 'quantity', type: 'string', description: 'New quantity (+x, -x, =x' },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
@@ -126,4 +124,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

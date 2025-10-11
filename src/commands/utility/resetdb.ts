@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { buildCommand, checkUserRole } from '~/helpers';
+import { checkUserRole } from '~/helpers';
 import { CommandData } from '~/types/command';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -25,8 +25,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -78,4 +76,4 @@ const help = {
   category: 'utility',
 };
 
-export { commandData, data, execute, help };
+export { commandData, execute, help };

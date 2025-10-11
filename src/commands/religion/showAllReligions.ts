@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { Religion } from '~/db/models/Religion';
-import { buildCommand, formatNames, replyWithUserMention } from '~/helpers';
+import { formatNames, replyWithUserMention } from '~/helpers';
 import { showReligion } from './showReligion';
 import { CommandData } from '~/types';
 
@@ -9,8 +9,6 @@ const commandData: CommandData = {
   description: 'Shows all active religions',
   category: 'religion',
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const allMessages = await showAllReligions();
@@ -56,4 +54,4 @@ async function showAllReligions(): Promise<EmbedBuilder[]> {
   return embeds;
 }
 
-export { data, execute, commandData, showAllReligions };
+export { execute, commandData, showAllReligions };

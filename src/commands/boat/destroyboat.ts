@@ -1,13 +1,6 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Shipment } from '~/db/models/Boat';
-import {
-  findBoatByName,
-  boatNameAutocomplete,
-  buildCommand,
-  checkUserRole,
-  confirmAction,
-  formatNames,
-} from '~/helpers';
+import { findBoatByName, boatNameAutocomplete, checkUserRole, confirmAction, formatNames } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -16,8 +9,6 @@ const commandData: CommandData = {
   category: 'boats',
   options: [{ name: 'name', type: 'string', description: 'The name of the boat', required: true, autocomplete: true }],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name') as string;
@@ -78,4 +69,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await boatNameAutocomplete(interaction);
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

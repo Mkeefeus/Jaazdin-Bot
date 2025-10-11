@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { buildCommand, checkUserRole } from '~/helpers';
+import { checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -7,8 +7,6 @@ const commandData: CommandData = {
   description: 'Restarts the bot process',
   category: 'utility',
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.BOT_DEV, Roles.GM])) {
@@ -33,4 +31,4 @@ const help: CommandData = {
   category: 'utility',
 };
 
-export { commandData, data, execute, help };
+export { commandData, execute, help };

@@ -1,7 +1,7 @@
 import { db } from 'db/db';
 import { ChatInputCommandInteraction } from 'discord.js';
 import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
-import { buildCommand } from '~/helpers';
+
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -27,8 +27,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
@@ -89,4 +87,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

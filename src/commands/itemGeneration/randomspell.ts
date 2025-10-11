@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Spell } from '~/db/models/Spell';
-import { buildCommand, createItemEmbed } from '~/helpers';
+import { createItemEmbed } from '~/helpers';
 import { CommandData } from '~/types';
 
 const SPELL_SCHOOLS = [
@@ -57,8 +57,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const level = interaction.options.getInteger('level', true);
@@ -117,4 +115,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await interaction.respond(filtered);
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

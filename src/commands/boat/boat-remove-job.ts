@@ -1,11 +1,5 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
-import {
-  findBoatByName,
-  boatNameAutocomplete,
-  createBoatStatusDescription,
-  buildCommand,
-  checkUserRole,
-} from '~/helpers';
+import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription, checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 import { Boat } from '~/db/models/Boat';
 
@@ -18,8 +12,6 @@ const commandData: CommandData = {
     { name: 'job', type: 'string', description: 'Job name to remove', required: true, autocomplete: true },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
   const focusedOption = interaction.options.getFocused(true);
@@ -108,4 +100,4 @@ async function execute(interaction: ChatInputCommandInteraction): Promise<void> 
   await interaction.reply({ embeds: [embed] });
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

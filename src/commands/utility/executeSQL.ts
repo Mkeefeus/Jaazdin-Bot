@@ -1,6 +1,6 @@
 import { db } from '~/db/db';
 import { ChatInputCommandInteraction } from 'discord.js';
-import { buildCommand, checkUserRole } from '~/helpers';
+import { checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -16,8 +16,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const hasRole = checkUserRole(interaction, Roles.BOT_DEV);
@@ -39,9 +37,8 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export { data, execute, commandData };
+export { execute, commandData };
 
 export default {
-  data,
   execute,
 };

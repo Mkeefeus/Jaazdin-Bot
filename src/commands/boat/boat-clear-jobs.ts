@@ -7,13 +7,7 @@ import {
   ActionRowBuilder,
   MessageFlags,
 } from 'discord.js';
-import {
-  findBoatByName,
-  boatNameAutocomplete,
-  createBoatStatusDescription,
-  buildCommand,
-  checkUserRole,
-} from '~/helpers';
+import { findBoatByName, boatNameAutocomplete, createBoatStatusDescription, checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -22,8 +16,6 @@ const commandData: CommandData = {
   category: 'boats',
   options: [{ name: 'boat', type: 'string', description: 'Boat name', required: true, autocomplete: true }],
 };
-
-const data = buildCommand(commandData);
 
 async function autocomplete(interaction: AutocompleteInteraction): Promise<void> {
   await boatNameAutocomplete(interaction);
@@ -126,4 +118,4 @@ async function execute(interaction: ChatInputCommandInteraction): Promise<void> 
   }
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

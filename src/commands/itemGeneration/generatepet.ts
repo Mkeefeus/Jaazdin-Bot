@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Pet } from '../../db/models/Pet';
 import { Op } from 'sequelize';
-import { buildCommand, checkUserRole, createItemEmbed, creatureTypeChoices, randomInt, rarityChoices } from '~/helpers';
+import { checkUserRole, createItemEmbed, creatureTypeChoices, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 // Rarity boundaries by CR
@@ -34,8 +34,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
@@ -90,4 +88,4 @@ async function getRandomPetByRarityAndType(rarity: string, creatureType: string)
   return validPets[Math.floor(Math.random() * validPets.length)];
 }
 
-export { data, execute, commandData, getRandomPetByRarityAndType };
+export { execute, commandData, getRandomPetByRarityAndType };

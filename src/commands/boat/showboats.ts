@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
-import { boatInTownEmbedBuilder, buildCommand } from '~/helpers';
+import { boatInTownEmbedBuilder } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -8,8 +8,6 @@ const commandData: CommandData = {
   description: 'Show all boats and their current status',
   category: 'boats',
 };
-
-const data = buildCommand(commandData);
 
 export async function createBoatEmbed(boats: Boat[]) {
   const embeds: EmbedBuilder[] = [];
@@ -77,4 +75,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

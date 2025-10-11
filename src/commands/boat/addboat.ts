@@ -1,12 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { Boat, Shipment } from '~/db/models/Boat';
-import {
-  createBoatStatusDescription,
-  tableToGenerateChoices,
-  generateShipmentItems,
-  buildCommand,
-  checkUserRole,
-} from '~/helpers';
+import { createBoatStatusDescription, tableToGenerateChoices, generateShipmentItems, checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -37,8 +31,6 @@ const commandData: CommandData = {
     { name: 'isintown', type: 'boolean', description: 'Is the boat in town? (default false)' },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, Roles.GM)) {
@@ -136,4 +128,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

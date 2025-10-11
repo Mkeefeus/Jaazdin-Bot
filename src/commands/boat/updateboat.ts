@@ -7,7 +7,6 @@ import {
   generateShipmentItems,
   boatAtSeaEmbedBuilder,
   tableToGenerateChoices,
-  buildCommand,
   checkUserRole,
   parseChangeString,
 } from '~/helpers';
@@ -36,8 +35,6 @@ const commandData: CommandData = {
     { name: 'isintown', type: 'boolean', description: 'Is the boat in town?' },
   ],
 };
-
-const data = buildCommand(commandData);
 
 function buildBoatUpdatesFromOptions(
   interaction: ChatInputCommandInteraction,
@@ -207,4 +204,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   }
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

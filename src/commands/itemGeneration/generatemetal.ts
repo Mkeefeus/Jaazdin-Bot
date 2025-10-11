@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Metal } from '../../db/models/Metal';
 import { Op } from 'sequelize';
-import { buildCommand, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
+import { createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -18,8 +18,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function getRandomMetalByRarity(rarity: string): Promise<Metal | null> {
   const metals = await Metal.findAll({ where: { rarity } });
@@ -79,4 +77,4 @@ async function getRandomMetalByRarityExcludingPlanes(rarity: string, excludedPla
   return validMetals[Math.floor(Math.random() * validMetals.length)];
 }
 
-export { data, execute, commandData, getRandomMetalByRarity, getRandomMetalByRarityExcludingPlanes };
+export { execute, commandData, getRandomMetalByRarity, getRandomMetalByRarityExcludingPlanes };

@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction, MessageFlags } from 'discord.js';
 import { Announcement } from '~/db/models/Announcement';
-import { checkUserRole, confirmAction, formatNames, buildCommand } from '~/helpers';
+import { checkUserRole, confirmAction, formatNames } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -17,8 +17,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name') as string;
@@ -90,4 +88,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await interaction.respond(filtered.map((name) => ({ name, value: name })).slice(0, 25));
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

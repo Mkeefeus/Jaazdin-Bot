@@ -1,5 +1,5 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder, MessageFlags } from 'discord.js';
-import { buildCommand, checkUserRole, getCommandFiles } from '~/helpers';
+import { checkUserRole, getCommandFiles } from '~/helpers';
 import { Roles, CommandData, CommandFile } from '~/types';
 
 const commandData: CommandData = {
@@ -15,8 +15,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 const commands: CommandData[] = [];
 
@@ -279,4 +277,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: embeds, flags: MessageFlags.Ephemeral });
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

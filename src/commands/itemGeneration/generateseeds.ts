@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Seed } from '../../db/models/Seed';
-import { buildCommand, checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
+import { checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -17,8 +17,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function getRandomSeedByRarity(rarity: string): Promise<Seed | null> {
   const items = await Seed.findAll({
@@ -61,4 +59,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export { data, execute, commandData, getRandomSeedByRarity };
+export { execute, commandData, getRandomSeedByRarity };

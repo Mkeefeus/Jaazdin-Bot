@@ -1,13 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Weapon } from '../../db/models/Weapon';
-import {
-  createItemEmbed,
-  calculateMetalItemPrice,
-  buildCommand,
-  checkUserRole,
-  randomInt,
-  rarityChoices,
-} from '~/helpers';
+import { createItemEmbed, calculateMetalItemPrice, checkUserRole, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 import { getRandomMetalByRarity } from './generatemetal';
 
@@ -25,8 +18,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function generateRandomWeaponWithMetalByRarity(rarity: string) {
   const metal = await getRandomMetalByRarity(rarity);
@@ -75,4 +66,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
 
-export { data, execute, commandData, generateRandomWeaponWithMetalByRarity };
+export { execute, commandData, generateRandomWeaponWithMetalByRarity };

@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { IngredientCategory, Ingredient } from '~/db/models/Ingredient';
-import { buildCommand } from '~/helpers';
+
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -8,8 +8,6 @@ const commandData: CommandData = {
   description: 'Shows all available ingredients in the kitchen',
   category: 'fun',
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   try {
@@ -148,4 +146,4 @@ function getCategoryEmoji(category: IngredientCategory): string {
   return emojiMap[category];
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

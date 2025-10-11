@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction } from 'discord.js';
 import { Ingredient } from '~/db/models/Ingredient';
 import { writeFile } from 'fs/promises';
 import { resolve } from 'path';
-import { buildCommand } from '~/helpers';
+
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -10,8 +10,6 @@ const commandData: CommandData = {
   description: 'Save the kitchen to a JSON file',
   category: 'fun',
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   try {
@@ -35,4 +33,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
-import { buildCommand, checkUserRole, formatNames } from '~/helpers';
+import { checkUserRole, formatNames } from '~/helpers';
 import { CommandData, Roles, TimerType } from '~/types';
 import { TIMER_MAX_LENGTH } from '~/constants';
 
@@ -58,8 +58,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 const ICON_MAP: Record<string, string> = {
   building: '🏗️',
@@ -135,4 +133,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

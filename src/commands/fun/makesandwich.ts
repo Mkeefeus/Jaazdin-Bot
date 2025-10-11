@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { IngredientCategory, Ingredient } from '../../db/models/Ingredient.js';
-import { buildCommand } from '~/helpers';
+
 import { CommandData } from '~/types';
 
 // Fun rating messages
@@ -44,8 +44,6 @@ const commandData: CommandData = {
   description: 'Make Kreider a sandwich!',
   category: 'fun',
 };
-
-const data = buildCommand(commandData);
 
 function getRandomRating(ratings: string[]): string {
   return ratings[Math.floor(Math.random() * ratings.length)];
@@ -133,4 +131,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

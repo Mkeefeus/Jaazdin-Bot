@@ -1,6 +1,6 @@
 import { EmbedBuilder, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Timer } from '~/db/models/Timer';
-import { buildCommand, formatNames } from '~/helpers';
+import { formatNames } from '~/helpers';
 import { CommandData, SortedTimers, TimerType, typeColors, typeIcons } from '~/types';
 
 const commandData: CommandData = {
@@ -15,8 +15,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 function sortTimersByTypeAndUser(timers: Timer[]): SortedTimers {
   const sorted: SortedTimers = {
@@ -244,4 +242,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export { data, execute, commandData, sortTimersByTypeAndUser };
+export { execute, commandData, sortTimersByTypeAndUser };

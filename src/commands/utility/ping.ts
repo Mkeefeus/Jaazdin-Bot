@@ -1,6 +1,6 @@
 import { db } from 'db/db';
 import { ChatInputCommandInteraction } from 'discord.js';
-import { buildCommand } from '~/helpers';
+
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -8,8 +8,6 @@ const commandData: CommandData = {
   description: 'Replies with Pong!',
   category: 'utility',
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   try {
@@ -21,4 +19,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply('Pong!');
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Reagent } from '../../db/models/Reagent';
-import { buildCommand, checkUserRole, createItemEmbed, creatureTypeChoices, randomInt, rarityChoices } from '~/helpers';
+import { checkUserRole, createItemEmbed, creatureTypeChoices, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -24,8 +24,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   if (!checkUserRole(interaction, [Roles.GM, Roles.DM])) {
@@ -74,4 +72,4 @@ async function getRandomReagentByRarity(rarity: string) {
   return validReagents[Math.floor(Math.random() * validReagents.length)];
 }
 
-export { data, execute, commandData, getRandomReagentByRarityAndType, getRandomReagentByRarity };
+export { execute, commandData, getRandomReagentByRarityAndType, getRandomReagentByRarity };

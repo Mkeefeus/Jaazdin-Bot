@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { TIMER_MAX_LENGTH } from '~/constants';
 import { Timer } from '~/db/models/Timer';
-import { buildCommand, checkUserRole, formatNames, parseChangeString } from '~/helpers';
+import { checkUserRole, formatNames, parseChangeString } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -30,8 +30,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function autocomplete(interaction: AutocompleteInteraction) {
   const focusedOption = interaction.options.getFocused(true);
@@ -119,4 +117,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
 import { MagicItem } from '../../db/models/MagicItem';
-import { buildCommand, checkUserRole, createItemEmbed, randomInt } from '~/helpers';
+import { checkUserRole, createItemEmbed, randomInt } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -17,8 +17,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function autocomplete(interaction: AutocompleteInteraction) {
   const items = await MagicItem.findAll({
@@ -82,4 +80,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export { data, execute, commandData, autocomplete, getRandomMagicItemByRarity, getRandomMagicItemByTable };
+export { execute, commandData, autocomplete, getRandomMagicItemByRarity, getRandomMagicItemByTable };

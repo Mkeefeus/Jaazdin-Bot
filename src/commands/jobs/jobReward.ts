@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, AutocompleteInteraction } fr
 import { Op } from 'sequelize';
 import { Boat } from '~/db/models/Boat';
 import { Job, JobTier } from '~/db/models/Job';
-import { buildCommand, formatNames, jobNameAutocomplete, replyWithUserMention } from '~/helpers';
+import { formatNames, jobNameAutocomplete, replyWithUserMention } from '~/helpers';
 import { CommandData } from '~/types';
 
 // Helper function to convert job name from database format to boat format
@@ -43,8 +43,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const jobName = interaction.options.getString('name');
@@ -110,4 +108,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await jobNameAutocomplete(interaction);
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

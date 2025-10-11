@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Poison } from '../../db/models/Poison';
-import { buildCommand, checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
+import { checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -17,8 +17,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function getRandomPoisonByRarity(rarity: string): Promise<Poison | null> {
   const poisons = await Poison.findAll({ where: { rarity } });
@@ -59,4 +57,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export { data, execute, commandData, getRandomPoisonByRarity };
+export { execute, commandData, getRandomPoisonByRarity };

@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, AutocompleteInteraction } from 'discord.js';
-import { buildCommand } from '~/helpers';
+
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -11,8 +11,6 @@ const commandData: CommandData = {
   ],
 };
 
-const data = buildCommand(commandData);
-
 async function execute(interaction: ChatInputCommandInteraction) {
   // Command execution logic here
 }
@@ -23,4 +21,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
 }
 
 // Other exports can be exported here rather then inline
-export { data, execute, autocomplete, commandData };
+export { execute, autocomplete, commandData };

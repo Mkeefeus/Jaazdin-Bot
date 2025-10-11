@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Meal } from '../../db/models/Meal';
-import { buildCommand, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
+import { createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -17,8 +17,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function getRandomMealByRarity(rarity: string): Promise<Meal | null> {
   const meals = await Meal.findAll({ where: { rarity } });
@@ -49,4 +47,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export { data, execute, commandData, getRandomMealByRarity };
+export { execute, commandData, getRandomMealByRarity };

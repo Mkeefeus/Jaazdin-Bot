@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Potion } from '../../db/models/Potion';
-import { buildCommand, checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
+import { checkUserRole, createItemEmbed, randomInt, rarityChoices } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -17,8 +17,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function getRandomPotionByRarity(rarity: string): Promise<Potion | null> {
   const potions = await Potion.findAll({ where: { rarity } });
@@ -58,4 +56,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-export { data, execute, commandData, getRandomPotionByRarity };
+export { execute, commandData, getRandomPotionByRarity };

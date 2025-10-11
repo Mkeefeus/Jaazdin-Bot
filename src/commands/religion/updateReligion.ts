@@ -3,7 +3,6 @@ import {
   findReligionByName,
   checkReligionExists,
   religionCommandAutocomplete,
-  buildCommand,
   parseChangeString,
   replyWithUserMention,
 } from '~/helpers';
@@ -41,8 +40,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
@@ -115,4 +112,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

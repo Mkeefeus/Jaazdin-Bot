@@ -9,7 +9,7 @@ import {
   MessageFlags,
 } from 'discord.js';
 import { Announcement } from '~/db/models/Announcement';
-import { buildCommand, checkUserRole, showAnnouncement } from '~/helpers';
+import { checkUserRole, showAnnouncement } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const CHANNEL_ID = process.env.BOT_CHANNEL_ID;
@@ -23,8 +23,6 @@ const commandData: CommandData = {
     { name: 'post_now', type: 'boolean', description: 'Post announcement immediately' },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   // Only allow GMs to use this command
@@ -108,4 +106,4 @@ async function handleModalSubmit(interaction: Interaction) {
   }
 }
 
-export { data, execute, commandData, handleModalSubmit as handleAnnouncementModal };
+export { execute, commandData, handleModalSubmit as handleAnnouncementModal };

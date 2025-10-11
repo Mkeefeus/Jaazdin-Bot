@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Boat } from '~/db/models/Boat';
-import { buildCommand, checkUserRole } from '~/helpers';
+import { checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 import { Op } from 'sequelize';
 
@@ -19,7 +19,6 @@ const commandData: CommandData = {
   ],
 };
 
-const data = buildCommand(commandData);
 //TODO: for boats names use autocomplete to suggest existing boat names
 
 async function execute(interaction: ChatInputCommandInteraction) {
@@ -55,4 +54,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

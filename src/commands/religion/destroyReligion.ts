@@ -1,13 +1,6 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Domain } from '~/db/models/Religion';
-import {
-  buildCommand,
-  checkUserRole,
-  confirmAction,
-  findReligionByName,
-  formatNames,
-  religionCommandAutocomplete,
-} from '~/helpers';
+import { checkUserRole, confirmAction, findReligionByName, formatNames, religionCommandAutocomplete } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
 const commandData: CommandData = {
@@ -24,8 +17,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
@@ -103,4 +94,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
-export { data, execute, commandData, autocomplete };
+export { execute, commandData, autocomplete };

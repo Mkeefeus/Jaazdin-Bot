@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from 'discord.js';
-import { buildCommand } from '~/helpers';
+
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -37,8 +37,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 function generateMultipliedBonusString(
   skillBonusString: string,
@@ -100,4 +98,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   });
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
-// import { buildCommand, checkUserRole } from '~/helpers';
+// import {  checkUserRole } from '~/helpers';
 import { checkUserRole } from '~/helpers';
 import { CommandData, Roles } from '~/types';
 
@@ -42,9 +42,7 @@ const commandData: CommandData = {
   ],
 };
 
-// const data = buildCommand(commandData);
-
-const data = undefined;
+//
 
 const ModifierPriority = ['r', 'rr', 'k', 'kh', 'kl', 'd', 'dl', 'dh', 'x', 'xo', 'min', 'max'];
 
@@ -797,4 +795,4 @@ async function execute(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export { data, execute, commandData };
+export { execute, commandData };

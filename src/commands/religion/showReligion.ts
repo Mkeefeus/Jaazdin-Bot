@@ -1,12 +1,6 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder } from 'discord.js';
 import { Domain, Religion } from '~/db/models/Religion';
-import {
-  buildCommand,
-  findReligionByName,
-  formatNames,
-  religionCommandAutocomplete,
-  replyWithUserMention,
-} from '~/helpers';
+import { findReligionByName, formatNames, religionCommandAutocomplete, replyWithUserMention } from '~/helpers';
 import { CommandData } from '~/types';
 
 const commandData: CommandData = {
@@ -23,8 +17,6 @@ const commandData: CommandData = {
     },
   ],
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   const name = interaction.options.getString('name')?.toLowerCase() as string;
@@ -61,4 +53,4 @@ async function autocomplete(interaction: AutocompleteInteraction) {
   await religionCommandAutocomplete(interaction);
 }
 
-export { data, execute, commandData, autocomplete, showReligion };
+export { execute, commandData, autocomplete, showReligion };

@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { buildCommand } from '~/helpers';
+
 import { CommandData } from '~/types/command';
 import { Roles } from '~/types';
 import { executeWeeklyTasks } from '~/weeklies/weekly';
@@ -9,8 +9,6 @@ const commandData: CommandData = {
   description: 'Triggers the weekly tasks',
   category: 'utility',
 };
-
-const data = buildCommand(commandData);
 
 async function execute(interaction: ChatInputCommandInteraction) {
   await executeWeeklyTasks();
@@ -27,4 +25,4 @@ const help = {
   category: 'utility',
 };
 
-export { commandData, data, execute, help };
+export { commandData, execute, help };
