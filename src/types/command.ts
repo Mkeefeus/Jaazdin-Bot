@@ -109,6 +109,7 @@ export type CommandData = {
   requiredRole?: Roles | Roles[];
   category: string;
   options?: CommandOption[];
+  // There are some additional missing properties. See https://discord.js.org/docs/packages/discord.js/14.23.2/SlashCommandBuilder:Class
 };
 
 export interface CommandFile {
