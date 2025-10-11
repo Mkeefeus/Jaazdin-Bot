@@ -4,6 +4,7 @@ import { CommandData } from '~/types';
 
 const commandData: CommandData = {
   name: '',
+  alias: '', // Optional, can also be an array of strings
   description: '',
   category: '',
   options: [
