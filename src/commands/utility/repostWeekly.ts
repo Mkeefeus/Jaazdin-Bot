@@ -23,10 +23,5 @@ async function execute(interaction: ChatInputCommandInteraction) {
     flags: MessageFlags.Ephemeral,
   });
 }
-const help = {
-  name: 'repostweekly',
-  description: 'Repost the weekly downtime message (GM only)',
-  requiredRole: [Roles.GM, Roles.BOT_DEV],
-  category: 'utility',
-};
-export { commandData, execute, help };
+
+export { commandData, execute };
